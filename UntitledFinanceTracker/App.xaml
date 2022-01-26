@@ -4,6 +4,55 @@
              xmlns:local="clr-namespace:UntitledFinanceTracker"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <!-- Default font -->
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontFamily" Value="Microsoft JhengHei Light" />
+            <Setter Property="Padding" Value="5 0 0 0" />
+        </Style>
+
+        <!-- Title formatting -->
+        <Style x:Key="Title" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Opacity" Value="0.85"/>
+            <Setter Property="Margin" Value="10 3 10 0"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="FontFamily" Value="Microsoft JhengHei Light" />
+        </Style>
+
+        <!-- Menu formatting -->
+        <Style x:Key="Menu" TargetType="{x:Type ListView}">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="#1c1c1c"/>
+        </Style>
+        
+        <!-- Menu item formatting -->
+        <Style x:Key="MenuItem" TargetType="{x:Type ListViewItem}">
+            <Style.Setters>
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="Foreground" Value="#ffffff"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                            <Border Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#121212" />
+                    <Setter Property="Foreground" Value="#A0DEEB" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#121212" />
+                    <Setter Property="Foreground" Value="#A0DEEB" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Application.Resources>
 </Application>

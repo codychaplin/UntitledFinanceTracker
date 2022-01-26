@@ -3,10 +3,96 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:UntitledFinanceTracker"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Background="#121212"
+        Icon="/logo.png"
+        Height="450" Width="800"
+        MinHeight="450" MinWidth="800"
+        Title="Untitled Finance Tracker"
+        WindowStyle="SingleBorderWindow"
+        WindowStartupLocation="CenterScreen" FontFamily="Microsoft JhengHei Light">
     <Grid>
+        <!-- grid column settings -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="101*" />
+            <ColumnDefinition Width="549*"/>
+            <!-- * = window width - column[0] width -->
+        </Grid.ColumnDefinitions>
 
+        <StackPanel Background="#1c1c1c">
+            <TextBlock Style="{StaticResource Title}" Padding="5" HorizontalAlignment="Center">$123,000</TextBlock>
+            <ListView Style="{StaticResource Menu}" x:Name="lvMainMenu" SelectionChanged="MainMenuSelectionChanged">
+                <!-- styles -->
+                <ListView.Resources>
+                    <Style TargetType="{x:Type fa:ImageAwesome}">
+                        <Setter Property="Width" Value="11"/>
+                        <Setter Property="Margin" Value="7 0 2 0"/>
+                        <Setter Property="Foreground" Value="#cccccc"/>
+                    </Style>
+                </ListView.Resources>
+
+                <!-- dashboard tab -->
+                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviDashboard">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="BarChart"/>
+                        <TextBlock Text="Dashboard" FontFamily="Microsoft JhengHei Light" />
+                    </StackPanel>
+                </ListViewItem>
+
+                <!-- tranaction view tab -->
+                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviTransactionView">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="CreditCard"/>
+                        <TextBlock Text="Transaction View"/>
+                    </StackPanel>
+                </ListViewItem>
+
+                <!-- week view tab tab -->
+                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviWeekView">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="CalendarOutline"/>
+                        <TextBlock Text="Week View"/>
+                    </StackPanel>
+                </ListViewItem>
+
+                <!-- month view tab -->
+                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviMonthView">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="CalendarOutline"/>
+                        <TextBlock Text="Month View"/>
+                    </StackPanel>
+                </ListViewItem>
+
+                <!-- balance sheet tab -->
+                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviBalanceSheet">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="BalanceScale"/>
+                        <TextBlock Text="Balance Sheet"/>
+                    </StackPanel>
+                </ListViewItem>
+
+                <!-- statistics tab -->
+                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviStats">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="PieChart"/>
+                        <TextBlock Text="Statistics"/>
+                    </StackPanel>
+                </ListViewItem>
+
+                <!-- settings tab -->
+                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviSettings">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:ImageAwesome Icon="Cog"/>
+                        <TextBlock Text="Settings"/>
+                    </StackPanel>
+                </ListViewItem>
+            </ListView>
+        </StackPanel>
+
+        <!-- Grid column[1] with empty grid (parent for user controls) -->
+        <Grid Grid.Column="1" x:Name="ContentPanel" Grid.ColumnSpan="2"></Grid>
     </Grid>
 </Window>

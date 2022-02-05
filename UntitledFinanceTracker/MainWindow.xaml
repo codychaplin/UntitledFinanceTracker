@@ -6,30 +6,35 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:UntitledFinanceTracker"
         mc:Ignorable="d"
-        Background="#121212"
         Icon="/logo.png"
+        Background="#121212"
         Height="450" Width="800"
         MinHeight="450" MinWidth="800"
         Title="Untitled Finance Tracker"
         WindowStyle="SingleBorderWindow"
-        WindowStartupLocation="CenterScreen" FontFamily="Microsoft JhengHei Light">
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Microsoft JhengHei Light">
     <Grid>
         <!-- grid column settings -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150" />
-            <ColumnDefinition Width="101*" />
-            <ColumnDefinition Width="549*"/>
+            <ColumnDefinition Width="*" />
             <!-- * = window width - column[0] width -->
         </Grid.ColumnDefinitions>
 
-        <StackPanel Background="#1c1c1c">
-            <TextBlock Style="{StaticResource Title}" Padding="5" HorizontalAlignment="Center">$123,000</TextBlock>
+        <StackPanel Background="#212121">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Margin" Value="5 0 0 0" />
+                </Style>
+            </StackPanel.Resources>
+            <TextBlock Style="{StaticResource Title}" Margin="0 15 0 10" HorizontalAlignment="Center">$123,000.00</TextBlock>
             <ListView Style="{StaticResource Menu}" x:Name="lvMainMenu" SelectionChanged="MainMenuSelectionChanged">
                 <!-- styles -->
                 <ListView.Resources>
                     <Style TargetType="{x:Type fa:ImageAwesome}">
                         <Setter Property="Width" Value="11"/>
-                        <Setter Property="Margin" Value="7 0 2 0"/>
+                        <Setter Property="Margin" Value="5 0 2 0"/>
                         <Setter Property="Foreground" Value="#cccccc"/>
                     </Style>
                 </ListView.Resources>
@@ -43,26 +48,18 @@
                 </ListViewItem>
 
                 <!-- tranaction view tab -->
-                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviTransactionView">
+                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviTransactions">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="CreditCard"/>
-                        <TextBlock Text="Transaction View"/>
+                        <TextBlock Text="Transactions"/>
                     </StackPanel>
                 </ListViewItem>
 
                 <!-- week view tab tab -->
-                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviWeekView">
+                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviCalendar">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="CalendarOutline"/>
-                        <TextBlock Text="Week View"/>
-                    </StackPanel>
-                </ListViewItem>
-
-                <!-- month view tab -->
-                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviMonthView">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:ImageAwesome Icon="CalendarOutline"/>
-                        <TextBlock Text="Month View"/>
+                        <TextBlock Text="Calendar"/>
                     </StackPanel>
                 </ListViewItem>
 
@@ -93,6 +90,6 @@
         </StackPanel>
 
         <!-- Grid column[1] with empty grid (parent for user controls) -->
-        <Grid Grid.Column="1" x:Name="ContentPanel" Grid.ColumnSpan="2"></Grid>
+        <Grid Grid.Column="1" x:Name="ContentPanel" Grid.ColumnSpan="3"></Grid>
     </Grid>
 </Window>

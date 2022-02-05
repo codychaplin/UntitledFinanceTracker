@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace UntitledFinanceTracker
 {
@@ -23,6 +15,37 @@ namespace UntitledFinanceTracker
         public SettingsAccountTypes()
         {
             InitializeComponent();
+        }
+
+        /// <summary>
+        /// Queries database for account types and fills the DataTable with results.
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains SelectionChanged event data.</param>
+        private void UserControl_Initialized(object sender, EventArgs e)
+        {
+            try
+            {
+                string connectionString = Properties.Settings.Default.connectionString;
+                string query = "SELECT AccountTypeID, AccountType FROM AccountTypes";
+                DataTable dt = new DataTable("AccountTypes");
+
+                using (SqlConnection con = new(connectionString))
+                    using (SqlCommand command = new(query, con))
+                        using (SqlDataAdapter adapter = new(command))
+                            adapter.Fill(dt);
+
+                dgAccountTypes.ItemsSource = dt.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -1,0 +1,78 @@
+﻿<Window x:Class="UntitledFinanceTracker.EditTransaction"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UntitledFinanceTracker"
+        mc:Ignorable="d"
+        Icon="/logo.png"
+        Background="#121212"
+        Title="Edit Transaction"
+        Height="300" Width="420"
+        ResizeMode="NoResize"
+        WindowStyle="SingleBorderWindow"
+        WindowStartupLocation="CenterScreen"
+        Initialized="Window_Initialized">
+    <Window.Resources>
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="#ffffff" />
+        </Style>
+        <Style TargetType="{x:Type DatePicker}">
+            <Setter Property="Width" Value="180" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Background" Value="#303030" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Style="{StaticResource spForm}">
+                <Label>Date</Label>
+                <DatePicker></DatePicker>
+            </StackPanel>
+            <StackPanel Style="{StaticResource spForm}">
+                <Label>Account</Label>
+                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbAccounts"
+                          DisplayMemberPath = "AccountName" SelectedValuePath = "AccountID" />
+            </StackPanel>
+            <StackPanel Style="{StaticResource spForm}">
+                <Label>Type</Label>
+                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbTypes">
+                    <ComboBoxItem>Income</ComboBoxItem>
+                    <ComboBoxItem>Expense</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Style="{StaticResource spForm}">
+                <Label>Amount</Label>
+                <TextBox></TextBox>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Column="1">
+            <StackPanel Style="{StaticResource spForm}">
+                <Label>Category</Label>
+                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbCategories"
+                          DisplayMemberPath = "CategoryName" SelectedValuePath = "CategoryID" SelectionChanged="cbCategories_SelectionChanged" />
+            </StackPanel>
+            <StackPanel Style="{StaticResource spForm}">
+                <Label>Subcategory</Label>
+                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbSubcategories"
+                          DisplayMemberPath = "CategoryName" SelectedValuePath = "CategoryID" />
+            </StackPanel>
+            <StackPanel Style="{StaticResource spForm}">
+                <Label>Payee</Label>
+                <TextBox></TextBox>
+            </StackPanel>
+            <StackPanel Style="{StaticResource spForm}" Orientation="Horizontal" Margin="0 18 0 0">
+                <Button Style="{StaticResource btnUpdateFrm}" x:Name="btnUpdate" Click="BtnUpdate_Click">Update</Button>
+                <Button Style="{StaticResource btnCancelFrm}">Cancel</Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

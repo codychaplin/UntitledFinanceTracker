@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace UntitledFinanceTracker
 {
     /// <summary>
-    /// Interaction logic for MonthView.xaml
+    /// Interaction logic for WeekView.xaml
     /// </summary>
-    public partial class MonthView : UserControl
+    public partial class Calendar : UserControl
     {
-        public MonthView()
+        public Calendar()
         {
             InitializeComponent();
         }

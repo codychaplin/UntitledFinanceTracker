@@ -35,25 +35,18 @@ namespace UntitledFinanceTracker
                     this.ContentPanel.Children.Add(ctrlDashboard); // add control to panel as child
                 }
 
-                // transaction view
-                if (lvMainMenu.SelectedItem.Equals(lviTransactionView))
+                // transactions
+                if (lvMainMenu.SelectedItem.Equals(lviTransactions))
                 {
-                    Control ctrlTransactionView = new TransactionView();
+                    Control ctrlTransactionView = new Transactions();
                     this.ContentPanel.Children.Add(ctrlTransactionView);
                 }
 
-                // week view
-                if (lvMainMenu.SelectedItem.Equals(lviWeekView))
+                // calendar
+                if (lvMainMenu.SelectedItem.Equals(lviCalendar))
                 {
-                    Control ctrlWeekView = new WeekView();
+                    Control ctrlWeekView = new Calendar();
                     this.ContentPanel.Children.Add(ctrlWeekView);
-                }
-
-                // month view
-                if (lvMainMenu.SelectedItem.Equals(lviMonthView))
-                {
-                    Control ctrlMonthView = new MonthView();
-                    this.ContentPanel.Children.Add(ctrlMonthView);
                 }
 
                 // balance sheet

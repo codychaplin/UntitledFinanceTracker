@@ -4,21 +4,24 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:UntitledFinanceTracker"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="36" />
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="55" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="140" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        
-        <TextBlock Style="{StaticResource Title}" Grid.Row="0" Grid.ColumnSpan="2">Settings</TextBlock>
-        <ListView Style="{StaticResource Menu}" Grid.Row="1" x:Name="lvSettingsMenu" Margin="10 0 0 0" SelectionChanged="SettingsMenuSelectionChanged">
-            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviGeneral" Content="General" />
+
+        <Border Background="#1A1A1A" Grid.ColumnSpan="2" Margin="10" />
+        <TextBlock Style="{StaticResource Title}" Grid.Row="0" Grid.ColumnSpan="2" Margin="15 0 0 0">Settings</TextBlock>
+
+        <ListView Style="{StaticResource Menu}" Grid.Row="1" x:Name="lvSettingsMenu" Margin="10 0 0 10" SelectionChanged="SettingsMenuSelectionChanged">
+            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviGeneral" Content="General"/>
             <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviAccountTypes" Content="Account Types" />
             <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviAccounts" Content="Accounts" />
             <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviCategories" Content="Categories" />

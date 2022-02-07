@@ -25,8 +25,8 @@
         <DataGrid x:Name="dgCategories" Grid.Row="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Width="40" Binding="{Binding CategoryID}" Visibility="Hidden" />
-                <DataGridTextColumn Header="Parent" Width="100" Binding="{Binding Parent}" />
-                <DataGridTextColumn Header="Type" Width="60" Binding="{Binding CategoryType}" />
+                <DataGridTextColumn Header="Parent" Width="100" Binding="{Binding ParentName}" />
+                <DataGridTextColumn Header="Type" Width="60" Binding="{Binding Type}" />
                 <DataGridTextColumn Header="Name" Width="100" Binding="{Binding CategoryName}" />
                 <DataGridTextColumn Header="Enabled" Width="*" Binding="{Binding Enabled}" />
                 <DataGridTemplateColumn Header="Action" HeaderStyle="{StaticResource dgCenter}" Width="60">

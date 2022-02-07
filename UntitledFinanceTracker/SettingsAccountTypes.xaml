@@ -23,7 +23,7 @@
         <DataGrid x:Name="dgAccountTypes" Grid.Row="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Width="40" Binding="{Binding AccountTypeID}" Visibility="Hidden" />
-                <DataGridTextColumn Header="Type" Width="*" Binding="{Binding AccountType}" />
+                <DataGridTextColumn Header="Type" Width="*" Binding="{Binding AccountTypeName}" />
                 <DataGridTemplateColumn Header="Action" HeaderStyle="{StaticResource dgCenter}" Width="60">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

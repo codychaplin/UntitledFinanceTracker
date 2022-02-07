@@ -26,7 +26,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Width="40" Binding="{Binding AccountID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Name" Width="100" Binding="{Binding AccountName}" />
-                <DataGridTextColumn Header="Type" Width="100" Binding="{Binding AccountType}" />
+                <DataGridTextColumn Header="Type" Width="100" Binding="{Binding AccountTypeName}" />
                 <DataGridTextColumn Header="Starting Balance" Width="112" Binding="{Binding StartingBalance, StringFormat=C}"
                                     CellStyle="{StaticResource dgCellRight}" />
                 <DataGridTextColumn Header="Enabled" Width="*" Binding="{Binding Enabled}" />

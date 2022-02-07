@@ -18,29 +18,14 @@ namespace UntitledFinanceTracker
         }
 
         /// <summary>
-        /// Queries database for account types and fills the DataTable with results.
+        /// Loads account types into dataGrid.
         /// </summary>
         /// <param name="sender">Object that raised the event.</param>
         /// <param name="e">Contains SelectionChanged event data.</param>
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            try
-            {
-                string connectionString = Properties.Settings.Default.connectionString;
-                string query = "SELECT AccountTypeID, AccountType FROM AccountTypes";
-                DataTable dt = new DataTable("AccountTypes");
-
-                using (SqlConnection con = new(connectionString))
-                    using (SqlCommand command = new(query, con))
-                        using (SqlDataAdapter adapter = new(command))
-                            adapter.Fill(dt);
-
-                dgAccountTypes.ItemsSource = dt.DefaultView;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            if (Data.AccountTypes.Count > 0)
+                dgAccountTypes.ItemsSource = Data.AccountTypes;
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)

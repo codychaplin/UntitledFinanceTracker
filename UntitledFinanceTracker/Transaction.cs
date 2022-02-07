@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UntitledFinanceTracker
 {
@@ -10,11 +6,14 @@ namespace UntitledFinanceTracker
     {
         public int TransactionID { get; private set; }
         public DateTime Date { get; set; }
-        public object[] Account = new object[2];
+        public int AccountID { get; set; }
+        public string AccountName { get; set; }
         public CategoryType Type { get; set; }
         public decimal Amount { get; set; }
-        public object[] Category = new object[2];
-        public object[] Subcategory = new object[2];
+        public int CategoryID { get; set; }
+        public string CategoryName { get; set; }
+        public int SubcategoryID { get; set; }
+        public string SubcategoryName { get; set; }
         public string Payee { get; set; }
 
         /// <summary>
@@ -23,50 +22,62 @@ namespace UntitledFinanceTracker
         public Transaction() { }
 
         /// <summary>
+        /// Initializes a new instance of the Transaction class only setting the ID.
+        /// </summary>
+        /// <param name="ID">Transaction ID.</param>
+        public Transaction(int ID)
+        {
+            TransactionID = ID;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the Transaction class.
         /// </summary>
         /// <param name="ID">Transaction ID.</param>
         /// <param name="date">Transaction date.</param>
-        /// <param name="AccountID">Transaction account ID.</param>
+        /// <param name="accountID">Transaction account ID.</param>
+        /// <param name="account">Transaction account name.</param>
         /// <param name="type">Transaction type.</param>
         /// <param name="amount">Transaction amount.</param>
         /// <param name="categoryID">Transaction category ID.</param>
-        /// <param name="category">Transaction category.</param>
+        /// <param name="category">Transaction category name.</param>
         /// <param name="subcategoryID">Transaction subcategory ID.</param>
-        /// <param name="subcategory">Transaction subcategory.</param>
+        /// <param name="subcategory">Transaction subcategory name.</param>
         /// <param name="payee">Transaction payee.</param>
         public Transaction(int ID, DateTime date, int accountID, string account, CategoryType type, decimal amount,
-            int categoryID, string category, int subcategoryID, string subcategory, string payee)
+            int categoryID, string category, int subcategoryID, string subcategory, string payee) : this(ID)
         {
-            TransactionID = ID;
             Date = date;
-            Account[0] = accountID;
-            Account[1] = account;
+            AccountID = accountID;
+            AccountName = account;
             Type = type;
             Amount = amount;
-            Category[0] = categoryID;
-            Category[1] = category;
-            Subcategory[0] = subcategoryID;
-            Subcategory[1] = subcategory;
+            CategoryID = categoryID;
+            CategoryName = category;
+            SubcategoryID = subcategoryID;
+            SubcategoryName = subcategory;
             Payee = payee;
         }
 
         // debugging purposes
         public override string ToString()
         {
-            return "TransactionID: " + TransactionID +
+            return "\nTransactionID: " + TransactionID +
                 "\nDate: " + Date +
-                "\nAccountID: " + Account[0] +
-                "\nAccount: " + Account[1] +
+                "\nAccountID: " + AccountID +
+                "\nAccount: " + AccountName +
                 "\nType: " + Type +
                 "\nAmount: " + Amount +
-                "\nCategoryID: " + Category[0] +
-                "\nCategory: " + Category[1] +
-                "\nSubcategoryID: " + Subcategory[0] +
-                "\nSubcategory: " + Subcategory[1] +
+                "\nCategoryID: " + CategoryID +
+                "\nCategory: " + CategoryName +
+                "\nSubcategoryID: " + SubcategoryID +
+                "\nSubcategory: " + SubcategoryName +
                 "\nPayee: " + Payee;
         }
     }
 
+    /// <summary>
+    /// Enum representing the type of transaction
+    /// </summary>
     public enum CategoryType { Transfer, Income, Expense }
 }

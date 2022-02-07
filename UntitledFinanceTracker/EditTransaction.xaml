@@ -13,20 +13,6 @@
         WindowStyle="SingleBorderWindow"
         WindowStartupLocation="CenterScreen"
         Initialized="Window_Initialized">
-    <Window.Resources>
-        <Style TargetType="{x:Type Label}">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="#ffffff" />
-        </Style>
-        <Style TargetType="{x:Type DatePicker}">
-            <Setter Property="Width" Value="180" />
-            <Setter Property="Height" Value="30" />
-            <Setter Property="Background" Value="#303030" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="BorderThickness" Value="0" />
-        </Style>
-    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -35,7 +21,7 @@
         <StackPanel Orientation="Vertical">
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Date</Label>
-                <DatePicker></DatePicker>
+                <DatePicker x:Name="dpDate"></DatePicker>
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Account</Label>
@@ -51,7 +37,7 @@
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Amount</Label>
-                <TextBox></TextBox>
+                <TextBox x:Name="txtAmount"></TextBox>
             </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Column="1">
@@ -67,11 +53,11 @@
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Payee</Label>
-                <TextBox></TextBox>
+                <TextBox x:Name="txtPayee"></TextBox>
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}" Orientation="Horizontal" Margin="0 18 0 0">
                 <Button Style="{StaticResource btnUpdateFrm}" x:Name="btnUpdate" Click="BtnUpdate_Click">Update</Button>
-                <Button Style="{StaticResource btnCancelFrm}">Cancel</Button>
+                <Button Style="{StaticResource btnCancelFrm}" x:Name="btnCancel" Click="btnCancel_Click" >Cancel</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

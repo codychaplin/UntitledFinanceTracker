@@ -22,17 +22,17 @@
             Add Transaction
         </Button>
         
-        <DataGrid x:Name="dgTransactions" Grid.Row="1">
+        <DataGrid x:Name="dgTransactions" Grid.Row="1" ItemsSource="{Binding}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Width="40" Binding="{Binding TransactionID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Date" Width="70" Binding="{Binding Date, StringFormat=yyyy-MM-dd}" />
-                <DataGridTextColumn Header="AccountID" Width="40" Binding="{Binding Account_fk}" Visibility="Hidden" />
+                <DataGridTextColumn Header="AccountID" Width="40" Binding="{Binding AccountID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Account" Width="100" Binding="{Binding AccountName}" />
                 <DataGridTextColumn Header="Amount" Width="70" Binding="{Binding Amount, StringFormat=C}"
                                     CellStyle="{StaticResource dgCellRight}" />
-                <DataGridTextColumn Header="CategoryID" Width="40" Binding="{Binding Category_fk}" Visibility="Hidden" />
+                <DataGridTextColumn Header="CategoryID" Width="40" Binding="{Binding CategoryID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Category" Width="100" Binding="{Binding CategoryName}" />
-                <DataGridTextColumn Header="SubcategoryID" Width="40" Binding="{Binding Subcategory_fk}" Visibility="Hidden" />
+                <DataGridTextColumn Header="SubcategoryID" Width="40" Binding="{Binding SubcategoryID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Subcategory" Width="100" Binding="{Binding SubcategoryName}" />
                 <DataGridTextColumn Header="Payee" Width="*" Binding="{Binding Payee}" />
                 <DataGridTemplateColumn Header="Action" Width="60" HeaderStyle="{StaticResource dgCenter}">

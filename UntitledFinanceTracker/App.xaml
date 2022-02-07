@@ -12,6 +12,12 @@
             <Setter Property="FontFamily" Value="Microsoft JhengHei Light" />
         </Style>
 
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="#ffffff" />
+        </Style>
+
         <!-- Title formatting -->
         <Style x:Key="Title" TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="20"/>
@@ -162,6 +168,7 @@
             <Setter Property="Foreground" Value="#ffffff" />
             <Setter Property="BorderBrush" Value="#404040" />
             <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="Microsoft JhengHei Light" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -175,12 +182,28 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="BorderBrush" Value="#8cecff" />
+                    <Setter Property="BorderBrush" Value="#63A7BF" />
                 </Trigger>
                 <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="BorderBrush" Value="#3ab6ce" />
+                    <Setter Property="BorderBrush" Value="#63A7BF" />
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type DatePicker}">
+            <Style.Resources>
+                <Style TargetType="{x:Type DatePickerTextBox}">
+                    <Setter Property="Background" Value="#202020"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                </Style>
+            </Style.Resources>
+            <Setter Property="Width" Value="180" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="BorderBrush" Value="#404040" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#ffffff" />
+            <Setter Property="Background" Value="#303030" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
 
         <!-- DataGrid formatting -->
@@ -195,7 +218,7 @@
             <Setter Property="CanUserAddRows" Value="false" />
             <Setter Property="CanUserDeleteRows" Value="false" />
             <Setter Property="CanUserResizeRows" Value="false" />
-            <Setter Property="CanUserSortColumns" Value="false" />
+            <Setter Property="CanUserSortColumns" Value="True" />
             <Setter Property="AutoGenerateColumns" Value="false" />
             <Setter Property="Background" Value="#212121" />
             <Setter Property="Foreground" Value="#ffffff" />
@@ -220,6 +243,7 @@
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="10 0 0 0" />
             <Setter Property="Background" Value="#1A1A1A" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -290,21 +314,19 @@
             <Setter Property="Orientation" Value="Vertical" />
         </Style>
 
-
         <!-- ComboBox formatting -->
         <Style TargetType="{x:Type ComboBox}">
             <Setter Property="Width" Value="180" />
             <Setter Property="Height" Value="30" />
             <Setter Property="Foreground" Value="#ffffff" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="IsEditable" Value="False" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
         <!-- ComboBox formatting -->
         <Style TargetType="{x:Type ComboBoxItem}">
             <Setter Property="Foreground" Value="#ffffff" />
             <Setter Property="Background" Value="#202020" />
             <Setter Property="Padding" Value="5 2 5 2" />
-            <Setter Property="FontFamily" Value="Microsoft JhengHei Light" />
             <Setter Property="BorderThickness" Value="0" />
         </Style>
         
@@ -437,9 +459,10 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
                 </Grid.ColumnDefinitions>
-                <Popup x:Name="PART_Popup" AllowsTransparency="true" Grid.ColumnSpan="2" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" Placement="Bottom" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+                <Popup x:Name="PART_Popup" AllowsTransparency="true" Grid.ColumnSpan="2" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" Placement="Bottom"
+                       PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
                     <theme:SystemDropShadowChrome x:Name="shadow" Color="Transparent" MinWidth="{Binding ActualWidth, ElementName=templateRoot}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                        <Border x:Name="dropDownBorder" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}">
+                        <Border x:Name="dropDownBorder" Background="#202020" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}">
                             <ScrollViewer x:Name="DropDownScrollViewer">
                                 <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                     <Canvas x:Name="canvas" HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
@@ -451,8 +474,11 @@
                         </Border>
                     </theme:SystemDropShadowChrome>
                 </Popup>
-                <ToggleButton x:Name="toggleButton" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Grid.ColumnSpan="2" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Style="{StaticResource ComboBoxToggleButton}"/>
-                <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" Content="{TemplateBinding SelectionBoxItem}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" IsHitTestVisible="false" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                <ToggleButton x:Name="toggleButton" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Grid.ColumnSpan="2"
+                              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Style="{StaticResource ComboBoxToggleButton}"/>
+                <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" Content="{TemplateBinding SelectionBoxItem}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                  ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" IsHitTestVisible="false" Margin="{TemplateBinding Padding}"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
             </Grid>
             <ControlTemplate.Triggers>
                 <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="true">

@@ -29,26 +29,8 @@ namespace UntitledFinanceTracker
         
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            try
-            {
-                string connectionString = Properties.Settings.Default.connectionString;
-                // SELECTS parent ID (AS name using LEFT JOIN), type, name, enabled WHERE type != Transfer
-                string query = "SELECT par.CategoryID, sub.CategoryName AS Parent, par.CategoryType, par.CategoryName, par.Enabled FROM Categories par " +
-                    "LEFT JOIN Categories sub ON par.ParentID_fk = sub.CategoryID WHERE par.CategoryType <> 'Transfer'";
-
-                DataTable dt = new DataTable("Categories");
-
-                using (SqlConnection con = new(connectionString))
-                using (SqlCommand command = new(query, con))
-                using (SqlDataAdapter adapter = new(command))
-                    adapter.Fill(dt);
-
-                dgCategories.ItemsSource = dt.DefaultView;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            if (Data.Categories.Count > 0)
+                dgCategories.ItemsSource = Data.Categories;
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)

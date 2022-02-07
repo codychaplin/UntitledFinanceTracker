@@ -23,8 +23,8 @@ namespace UntitledFinanceTracker
         /// <param name="e">Contains EventArgs data.</param>
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            if (Data.transactions.Count > 0)
-                dgTransactions.ItemsSource = Data.transactions;
+            if (Data.Transactions.Count > 0)
+                dgTransactions.ItemsSource = Data.Transactions;
         }
 
         /// <summary>
@@ -52,6 +52,8 @@ namespace UntitledFinanceTracker
 
                 Window editTransaction = new EditTransaction(ID);
                 editTransaction.ShowDialog();
+                dgTransactions.Items.Refresh();
+                
             }
             catch (Exception ex)
             {

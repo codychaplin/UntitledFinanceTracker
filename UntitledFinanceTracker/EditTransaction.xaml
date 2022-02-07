@@ -29,13 +29,6 @@
                           DisplayMemberPath = "AccountName" SelectedValuePath = "AccountID" />
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}">
-                <Label>Type</Label>
-                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbTypes">
-                    <ComboBoxItem>Income</ComboBoxItem>
-                    <ComboBoxItem>Expense</ComboBoxItem>
-                </ComboBox>
-            </StackPanel>
-            <StackPanel Style="{StaticResource spForm}">
                 <Label>Amount</Label>
                 <TextBox x:Name="txtAmount"></TextBox>
             </StackPanel>

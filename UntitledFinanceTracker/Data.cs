@@ -6,9 +6,9 @@ namespace UntitledFinanceTracker
 {
     abstract class Data
     {
-        public static ObservableCollection<Account> Accounts = new();
-        public static ObservableCollection<AccountType> AccountTypes = new();
-        public static ObservableCollection<Category> Categories = new();
-        public static ObservableCollection<Transaction> transactions = new();
+        public static ObservableCollection<Account> Accounts { get; set; }
+        public static ObservableCollection<AccountType> AccountTypes { get; set; }
+        public static ObservableCollection<Category> Categories { get; set; }
+        public static ObservableCollection<Transaction> Transactions { get; set; }
     }
 }

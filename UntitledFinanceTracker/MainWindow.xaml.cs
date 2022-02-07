@@ -81,6 +81,11 @@ namespace UntitledFinanceTracker
         {
             try
             {
+                Data.AccountTypes = new();
+                Data.Accounts = new();
+                Data.Categories = new();
+                Data.Transactions = new();
+
                 string connectionString = Properties.Settings.Default.connectionString;
                 SqlConnection con = new(connectionString);
                 con.Open();
@@ -151,7 +156,7 @@ namespace UntitledFinanceTracker
 
         void InitializeTransactions(ref SqlConnection con)
         {
-            string query = "SELECT TransactionID, Date, Account_fk, Accounts.AccountName, Type, Amount, " +
+            string query = "SELECT TransactionID, Date, Account_fk, Accounts.AccountName, Amount, " +
                 "Category_fk, cat.CategoryName, Subcategory_fk, sub.CategoryName AS SubcategoryName, Payee FROM Transactions " +
                 "INNER JOIN Accounts ON Transactions.Account_fk = Accounts.AccountID " +
                 "INNER JOIN Categories cat ON Transactions.Category_fk = cat.CategoryID " +
@@ -162,9 +167,8 @@ namespace UntitledFinanceTracker
 
             while (reader.Read())
             {
-                Data.transactions.Add(new Transaction((int)reader[0], (DateTime)reader[1], (int)reader[2], reader[3].ToString(),
-                    (CategoryType)Enum.Parse(typeof(CategoryType), reader[4].ToString()), (decimal)reader[5],
-                    (int)reader[6], reader[7].ToString(), (int)reader[8], reader[9].ToString(), reader[10].ToString()));
+                Data.Transactions.Add(new Transaction((int)reader[0], (DateTime)reader[1], (int)reader[2], reader[3].ToString(),
+                     (decimal)reader[4], (int)reader[5], reader[6].ToString(), (int)reader[7], reader[8].ToString(), reader[9].ToString()));
             }
 
             reader.Close();

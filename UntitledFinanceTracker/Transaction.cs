@@ -8,7 +8,6 @@ namespace UntitledFinanceTracker
         public DateTime Date { get; set; }
         public int AccountID { get; set; }
         public string AccountName { get; set; }
-        public CategoryType Type { get; set; }
         public decimal Amount { get; set; }
         public int CategoryID { get; set; }
         public string CategoryName { get; set; }
@@ -37,20 +36,18 @@ namespace UntitledFinanceTracker
         /// <param name="date">Transaction date.</param>
         /// <param name="accountID">Transaction account ID.</param>
         /// <param name="account">Transaction account name.</param>
-        /// <param name="type">Transaction type.</param>
         /// <param name="amount">Transaction amount.</param>
         /// <param name="categoryID">Transaction category ID.</param>
         /// <param name="category">Transaction category name.</param>
         /// <param name="subcategoryID">Transaction subcategory ID.</param>
         /// <param name="subcategory">Transaction subcategory name.</param>
         /// <param name="payee">Transaction payee.</param>
-        public Transaction(int ID, DateTime date, int accountID, string account, CategoryType type, decimal amount,
+        public Transaction(int ID, DateTime date, int accountID, string account, decimal amount,
             int categoryID, string category, int subcategoryID, string subcategory, string payee) : this(ID)
         {
             Date = date;
             AccountID = accountID;
             AccountName = account;
-            Type = type;
             Amount = amount;
             CategoryID = categoryID;
             CategoryName = category;
@@ -66,7 +63,6 @@ namespace UntitledFinanceTracker
                 "\nDate: " + Date +
                 "\nAccountID: " + AccountID +
                 "\nAccount: " + AccountName +
-                "\nType: " + Type +
                 "\nAmount: " + Amount +
                 "\nCategoryID: " + CategoryID +
                 "\nCategory: " + CategoryName +
@@ -75,9 +71,4 @@ namespace UntitledFinanceTracker
                 "\nPayee: " + Payee;
         }
     }
-
-    /// <summary>
-    /// Enum representing the type of transaction
-    /// </summary>
-    public enum CategoryType { Transfer, Income, Expense }
 }

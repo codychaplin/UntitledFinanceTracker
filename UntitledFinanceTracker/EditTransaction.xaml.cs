@@ -31,14 +31,15 @@ namespace UntitledFinanceTracker
         {
             try
             {
-                IEnumerable<Transaction> t = from trans in Data.transactions where trans.TransactionID == ID select trans;
+                IEnumerable<Transaction> t = from trans in Data.Transactions
+                                             where trans.TransactionID == ID
+                                             select trans;
                 
                 transaction = t.Count() == 1 ? t.First() : throw new Exception("ERROR: ID returned more than 1 row");
 
                 // sets input values from transaction
                 dpDate.SelectedDate = transaction.Date;
                 cbAccounts.SelectedValue = transaction.AccountID;
-                cbTypes.Text = transaction.Type.ToString();
                 txtAmount.Text = transaction.Amount.ToString();
                 cbCategories.SelectedValue = transaction.CategoryID;
                 cbSubcategories.SelectedValue = transaction.SubcategoryID;
@@ -52,57 +53,38 @@ namespace UntitledFinanceTracker
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            try
-            {
-                string connectionString = Properties.Settings.Default.connectionString;
-                string accountsQuery = "SELECT AccountID, AccountName FROM Accounts";
-                string categoriesQuery = "SELECT CategoryID, CategoryName FROM Categories " +
-                    "WHERE ParentID_fk IS NULL AND CategoryType <> 'Transfer'";
-                DataSet dsA = new DataSet("Accounts");
-                DataSet dsC = new DataSet("Categories");
-
-                using (SqlConnection con = new(connectionString))
-                {
-                    using (SqlCommand cmdAccounts = new(accountsQuery, con))
-                        using (SqlDataAdapter adapter = new(cmdAccounts))
-                            adapter.Fill(dsA, "Accounts");
-
-                    using (SqlCommand cmdCategories = new(categoriesQuery, con))
-                        using (SqlDataAdapter adapter = new(cmdCategories))
-                            adapter.Fill(dsC, "Categories");
-                }
-
-                cbAccounts.ItemsSource = dsA.Tables["Accounts"].DefaultView;
-                cbCategories.ItemsSource = dsC.Tables["Categories"].DefaultView;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            cbAccounts.ItemsSource = Data.Accounts;
+            cbCategories.ItemsSource = from cat in Data.Categories
+                                       where (cat.ParentID == null && cat.CategoryID != 1)
+                                       select cat;
         }
 
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine(cbTypes.Text);
-
-                /*// sets input values from transaction
+                // update transaction
                 transaction.Date = (DateTime)dpDate.SelectedDate;
                 transaction.AccountID = (int)cbAccounts.SelectedValue;
-                transaction.Type = (cbTypes.SelectedValue.ToString() == "Income") ? CategoryType.Income : CategoryType.Expense;
+                transaction.AccountName = cbAccounts.Text;
                 transaction.Amount = Convert.ToDecimal(txtAmount.Text);
                 transaction.CategoryID = (int)cbCategories.SelectedValue;
+                transaction.CategoryName = cbCategories.Text;
                 transaction.SubcategoryID = (int)cbSubcategories.SelectedValue;
+                transaction.SubcategoryName = cbSubcategories.Text;
                 transaction.Payee = txtPayee.Text;
 
+                // updates collection
+                var trans = Data.Transactions.FirstOrDefault(t => t.TransactionID == transaction.TransactionID);
+                trans = transaction;
+
+                // updates database
                 string connectionString = Properties.Settings.Default.connectionString;
                 SqlConnection con = new(connectionString);
                 con.Open();
 
                 string setQuery = "UPDATE Transactions SET Date = '" + transaction.Date + "'" +
                     ", Account_fk = " + transaction.AccountID +
-                    ", Type = '" + transaction.Type + "'" +
                     ", Amount = '" + transaction.Amount + "'" +
                     ", Category_fk = " + transaction.CategoryID +
                     ", Subcategory_fk = " + transaction.SubcategoryID +
@@ -112,10 +94,8 @@ namespace UntitledFinanceTracker
                 SqlCommand command = new(setQuery, con);
                 command.ExecuteNonQuery();
                 con.Close();
-
-                Tag = transaction;*/
-
-                //Close();
+                
+                Close();
             }
             catch (Exception ex)
             {
@@ -130,26 +110,12 @@ namespace UntitledFinanceTracker
 
         private void cbCategories_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                int ID = (int)cbCategories.SelectedValue;
+            int ID = (int)cbCategories.SelectedValue;
+            IEnumerable<Category> categories = from cat in Data.Categories
+                                               where cat.ParentID == ID
+                                               select cat;
 
-                string connectionString = Properties.Settings.Default.connectionString;
-                string query = "SELECT CategoryID, CategoryName FROM Categories " +
-                    "WHERE ParentID_fk = " + ID;
-                DataSet ds = new DataSet("Subcategories");
-
-                using (SqlConnection con = new(connectionString))
-                    using (SqlCommand cmdAccounts = new(query, con))
-                        using (SqlDataAdapter adapter = new(cmdAccounts))
-                            adapter.Fill(ds, "Subcategories");
-
-                cbSubcategories.ItemsSource = ds.Tables["Subcategories"].DefaultView;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            cbSubcategories.ItemsSource = categories;
         }
     }
 }

@@ -21,8 +21,8 @@
         <Button Style="{StaticResource btnAdd}" x:Name="btnAdd" Click="BtnAdd_Click" VerticalAlignment="Stretch" Margin="15">
             Add Transaction
         </Button>
-        
-        <DataGrid x:Name="dgTransactions" Grid.Row="1" ItemsSource="{Binding}">
+
+        <DataGrid x:Name="dgTransactions" Grid.Row="1" ItemsSource="{Binding Transactions}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Width="40" Binding="{Binding TransactionID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Date" Width="70" Binding="{Binding Date, StringFormat=yyyy-MM-dd}" />

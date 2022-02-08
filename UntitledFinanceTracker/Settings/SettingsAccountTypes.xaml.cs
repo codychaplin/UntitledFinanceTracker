@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Data.SqlClient;
-using System.Data;
 
 namespace UntitledFinanceTracker
 {
@@ -29,6 +27,26 @@ namespace UntitledFinanceTracker
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            Window addAccountType = new EditAccountTypes();
+            addAccountType.Title = "Add Account Type";
+            addAccountType.ShowDialog();
+
+            dgAccountTypes.Items.Refresh();
+        }
+
+        private void btnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            AccountType row = (AccountType)(sender as Button).DataContext;
+            int ID = row.AccountTypeID;
+
+            Window editAccountType = new EditAccountTypes(ID);
+            editAccountType.ShowDialog();
+
+            dgAccountTypes.Items.Refresh();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
 
         }

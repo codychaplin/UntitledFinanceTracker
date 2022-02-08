@@ -19,7 +19,9 @@ namespace UntitledFinanceTracker
         {
             InitializeComponent();
 
-            btnUpdate.Content = "Add";
+            transaction = new();
+            btnEdit.Content = "Add";
+            btnCSV.Visibility = Visibility.Visible;
         }
 
         public EditTransaction(int ID)
@@ -27,12 +29,13 @@ namespace UntitledFinanceTracker
             InitializeComponent();
 
             SetTransaction(ID);
+            btnCSV.Visibility = Visibility.Hidden;
         }
 
         /// <summary>
         /// Loads transaction data into input fields
         /// </summary>
-        /// <param name="ID">Object that raised the event.</param>
+        /// <param name="ID">Transaction ID.</param>
         void SetTransaction(int ID)
         {
             try
@@ -75,10 +78,14 @@ namespace UntitledFinanceTracker
         /// </summary>
         /// <param name="sender">Object that raised the event.</param>
         /// <param name="e">Contains RoutedEventArgs data.</param>
-        private void BtnUpdate_Click(object sender, RoutedEventArgs e)
+        private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                string connectionString = Properties.Settings.Default.connectionString;
+                SqlConnection con = new(connectionString);
+                con.Open();
+
                 if (Title == "Edit Transaction")
                 {
                     // update transaction
@@ -97,11 +104,7 @@ namespace UntitledFinanceTracker
                     trans = transaction;
 
                     // updates database
-                    string connectionString = Properties.Settings.Default.connectionString;
-                    SqlConnection con = new(connectionString);
-                    con.Open();
-
-                    string setQuery = "UPDATE Transactions SET Date = '" + transaction.Date.ToString("yyyy-MM-dd") + "'" +
+                    string query = "UPDATE Transactions SET Date = '" + transaction.Date.ToString("yyyy-MM-dd") + "'" +
                         ", Account_fk = " + transaction.AccountID +
                         ", Amount = '" + transaction.Amount + "'" +
                         ", Category_fk = " + transaction.CategoryID +
@@ -109,46 +112,40 @@ namespace UntitledFinanceTracker
                         ", Payee = '" + transaction.Payee + "' " +
                         " WHERE TransactionID = " + transaction.TransactionID;
 
-                    SqlCommand command = new(setQuery, con);
+                    SqlCommand command = new(query, con);
                     command.ExecuteNonQuery();
-                    con.Close();
                 }
                 else if (Title == "Add Transaction")
                 {
-                    Transaction newTransaction = new();
-                    newTransaction.Date = (DateTime)dpDate.SelectedDate;
-                    newTransaction.AccountID = (int)cbAccounts.SelectedValue;
-                    newTransaction.AccountName = cbAccounts.Text;
-                    newTransaction.Amount = Convert.ToDecimal(txtAmount.Text);
-                    newTransaction.CategoryID = (int)cbCategories.SelectedValue;
-                    newTransaction.CategoryName = cbCategories.Text;
-                    newTransaction.SubcategoryID = (int)cbSubcategories.SelectedValue;
-                    newTransaction.SubcategoryName = cbSubcategories.Text;
-                    newTransaction.Payee = txtPayee.Text;
+                    transaction.Date = (DateTime)dpDate.SelectedDate;
+                    transaction.AccountID = (int)cbAccounts.SelectedValue;
+                    transaction.AccountName = cbAccounts.Text;
+                    transaction.Amount = Convert.ToDecimal(txtAmount.Text);
+                    transaction.CategoryID = (int)cbCategories.SelectedValue;
+                    transaction.CategoryName = cbCategories.Text;
+                    transaction.SubcategoryID = (int)cbSubcategories.SelectedValue;
+                    transaction.SubcategoryName = cbSubcategories.Text;
+                    transaction.Payee = txtPayee.Text;
                     
-                    string connectionString = Properties.Settings.Default.connectionString;
-                    SqlConnection con = new(connectionString);
-                    con.Open();
-
                     string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee)" +
-                        " VALUES ('" + newTransaction.Date.ToString("yyyy-MM-dd") + "'" +
-                        ", " + newTransaction.AccountID +
-                        ", " + newTransaction.Amount +
-                        ", " + newTransaction.CategoryID +
-                        ", " + newTransaction.SubcategoryID +
-                        ", '" + newTransaction.Payee + "')";
+                        " VALUES ('" + transaction.Date.ToString("yyyy-MM-dd") + "'" +
+                        ", " + transaction.AccountID +
+                        ", " + transaction.Amount +
+                        ", " + transaction.CategoryID +
+                        ", " + transaction.SubcategoryID +
+                        ", '" + transaction.Payee + "')";
 
                     SqlCommand command = new(query, con);
                     command.ExecuteNonQuery();
-                    con.Close();
 
-                    Data.Transactions.Add(newTransaction);
+                    Data.Transactions.Add(transaction);
                 }
                 else
                 {
                     throw new Exception("How did this even happen");
                 }
-                
+
+                con.Close();
                 Close();
             }
             catch (SqlException ex)

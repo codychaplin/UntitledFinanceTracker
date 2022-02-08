@@ -164,8 +164,8 @@
             <Setter Property="Width" Value="120" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#b94b4a" />
-                    <Setter Property="Foreground" Value="#ffd8d8" />
+                    <Setter Property="Background" Value="#52b94a" />
+                    <Setter Property="Foreground" Value="#dbffd8" />
                 </Trigger>
             </Style.Triggers>
         </Style>

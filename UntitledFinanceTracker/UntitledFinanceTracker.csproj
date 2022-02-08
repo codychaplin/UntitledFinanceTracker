@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="EditCategories.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="EditAccounts.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -38,6 +41,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="EditCategories.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="EditAccounts.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>

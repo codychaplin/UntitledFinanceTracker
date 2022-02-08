@@ -62,6 +62,16 @@ namespace UntitledFinanceTracker
         }
 
         /// <summary>
+        /// Populates Accounts and Categories ComboBoxes
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains EventArgs data.</param>
+        private void Window_Initialized(object sender, EventArgs e)
+        {
+            cbAccountType.ItemsSource = Data.AccountTypes;
+        }
+
+        /// <summary>
         /// Updates/adds account to collection and database
         /// </summary>
         /// <param name="sender">Object that raised the event.</param>
@@ -91,7 +101,7 @@ namespace UntitledFinanceTracker
                     string query = "UPDATE Accounts SET AccountName = '" + account.AccountName + "'" +
                         ", AccountType_fk = " + account.AccountTypeID +
                         ", StartingBalance = " + account.StartingBalance +
-                        ", Enabled = '" + account.Enabled + "' " +
+                        ", Enabled = '" + account.Enabled + "'" +
                         " WHERE AccountID = " + account.AccountID;
                     SqlCommand command = new(query, con);
                     command.ExecuteNonQuery();
@@ -136,16 +146,6 @@ namespace UntitledFinanceTracker
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
-        }
-
-        /// <summary>
-        /// Populates Accounts and Categories ComboBoxes
-        /// </summary>
-        /// <param name="sender">Object that raised the event.</param>
-        /// <param name="e">Contains EventArgs data.</param>
-        private void Window_Initialized(object sender, EventArgs e)
-        {
-            cbAccountType.ItemsSource = Data.AccountTypes;
         }
     }
 }

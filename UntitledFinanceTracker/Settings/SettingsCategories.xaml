@@ -26,15 +26,14 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Width="40" Binding="{Binding CategoryID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Parent" Width="100" Binding="{Binding ParentName}" />
-                <DataGridTextColumn Header="Type" Width="60" Binding="{Binding Type}" />
                 <DataGridTextColumn Header="Name" Width="100" Binding="{Binding CategoryName}" />
                 <DataGridTextColumn Header="Enabled" Width="*" Binding="{Binding Enabled}" />
                 <DataGridTemplateColumn Header="Action" HeaderStyle="{StaticResource dgCenter}" Width="60">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button Style="{StaticResource btnEditDg}" />
-                                <Button Style="{StaticResource btnDeleteDg}" />
+                                <Button x:Name="btnEdit" Style="{StaticResource btnEditDg}" Click="btnEdit_Click" />
+                                <Button x:Name="btnDelete" Style="{StaticResource btnDeleteDg}" Click="btnDelete_Click" />
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

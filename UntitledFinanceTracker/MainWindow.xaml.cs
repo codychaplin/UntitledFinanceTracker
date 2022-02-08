@@ -165,8 +165,8 @@ namespace UntitledFinanceTracker
             {
                 int? parentID = (reader[1] is DBNull) ? null : (int)reader[1]; // coverts DBNull to null
 
-                Data.Categories.Add(new Category((int)reader[0], parentID, reader[5].ToString(),
-                    (CategoryType)Enum.Parse(typeof(CategoryType), reader[2].ToString()), reader[3].ToString(), (bool)reader[4]));
+                Data.Categories.Add(new Category((int)reader[0], parentID, reader[4].ToString(),
+                    reader[2].ToString(), (bool)reader[3]));
             }
 
             reader.Close();

@@ -69,7 +69,7 @@ namespace UntitledFinanceTracker
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             // prompts user to confirm deletion
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this account type?", "Confirm Deletion", MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this account?", "Confirm Deletion", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
                 try

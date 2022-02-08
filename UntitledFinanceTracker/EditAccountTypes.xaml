@@ -15,7 +15,7 @@
     <Grid>
         <StackPanel Orientation="Vertical">
             <StackPanel Style="{StaticResource spForm}">
-                <Label>Account Type</Label>
+                <Label>Type</Label>
                 <TextBox x:Name="txtAccountType"></TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

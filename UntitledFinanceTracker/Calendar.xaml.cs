@@ -20,6 +20,9 @@ namespace UntitledFinanceTracker
     /// </summary>
     public partial class Calendar : UserControl
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public Calendar()
         {
             InitializeComponent();

@@ -10,6 +10,9 @@ namespace UntitledFinanceTracker
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -24,7 +27,7 @@ namespace UntitledFinanceTracker
         /// When a ListViewItem is selected, this event is triggered which opens the page corresponding to the selection.
         /// </summary>
         /// <param name="sender">Object that raised the event.</param>
-        /// <param name="e">Contains SelectionChanged event data.</param>
+        /// <param name="e">Contains SelectionChangedEventArgs data.</param>
         private void MainMenuSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -77,6 +80,9 @@ namespace UntitledFinanceTracker
             }
         }
 
+        /// <summary>
+        /// loads database info into ObservableCollections.
+        /// </summary>
         void Init()
         {
             try
@@ -103,6 +109,10 @@ namespace UntitledFinanceTracker
             }
         }
 
+        /// <summary>
+        /// Loads account types from database into memory.
+        /// </summary>
+        /// <param name="con">Reference to database connection.</param>
         void InitializeAccountTypes(ref SqlConnection con)
         {
             string query = "SELECT * FROM AccountTypes";
@@ -118,6 +128,10 @@ namespace UntitledFinanceTracker
             reader.Close();
         }
 
+        /// <summary>
+        /// Loads accounts from database into memory.
+        /// </summary>
+        /// <param name="con">Reference to database connection.</param>
         void InitializeAccounts(ref SqlConnection con)
         {
             string query = "SELECT Accounts.*, AccountTypes.AccountType FROM Accounts " +
@@ -135,6 +149,10 @@ namespace UntitledFinanceTracker
             reader.Close();
         }
 
+        /// <summary>
+        /// Loads categories from database into memory.
+        /// </summary>
+        /// <param name="con">Reference to database connection.</param>
         void InitializeCategories(ref SqlConnection con)
         {
             string query = "SELECT par.*, sub.CategoryName AS ParentName FROM Categories par " +
@@ -154,6 +172,10 @@ namespace UntitledFinanceTracker
             reader.Close();
         }
 
+        /// <summary>
+        /// Loads transactions from database into memory.
+        /// </summary>
+        /// <param name="con">Reference to database connection.</param>
         void InitializeTransactions(ref SqlConnection con)
         {
             string query = "SELECT TransactionID, Date, Account_fk, Accounts.AccountName, Amount, " +

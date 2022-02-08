@@ -20,6 +20,9 @@ namespace UntitledFinanceTracker
     /// </summary>
     public partial class BalanceSheet : UserControl
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public BalanceSheet()
         {
             InitializeComponent();

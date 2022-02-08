@@ -20,6 +20,9 @@ namespace UntitledFinanceTracker
     /// </summary>
     public partial class Dashboard : UserControl
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public Dashboard()
         {
             InitializeComponent();

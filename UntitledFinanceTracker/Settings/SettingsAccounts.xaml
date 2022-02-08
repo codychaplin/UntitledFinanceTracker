@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="UntitledFinanceTracker.SettingsAccounts"
+﻿    <UserControl x:Class="UntitledFinanceTracker.SettingsAccounts"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -34,8 +34,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button Style="{StaticResource btnEditDg}" />
-                                <Button Style="{StaticResource btnDeleteDg}" />
+                                <Button x:Name="btnEdit" Style="{StaticResource btnEditDg}" Click="btnEdit_Click" />
+                                <Button x:Name="btnDelete" Style="{StaticResource btnDeleteDg}" Click="btnDelete_Click" />
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

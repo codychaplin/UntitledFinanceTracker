@@ -15,6 +15,9 @@ namespace UntitledFinanceTracker
     {
         Transaction transaction { get; set; }
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public EditTransaction()
         {
             InitializeComponent();
@@ -24,6 +27,10 @@ namespace UntitledFinanceTracker
             btnCSV.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Parameterized constructor setting the ID
+        /// </summary>
+        /// <param name="ID">Transaction ID.</param>
         public EditTransaction(int ID)
         {
             InitializeComponent();
@@ -86,19 +93,19 @@ namespace UntitledFinanceTracker
                 SqlConnection con = new(connectionString);
                 con.Open();
 
+                // update transaction
+                transaction.Date = (DateTime)dpDate.SelectedDate;
+                transaction.AccountID = (int)cbAccounts.SelectedValue;
+                transaction.AccountName = cbAccounts.Text;
+                transaction.Amount = Convert.ToDecimal(txtAmount.Text);
+                transaction.CategoryID = (int)cbCategories.SelectedValue;
+                transaction.CategoryName = cbCategories.Text;
+                transaction.SubcategoryID = (int)cbSubcategories.SelectedValue;
+                transaction.SubcategoryName = cbSubcategories.Text;
+                transaction.Payee = txtPayee.Text;
+
                 if (Title == "Edit Transaction")
                 {
-                    // update transaction
-                    transaction.Date = (DateTime)dpDate.SelectedDate;
-                    transaction.AccountID = (int)cbAccounts.SelectedValue;
-                    transaction.AccountName = cbAccounts.Text;
-                    transaction.Amount = Convert.ToDecimal(txtAmount.Text);
-                    transaction.CategoryID = (int)cbCategories.SelectedValue;
-                    transaction.CategoryName = cbCategories.Text;
-                    transaction.SubcategoryID = (int)cbSubcategories.SelectedValue;
-                    transaction.SubcategoryName = cbSubcategories.Text;
-                    transaction.Payee = txtPayee.Text;
-
                     // updates collection
                     Transaction trans = Data.Transactions.First(t => t.TransactionID == transaction.TransactionID);
                     trans = transaction;
@@ -117,16 +124,6 @@ namespace UntitledFinanceTracker
                 }
                 else if (Title == "Add Transaction")
                 {
-                    transaction.Date = (DateTime)dpDate.SelectedDate;
-                    transaction.AccountID = (int)cbAccounts.SelectedValue;
-                    transaction.AccountName = cbAccounts.Text;
-                    transaction.Amount = Convert.ToDecimal(txtAmount.Text);
-                    transaction.CategoryID = (int)cbCategories.SelectedValue;
-                    transaction.CategoryName = cbCategories.Text;
-                    transaction.SubcategoryID = (int)cbSubcategories.SelectedValue;
-                    transaction.SubcategoryName = cbSubcategories.Text;
-                    transaction.Payee = txtPayee.Text;
-                    
                     string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee)" +
                         " VALUES ('" + transaction.Date.ToString("yyyy-MM-dd") + "'" +
                         ", " + transaction.AccountID +

@@ -11,6 +11,9 @@ namespace UntitledFinanceTracker
     /// </summary>
     public partial class Transactions : UserControl
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public Transactions()
         {
             InitializeComponent();

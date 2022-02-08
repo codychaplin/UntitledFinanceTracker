@@ -13,6 +13,9 @@ namespace UntitledFinanceTracker
     {
         AccountType accountType { get; set; }
 
+        /// <summary>
+        /// Interaction logic for EditTransaction.xaml
+        /// </summary>
         public EditAccountTypes()
         {
             InitializeComponent();
@@ -21,6 +24,10 @@ namespace UntitledFinanceTracker
             btnEdit.Content = "Add";
         }
 
+        /// <summary>
+        /// Parameterized constructor setting the ID
+        /// </summary>
+        /// <param name="ID">Account Type ID.</param>
         public EditAccountTypes(int ID)
         {
             InitializeComponent();
@@ -51,6 +58,11 @@ namespace UntitledFinanceTracker
             }
         }
 
+        /// <summary>
+        /// Updates/adds account type to collection and database
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains RoutedEventArgs data.</param>
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -59,11 +71,11 @@ namespace UntitledFinanceTracker
                 SqlConnection con = new(connectionString);
                 con.Open();
 
+                // update accountType
+                accountType.AccountTypeName = txtAccountType.Text;
+
                 if (Title == "Edit Account Type")
                 {
-                    // update accountType
-                    accountType.AccountTypeName = txtAccountType.Text;
-
                     // updates collection
                     AccountType accType = Data.AccountTypes.First(a => a.AccountTypeID == accountType.AccountTypeID);
                     accType = accountType;
@@ -76,9 +88,6 @@ namespace UntitledFinanceTracker
                 }
                 else if (Title == "Add Account Type")
                 {
-                    // update accountType
-                    accountType.AccountTypeName = txtAccountType.Text;
-
                     // updates database
                     string query = "INSERT INTO AccountTypes (AccountType)" +
                         " VALUES ('" + accountType.AccountTypeName + "')";
@@ -105,9 +114,14 @@ namespace UntitledFinanceTracker
             }
         }
 
+        /// <summary>
+        /// Closes window
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains RoutedEventArgs data.</param>
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-
+            Close();
         }
     }
 }

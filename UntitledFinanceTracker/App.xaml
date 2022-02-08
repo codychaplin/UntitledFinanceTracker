@@ -121,6 +121,14 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="#d64e4d" />
+                </Trigger>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="Foreground" Value="#d64e4d" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <!-- Update Button Form formatting -->

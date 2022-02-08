@@ -159,6 +159,16 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <!-- Import CSV Button Form formatting -->
+        <Style x:Key="btnCSVFrm" TargetType="{x:Type Button}" BasedOn="{StaticResource btnCancelFrm}">
+            <Setter Property="Width" Value="120" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#b94b4a" />
+                    <Setter Property="Foreground" Value="#ffd8d8" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
         <!-- TextBox formatting -->
         <Style TargetType="{x:Type TextBox}">
@@ -243,12 +253,11 @@
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="10 0 0 0" />
             <Setter Property="Background" Value="#1A1A1A" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
-                        <Grid Background="{TemplateBinding Background}">
+                        <Grid Background="{TemplateBinding Background}" Margin="5 0 0 0">
                             <TextBlock FontFamily="Microsoft JhengHei" Text="{TemplateBinding Content}" VerticalAlignment="Center" />
                         </Grid>
                     </ControlTemplate>

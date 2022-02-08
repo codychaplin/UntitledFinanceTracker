@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Data;
 using System.Windows;
 using System.Data.SqlClient;
 using System.Windows.Controls;
+using System.Linq;
 
 namespace UntitledFinanceTracker
 {
@@ -28,66 +28,76 @@ namespace UntitledFinanceTracker
         }
 
         /// <summary>
-        /// Adds a transaction to the database and dataGrid
+        /// Adds a transaction to the dataGrid and database
         /// </summary>
         /// <param name="sender">Object that raised the event.</param>
         /// <param name="e">Contains RoutedEventArgs data.</param>
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
+            Window addTransaction = new EditTransaction();
+            addTransaction.Title = "Add Transaction";
+            addTransaction.ShowDialog();
 
+            dgTransactions.Items.Refresh();
         }
 
         /// <summary>
-        /// Edits a transaction and updates the database and dataGrid
+        /// Edits a transaction and updates the dataGrid and database
         /// </summary>
         /// <param name="sender">Object that raised the event.</param>
         /// <param name="e">Contains RoutedEventArgs data.</param>
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                // gets Transaction as array from dataGridRow
-                Transaction row = (Transaction)(sender as Button).DataContext;
-                int ID = row.TransactionID;
+            Transaction row = (Transaction)(sender as Button).DataContext;
+            int ID = row.TransactionID;
 
-                Window editTransaction = new EditTransaction(ID);
-                editTransaction.ShowDialog();
-                dgTransactions.Items.Refresh();
-                
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            Window editTransaction = new EditTransaction(ID);
+            editTransaction.ShowDialog();
+
+            dgTransactions.Items.Refresh();
         }
 
         /// <summary>
-        /// Deletes a transaction from the database and dataGrid
+        /// Deletes a transaction from the dataGrid and database
         /// </summary>
         /// <param name="sender">Object that raised the event.</param>
         /// <param name="e">Contains RoutedEventArgs data.</param>
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
-            try
+            // prompts user to confirm deletion
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this transaction?", "Confirm Deletion", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
             {
-                // gets transactionID from dataGridRow
-                DataRowView row = (sender as Button).DataContext as DataRowView;
-                int ID = (int)row.Row.ItemArray[0];
-
-                string connectionString = Properties.Settings.Default.connectionString;
-                string query = "DELETE FROM Transactions WHERE TransactionID = " + ID;
-
-                using (SqlConnection con = new(connectionString))
+                try
                 {
+                    // gets transaction ID
+                    Transaction row = (Transaction)(sender as Button).DataContext;
+                    int ID = row.TransactionID;
+
+                    // deletes transaction from collection
+                    Transaction trans = Data.Transactions.FirstOrDefault(t => t.TransactionID == ID);
+                    Data.Transactions.Remove(trans);
+
+                    // deletes transaction from database
+                    string connectionString = Properties.Settings.Default.connectionString;
+                    string query = "DELETE FROM Transactions WHERE TransactionID = " + ID;
+
+                    SqlConnection con = new(connectionString);
                     con.Open();
-                    using (SqlCommand command = new(query, con))
-                        command.ExecuteNonQuery();
+                    SqlCommand command = new(query, con);
+                    command.ExecuteNonQuery();
                     con.Close();
+
+                    dgTransactions.Items.Refresh();
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("SQL: " + ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
     }

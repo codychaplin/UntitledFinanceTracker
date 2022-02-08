@@ -55,20 +55,5 @@ namespace UntitledFinanceTracker
             SubcategoryName = subcategory;
             Payee = payee;
         }
-
-        // debugging purposes
-        public override string ToString()
-        {
-            return "\nTransactionID: " + TransactionID +
-                "\nDate: " + Date +
-                "\nAccountID: " + AccountID +
-                "\nAccount: " + AccountName +
-                "\nAmount: " + Amount +
-                "\nCategoryID: " + CategoryID +
-                "\nCategory: " + CategoryName +
-                "\nSubcategoryID: " + SubcategoryID +
-                "\nSubcategory: " + SubcategoryName +
-                "\nPayee: " + Payee;
-        }
     }
 }

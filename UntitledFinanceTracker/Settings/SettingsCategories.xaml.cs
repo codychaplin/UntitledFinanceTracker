@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Windows;
+using System.Data.SqlClient;
 using System.Windows.Controls;
 
 namespace UntitledFinanceTracker
@@ -27,7 +27,17 @@ namespace UntitledFinanceTracker
         private void UserControl_Initialized(object sender, EventArgs e)
         {
             if (Data.Categories.Count > 0)
-                dgCategories.ItemsSource = Data.Categories;
+                GetSource();
+        }
+
+        /// <summary>
+        /// Reloads dataGrid itemsSource
+        /// </summary>
+        void GetSource()
+        {
+            dgCategories.ItemsSource = from cat in Data.Categories
+                                       where cat.CategoryID > 4
+                                       select cat;
         }
 
         /// <summary>
@@ -41,6 +51,7 @@ namespace UntitledFinanceTracker
             addCategory.Title = "Add Category";
             addCategory.ShowDialog();
 
+            GetSource();
             dgCategories.Items.Refresh();
         }
 
@@ -91,6 +102,7 @@ namespace UntitledFinanceTracker
                     command.ExecuteNonQuery();
                     con.Close();
 
+                    GetSource();
                     dgCategories.Items.Refresh();
                 }
                 catch (SqlException ex)

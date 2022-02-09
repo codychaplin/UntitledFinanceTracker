@@ -30,5 +30,15 @@ namespace UntitledFinanceTracker
         {
             AccountTypeName = accountTypeName;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the AccountType class using a copy constructor
+        /// </summary>
+        /// <param name="ID">Account ID.</param>
+        /// <param name="accType">AccountType object.</param>
+        public AccountType(int ID, AccountType accType) : this(ID, accType.AccountTypeName)
+        {
+
+        }
     }
 }

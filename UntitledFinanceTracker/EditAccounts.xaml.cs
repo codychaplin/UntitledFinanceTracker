@@ -47,7 +47,7 @@ namespace UntitledFinanceTracker
                                          where acc.AccountID == ID
                                          select acc;
 
-                account = a.Count() == 1 ? a.First() : throw new Exception("ERROR: ID returned more than 1 row");
+                account = a.Count() == 1 ? a.First() : throw new Exception("ERROR: Could not find record");
 
                 // sets input value from account
                 txtName.Text = account.AccountName;
@@ -110,15 +110,20 @@ namespace UntitledFinanceTracker
                 {
                     // updates database
                     string query = "INSERT INTO Accounts (AccountName, AccountType_fk, StartingBalance, CurrentBalance, Enabled)" +
+                        " OUTPUT INSERTED.AccountID" +
                         " VALUES ('" +  account.AccountName + "'" +
                         ", " + account.AccountTypeID +
                         ", " + account.StartingBalance +
                         ", " + account.CurrentBalance +
                         ", '" + account.Enabled + "')";
-                    SqlCommand command = new(query, con);
-                    command.ExecuteNonQuery();
 
-                    Data.Accounts.Add(account);
+                    // execute query and get ID of new account
+                    SqlCommand command = new(query, con);
+                    int ID = (int)command.ExecuteScalar();
+
+                    // create and add newAccount to collection
+                    Account newAccount = new(ID, account);
+                    Data.Accounts.Add(newAccount);
                 }
                 else
                 {

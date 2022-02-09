@@ -46,5 +46,16 @@ namespace UntitledFinanceTracker
             CurrentBalance = currentBalance;
             Enabled = enabled;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the Account class using a copy constructor
+        /// </summary>
+        /// <param name="ID">Account ID.</param>
+        /// <param name="acc">Account object.</param>
+        public Account(int ID, Account acc) : this(ID, acc.AccountName, acc.AccountTypeID, acc.AccountTypeName,
+            acc.StartingBalance, acc.CurrentBalance, acc.Enabled)
+        {
+
+        }
     }
 }

@@ -47,7 +47,7 @@ namespace UntitledFinanceTracker
                                          where cat.CategoryID == ID
                                          select cat;
 
-                category = c.Count() == 1 ? c.First() : throw new Exception("ERROR: ID returned more than 1 row");
+                category = c.Count() == 1 ? c.First() : throw new Exception("ERROR: Could not find record");
 
                 // sets input value from category
                 cbParent.SelectedValue = category.ParentID;
@@ -119,6 +119,7 @@ namespace UntitledFinanceTracker
                     if (category.ParentID.HasValue && category.ParentID != 0)
                     {
                         query = "INSERT INTO Categories (ParentID_fk, CategoryName, Enabled)" +
+                            " OUTPUT INSERTED.CategoryID" +
                             " VALUES (" + category.ParentID +
                             ", '" + category.CategoryName + "'" +
                             ", '" + category.Enabled + "')";
@@ -126,15 +127,19 @@ namespace UntitledFinanceTracker
                     else
                     {
                         query = "INSERT INTO Categories (ParentID_fk, CategoryName, Enabled)" +
+                            " OUTPUT INSERTED.CategoryID" +
                             " VALUES (null" +
                             ", '" + category.CategoryName + "'" +
                             ", '" + category.Enabled + "')";
                     }
 
+                    // execute query and get ID of new category
                     SqlCommand command = new(query, con);
-                    command.ExecuteNonQuery();
+                    int ID = (int)command.ExecuteScalar();
 
-                    Data.Categories.Add(category);
+                    // create and add newCategory to collection
+                    Category newCategory = new(ID, category);
+                    Data.Categories.Add(newCategory);
                 }
                 else
                 {

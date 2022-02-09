@@ -90,11 +90,16 @@ namespace UntitledFinanceTracker
                 {
                     // updates database
                     string query = "INSERT INTO AccountTypes (AccountType)" +
+                        " OUTPUT INSERTED.AccountTypeID" +
                         " VALUES ('" + accountType.AccountTypeName + "')";
-                    SqlCommand command = new(query, con);
-                    command.ExecuteNonQuery();
 
-                    Data.AccountTypes.Add(accountType);
+                    // execute query and get ID of new accountType
+                    SqlCommand command = new(query, con);
+                    int ID = (int)command.ExecuteScalar();
+
+                    // create and add newAccountType to collection
+                    AccountType newAccountType = new(ID, accountType);
+                    Data.AccountTypes.Add(newAccountType);
                 }
                 else
                 {

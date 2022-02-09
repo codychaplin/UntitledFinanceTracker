@@ -18,7 +18,7 @@ namespace UntitledFinanceTracker
         /// <summary>
         /// Initializes a new instance of the Category class only setting the ID.
         /// </summary>
-        /// <param name="ID">Account ID.</param>
+        /// <param name="ID">Category ID.</param>
         public Category(int ID)
         {
             CategoryID = ID;
@@ -38,6 +38,16 @@ namespace UntitledFinanceTracker
             ParentName = parentName;
             CategoryName = categoryName;
             Enabled = enabled;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Category class using a copy constructor
+        /// </summary>
+        /// <param name="ID">Category ID.</param>
+        /// <param name="cat">Category object.</param>
+        public Category(int ID, Category cat) : this(ID, cat.ParentID, cat.ParentName, cat.CategoryName, cat.Enabled)
+        {
+
         }
     }
 }

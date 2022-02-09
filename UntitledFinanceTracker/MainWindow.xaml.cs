@@ -163,7 +163,9 @@ namespace UntitledFinanceTracker
 
             while (reader.Read())
             {
-                int? parentID = (reader[1] is DBNull) ? null : (int)reader[1]; // coverts DBNull to null
+                // converts DBNull to null
+                int? parentID = (reader[1] is DBNull) ? null : (int)reader[1];
+                //string parentName = (reader[4] is DBNull) ? "" : reader[4].ToString();
 
                 Data.Categories.Add(new Category((int)reader[0], parentID, reader[4].ToString(),
                     reader[2].ToString(), (bool)reader[3]));

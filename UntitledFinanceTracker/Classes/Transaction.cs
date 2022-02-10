@@ -55,5 +55,16 @@ namespace UntitledFinanceTracker
             SubcategoryName = subcategory;
             Payee = payee;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the Transaction class using a copy constructor
+        /// </summary>
+        /// <param name="ID">Transaction ID.</param>
+        /// <param name="cat">Transaction object.</param>
+        public Transaction(int ID, Transaction trans) : this(ID, trans.Date, trans.AccountID, trans.AccountName, trans.Amount,
+            trans.CategoryID, trans.CategoryName, trans.SubcategoryID, trans.SubcategoryName, trans.Payee)
+        {
+
+        }
     }
 }

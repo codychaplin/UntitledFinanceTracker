@@ -41,6 +41,7 @@ namespace UntitledFinanceTracker
             addTransaction.Title = "Add Transaction";
             addTransaction.ShowDialog();
 
+            dgTransactions.ItemsSource = Data.Transactions;
             dgTransactions.Items.Refresh();
         }
 

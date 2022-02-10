@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Data;
 using System.Linq;
 using System.Windows;
+using System.Globalization;
 using System.Data.SqlClient;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using Microsoft.Win32;
 
 namespace UntitledFinanceTracker
 {
@@ -125,6 +128,7 @@ namespace UntitledFinanceTracker
                 else if (Title == "Add Transaction")
                 {
                     string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee)" +
+                        " OUTPUT INSERTED.TransactionID" +
                         " VALUES ('" + transaction.Date.ToString("yyyy-MM-dd") + "'" +
                         ", " + transaction.AccountID +
                         ", " + transaction.Amount +
@@ -133,9 +137,11 @@ namespace UntitledFinanceTracker
                         ", '" + transaction.Payee + "')";
 
                     SqlCommand command = new(query, con);
-                    command.ExecuteNonQuery();
+                    int ID = (int)command.ExecuteScalar();
 
-                    Data.Transactions.Add(transaction);
+                    // create and add newTransaction to collection
+                    Transaction newTransaction = new(ID, transaction);
+                    Data.Transactions.Add(newTransaction);
                 }
                 else
                 {
@@ -180,9 +186,93 @@ namespace UntitledFinanceTracker
             cbSubcategories.ItemsSource = categories;
         }
 
+        /// <summary>
+        /// Uploads CSV file and imports data into collection/database
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains RoutedEventArgs data.</param>
         private void btnCSV_Click(object sender, RoutedEventArgs e)
         {
+            OpenFileDialog upload = new();
+            upload.Filter = "CSV Files (*.csv)|*.csv";
 
+            // if file is uplaoded
+            if (upload.ShowDialog() == true)
+            {
+                FileStream fs = new(upload.FileName, FileMode.Open, FileAccess.Read);
+                StreamReader sr = new(fs);
+
+                try
+                {
+                    string connectionString = Properties.Settings.Default.connectionString;
+                    SqlConnection con = new(connectionString);
+                    con.Open();
+
+                    List<Transaction> transactions = new();
+
+                    // for each line, convert to Transaction object
+                    while (sr.Read() != -1)
+                    {
+                        string row = sr.ReadLine();
+                        string[] column = row.Split(',');
+
+                        // get IDs from names
+                        var accountID = from acc in Data.Accounts
+                                        where acc.AccountName == column[1]
+                                        select acc.AccountID;
+                        var categoryID = from cat in Data.Categories
+                                         where cat.CategoryName == column[3]
+                                         select cat.CategoryID;
+                        var subCategoryID = from cat in Data.Categories
+                                            where cat.CategoryName == column[4]
+                                            select cat.CategoryID;
+
+                        Transaction trans = new();
+                        trans.Date = Convert.ToDateTime(column[0]);
+                        trans.AccountID = accountID.First();
+                        trans.AccountName = column[1];
+                        trans.Amount = Convert.ToDecimal(column[2]);
+                        trans.CategoryID = categoryID.First();
+                        trans.CategoryName = column[3];
+                        trans.SubcategoryID = subCategoryID.First();
+                        trans.SubcategoryName = column[4];
+                        trans.Payee = column[5];
+
+                        transactions.Add(trans);
+                    }
+
+                    // after all data passes validation, insert each into collection/database
+                    foreach (Transaction trans in transactions)
+                    {
+                        string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee)" +
+                                " OUTPUT INSERTED.TransactionID" +
+                                " VALUES ('" + trans.Date.ToString("yyyy-MM-dd") + "'" +
+                                ", " + trans.AccountID +
+                                ", " + trans.Amount +
+                                ", " + trans.CategoryID +
+                                ", " + trans.SubcategoryID +
+                                ", '" + trans.Payee + "')";
+
+                        SqlCommand command = new(query, con);
+                        int ID = (int)command.ExecuteScalar();
+
+                        // create and add newTransaction to collection
+                        Transaction newTransaction = new(ID, trans);
+                        Data.Transactions.Add(newTransaction);
+                    }
+
+                    con.Close();
+                    Close();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("SQL: " + ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
     }
 }

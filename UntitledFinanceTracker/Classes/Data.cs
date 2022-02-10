@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace UntitledFinanceTracker
 {
@@ -10,5 +8,13 @@ namespace UntitledFinanceTracker
         public static ObservableCollection<AccountType> AccountTypes { get; set; }
         public static ObservableCollection<Category> Categories { get; set; }
         public static ObservableCollection<Transaction> Transactions { get; set; }
+
+        /// <summary>
+        /// Debug purposes
+        /// </summary>
+        public static void Log(object log)
+        {
+            System.Diagnostics.Debug.WriteLine(log);
+        }
     }
 }

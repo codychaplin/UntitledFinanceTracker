@@ -5,10 +5,8 @@ namespace UntitledFinanceTracker
     class Transaction
     {
         int _transactionID;
-        DateTime _date;
         int _accountID;
         string _accountName;
-        decimal _amount;
         int _categoryID;
         string _categoryName;
         int _subcategoryID;
@@ -91,11 +89,11 @@ namespace UntitledFinanceTracker
         /// </summary>
         public string DateString
         {
-            get { return _date.ToString("yyyy-mm-dd"); }
+            get { return Date.ToString("yyyy-MM-dd"); }
             set
             {
                 if (DateTime.TryParse(value, out DateTime date))
-                    _date = date;
+                    Date = date;
                 else
                     throw new Exception("Error: Transaction Date String cannot be converted to a Date");
             }
@@ -141,13 +139,13 @@ namespace UntitledFinanceTracker
         /// </summary>
         public string AmountString
         {
-            get { return _amount.ToString(); }
+            get { return Amount.ToString(); }
             set
             {
                 if (!String.IsNullOrEmpty(value))
                 {
                     if (decimal.TryParse(value, out decimal val))
-                        _amount = val;
+                        Amount = val;
                     else
                         throw new Exception("Error: Transaction Amount could not be converted to decimal");
                 }

@@ -84,11 +84,12 @@ namespace UntitledFinanceTracker
 
                     // deletes account type from database
                     string connectionString = Properties.Settings.Default.connectionString;
-                    string query = "DELETE FROM Accounts WHERE AccountID = " + ID;
+                    string query = "DELETE FROM Accounts WHERE AccountID = @ID";
 
                     SqlConnection con = new(connectionString);
                     con.Open();
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@ID", ID);
                     command.ExecuteNonQuery();
                     con.Close();
 

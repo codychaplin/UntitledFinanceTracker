@@ -94,11 +94,12 @@ namespace UntitledFinanceTracker
 
                     // deletes category from database
                     string connectionString = Properties.Settings.Default.connectionString;
-                    string query = "DELETE FROM Categories WHERE CategoryID = " + ID;
+                    string query = "DELETE FROM Categories WHERE CategoryID = @ID";
 
                     SqlConnection con = new(connectionString);
                     con.Open();
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@ID", ID);
                     command.ExecuteNonQuery();
                     con.Close();
 

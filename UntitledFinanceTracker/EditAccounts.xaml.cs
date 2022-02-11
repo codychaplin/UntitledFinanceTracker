@@ -96,29 +96,33 @@ namespace UntitledFinanceTracker
                     // updates collection
                     Account acc = Data.Accounts.First(a => a.AccountID == account.AccountID);
                     acc = account;
-                    
+
                     // updates database
-                    string query = "UPDATE Accounts SET AccountName = '" + account.AccountName + "'" +
-                        ", AccountType_fk = " + account.AccountTypeID +
-                        ", StartingBalance = " + account.StartingBalance +
-                        ", Enabled = '" + account.Enabled + "'" +
-                        " WHERE AccountID = " + account.AccountID;
+                    string query = "UPDATE Accounts SET AccountName=@AccountName, AccountType_fk=@AccountTypeID, " +
+                                   "StartingBalance=@StartingBalance, Enabled=@Enabled " +
+                                   "WHERE AccountID=@AccountID";
+
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@AccountName", account.AccountName);
+                    command.Parameters.AddWithValue("@AccountTypeID", account.AccountTypeID);
+                    command.Parameters.AddWithValue("@StartingBalance", account.StartingBalance);
+                    command.Parameters.AddWithValue("@Enabled", account.Enabled);
+                    command.Parameters.AddWithValue("@AccountID", account.AccountID);
                     command.ExecuteNonQuery();
                 }
                 else if (Title == "Add Account")
                 {
                     // updates database
-                    string query = "INSERT INTO Accounts (AccountName, AccountType_fk, StartingBalance, CurrentBalance, Enabled)" +
-                        " OUTPUT INSERTED.AccountID" +
-                        " VALUES ('" +  account.AccountName + "'" +
-                        ", " + account.AccountTypeID +
-                        ", " + account.StartingBalance +
-                        ", " + account.CurrentBalance +
-                        ", '" + account.Enabled + "')";
+                    string query = "INSERT INTO Accounts (AccountName, AccountType_fk, StartingBalance, CurrentBalance, Enabled) " +
+                                   "OUTPUT INSERTED.AccountID " +
+                                   "VALUES (@AccountName, @AccountTypeID, @StartingBalance, @StartingBalance, @Enabled)";
 
                     // execute query and get ID of new account
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@AccountName", account.AccountName);
+                    command.Parameters.AddWithValue("@AccountTypeID", account.AccountTypeID);
+                    command.Parameters.AddWithValue("@StartingBalance", account.StartingBalance);
+                    command.Parameters.AddWithValue("@Enabled", account.Enabled);
                     int ID = (int)command.ExecuteScalar();
 
                     // create and add newAccount to collection

@@ -72,7 +72,7 @@ namespace UntitledFinanceTracker
             get { return _parentID; }
             set
             {
-                if (value > 0 || value == null)
+                if (value >= 0 || value == null)
                     _parentID = value;
                 else
                     throw new Exception("Error: Parent ID must be empty or greater than 0");
@@ -82,17 +82,7 @@ namespace UntitledFinanceTracker
         /// <summary>
         /// Parent Category Name
         /// </summary>
-        public string ParentName
-        {
-            get { return _parentName; }
-            set
-            {
-                if (!String.IsNullOrEmpty(value))
-                    _parentName = value;
-                else
-                    throw new Exception("Error: Parent name cannot be blank");
-            }
-        }
+        public string ParentName { get; set; }
 
         /// <summary>
         /// Category Name

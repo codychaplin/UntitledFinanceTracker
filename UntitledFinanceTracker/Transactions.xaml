@@ -28,7 +28,7 @@
                 <DataGridTextColumn Header="Date" Width="70" Binding="{Binding Date, StringFormat=yyyy-MM-dd}" />
                 <DataGridTextColumn Header="AccountID" Width="40" Binding="{Binding AccountID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Account" Width="100" Binding="{Binding AccountName}" />
-                <DataGridTextColumn Header="Amount" Width="70" Binding="{Binding Amount, StringFormat=C}"
+                <DataGridTextColumn Header="Amount" Width="80" Binding="{Binding Amount, StringFormat=C}"
                                     CellStyle="{StaticResource dgCellRight}" />
                 <DataGridTextColumn Header="CategoryID" Width="40" Binding="{Binding CategoryID}" Visibility="Hidden" />
                 <DataGridTextColumn Header="Category" Width="100" Binding="{Binding CategoryName}" />

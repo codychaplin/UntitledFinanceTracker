@@ -102,39 +102,30 @@ namespace UntitledFinanceTracker
                     // updates collection
                     Category cat = Data.Categories.First(c => c.CategoryID == category.CategoryID);
                     cat = category;
-                    
+
                     // updates database
-                    string query = "UPDATE Categories SET ParentID_fk = " + category.ParentID +
-                        ", CategoryName = '" + category.CategoryName + "'" +
-                        ", Enabled = '" + category.Enabled + "'" +
-                        " WHERE CategoryID = " + category.CategoryID;
+                    string query = "UPDATE Categories SET ParentID_fk=@ParentID, CategoryName=@CategoryName, Enabled=@Enabled " +
+                                   "WHERE CategoryID=@CategoryID";
+                    
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@ParentID", category.ParentID);
+                    command.Parameters.AddWithValue("@CategoryName", category.CategoryName);
+                    command.Parameters.AddWithValue("@Enabled", category.Enabled);
+                    command.Parameters.AddWithValue("@CategoryID", category.CategoryID);
                     command.ExecuteNonQuery();
                 }
                 else if (Title == "Add Category")
                 {
                     // updates database
-                    string query = "";
-
-                    if (category.ParentID.HasValue && category.ParentID != 0)
-                    {
-                        query = "INSERT INTO Categories (ParentID_fk, CategoryName, Enabled)" +
-                            " OUTPUT INSERTED.CategoryID" +
-                            " VALUES (" + category.ParentID +
-                            ", '" + category.CategoryName + "'" +
-                            ", '" + category.Enabled + "')";
-                    }
-                    else
-                    {
-                        query = "INSERT INTO Categories (ParentID_fk, CategoryName, Enabled)" +
-                            " OUTPUT INSERTED.CategoryID" +
-                            " VALUES (null" +
-                            ", '" + category.CategoryName + "'" +
-                            ", '" + category.Enabled + "')";
-                    }
+                    string query = "INSERT INTO Categories (ParentID_fk, CategoryName, Enabled) " +
+                                   "OUTPUT INSERTED.CategoryID " +
+                                   "VALUES (@ParentID, @CategoryName, @Enabled)";
 
                     // execute query and get ID of new category
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@ParentID", (category.ParentID == null) ? DBNull.Value : category.ParentID);
+                    command.Parameters.AddWithValue("@CategoryName", category.CategoryName);
+                    command.Parameters.AddWithValue("@Enabled", category.Enabled);
                     int ID = (int)command.ExecuteScalar();
 
                     // create and add newCategory to collection

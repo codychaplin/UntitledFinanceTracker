@@ -79,22 +79,26 @@ namespace UntitledFinanceTracker
                     // updates collection
                     AccountType accType = Data.AccountTypes.First(a => a.AccountTypeID == accountType.AccountTypeID);
                     accType = accountType;
-                    
+
                     // updates database
-                    string query = "UPDATE AccountTypes SET AccountType = '" + accountType.AccountTypeName + "'" +
-                        " WHERE AccountTypeID = " + accountType.AccountTypeID;
+                    string query = "UPDATE AccountTypes SET AccountType=@AccountTypeName " +
+                                   "WHERE AccountTypeID=@AccountTypeID";
+
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@AccountTypeName", accountType.AccountTypeName);
+                    command.Parameters.AddWithValue("@AccountTypeID", accountType.AccountTypeID);
                     command.ExecuteNonQuery();
                 }
                 else if (Title == "Add Account Type")
                 {
                     // updates database
-                    string query = "INSERT INTO AccountTypes (AccountType)" +
-                        " OUTPUT INSERTED.AccountTypeID" +
-                        " VALUES ('" + accountType.AccountTypeName + "')";
+                    string query = "INSERT INTO AccountTypes (AccountType) " +
+                                   "OUTPUT INSERTED.AccountTypeID " +
+                                   "VALUES (@AccountTypeName)";
 
                     // execute query and get ID of new accountType
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@AccountTypeName", accountType.AccountTypeName);
                     int ID = (int)command.ExecuteScalar();
 
                     // create and add newAccountType to collection

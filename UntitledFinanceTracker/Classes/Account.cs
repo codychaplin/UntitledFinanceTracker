@@ -127,18 +127,18 @@ namespace UntitledFinanceTracker
         /// </summary>
         public string StartingBalanceString
         {
-            get { return _startingBalance.ToString(); }
+            get { return StartingBalance.ToString(); }
             set
             {
                 if (!String.IsNullOrEmpty(value))
                 {
                     if (decimal.TryParse(value, out decimal val))
-                        _startingBalance = val;
+                        StartingBalance = val;
                     else
                         throw new Exception("Error: Starting balance could not be converted to decimal");
                 }
                 else
-                    _startingBalance = 0;
+                    StartingBalance = 0;
             }
         }
 
@@ -152,18 +152,18 @@ namespace UntitledFinanceTracker
         /// </summary>
         public string CurrentBalanceString
         {
-            get { return _currentBalance.ToString(); }
+            get { return CurrentBalance.ToString(); }
             set
             {
                 if (!String.IsNullOrEmpty(value))
                 {
                     if (decimal.TryParse(value, out decimal val))
-                        _currentBalance = val;
+                        CurrentBalance = val;
                     else
                         throw new Exception("Error: Current balance could not be converted to decimal");
                 }
                 else
-                    _currentBalance = 0;
+                    CurrentBalance = 0;
             }
         }
 

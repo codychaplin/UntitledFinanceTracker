@@ -114,29 +114,33 @@ namespace UntitledFinanceTracker
                     trans = transaction;
 
                     // updates database
-                    string query = "UPDATE Transactions SET Date = '" + transaction.DateString + "'" +
-                        ", Account_fk = " + transaction.AccountID +
-                        ", Amount = '" + transaction.Amount + "'" +
-                        ", Category_fk = " + transaction.CategoryID +
-                        ", Subcategory_fk = " + transaction.SubcategoryID +
-                        ", Payee = '" + transaction.Payee + "' " +
-                        " WHERE TransactionID = " + transaction.TransactionID;
+                    string query = "UPDATE Transactions SET Date=@Date, Account_fk=@AccountID, Amount=@Amount, " +
+                                   "Category_fk=@CategoryID, Subcategory_fk=@SubcategoryID, Payee=@Payee " +
+                                   "WHERE TransactionID=@TransactionID";
 
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@Date", trans.DateString);
+                    command.Parameters.AddWithValue("@AccountID", trans.AccountID);
+                    command.Parameters.AddWithValue("@Amount", trans.Amount);
+                    command.Parameters.AddWithValue("@CategoryID", trans.CategoryID);
+                    command.Parameters.AddWithValue("@SubcategoryID", trans.SubcategoryID);
+                    command.Parameters.AddWithValue("@Payee", trans.Payee);
+                    command.Parameters.AddWithValue("@TransactionID", trans.TransactionID);
                     command.ExecuteNonQuery();
                 }
                 else if (Title == "Add Transaction")
                 {
-                    string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee)" +
-                        " OUTPUT INSERTED.TransactionID" +
-                        " VALUES ('" + transaction.DateString + "'" +
-                        ", " + transaction.AccountID +
-                        ", " + transaction.Amount +
-                        ", " + transaction.CategoryID +
-                        ", " + transaction.SubcategoryID +
-                        ", '" + transaction.Payee + "')";
+                    string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee) " +
+                                   "OUTPUT INSERTED.TransactionID " +
+                                   "VALUES (@Date, @AccountID, @Amount, @CategoryID, @SubcategoryID, @Payee)";
 
                     SqlCommand command = new(query, con);
+                    command.Parameters.AddWithValue("@Date", transaction.DateString);
+                    command.Parameters.AddWithValue("@AccountID", transaction.AccountID);
+                    command.Parameters.AddWithValue("@Amount", transaction.Amount);
+                    command.Parameters.AddWithValue("@CategoryID", transaction.CategoryID);
+                    command.Parameters.AddWithValue("@SubcategoryID", transaction.SubcategoryID);
+                    command.Parameters.AddWithValue("@Payee", transaction.Payee);
                     int ID = (int)command.ExecuteScalar();
 
                     // create and add newTransaction to collection
@@ -226,7 +230,7 @@ namespace UntitledFinanceTracker
                         var subCategoryID = from cat in Data.Categories
                                             where cat.CategoryName == column[4]
                                             select cat.CategoryID;
-
+                        
                         Transaction trans = new();
                         trans.DateString = column[0];
                         trans.AccountID = accountID.First();
@@ -244,16 +248,17 @@ namespace UntitledFinanceTracker
                     // after all data passes validation, insert each into collection/database
                     foreach (Transaction trans in transactions)
                     {
-                        string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee)" +
-                                " OUTPUT INSERTED.TransactionID" +
-                                " VALUES ('" + trans.DateString + "'" +
-                                ", " + trans.AccountID +
-                                ", " + trans.Amount +
-                                ", " + trans.CategoryID +
-                                ", " + trans.SubcategoryID +
-                                ", '" + trans.Payee + "')";
+                        string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee) " +
+                                       "OUTPUT INSERTED.TransactionID " +
+                                       "VALUES (@Date, @AccountID, @Amount, @CategoryID, @SubcategoryID, @Payee)";
 
                         SqlCommand command = new(query, con);
+                        command.Parameters.AddWithValue("@Date", trans.DateString);
+                        command.Parameters.AddWithValue("@AccountID", trans.AccountID);
+                        command.Parameters.AddWithValue("@Amount", trans.Amount);
+                        command.Parameters.AddWithValue("@CategoryID", trans.CategoryID);
+                        command.Parameters.AddWithValue("@SubcategoryID", trans.SubcategoryID);
+                        command.Parameters.AddWithValue("@Payee", trans.Payee);
                         int ID = (int)command.ExecuteScalar();
 
                         // create and add newTransaction to collection

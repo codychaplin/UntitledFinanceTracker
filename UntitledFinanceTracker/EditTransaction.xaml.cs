@@ -54,12 +54,12 @@ namespace UntitledFinanceTracker
                                              where trans.TransactionID == ID
                                              select trans;
                 
-                transaction = t.Count() == 1 ? t.First() : throw new Exception("ERROR: ID returned more than 1 row");
+                transaction = t.Count() == 1 ? t.First() : throw new Exception("ERROR: Could not find record");
 
                 // sets input values from transaction
                 dpDate.SelectedDate = transaction.Date;
                 cbAccounts.SelectedValue = transaction.AccountID;
-                txtAmount.Text = transaction.Amount.ToString();
+                txtAmount.Text = transaction.AmountString;
                 cbCategories.SelectedValue = transaction.CategoryID;
                 cbSubcategories.SelectedValue = transaction.SubcategoryID;
                 txtPayee.Text = transaction.Payee;
@@ -100,7 +100,7 @@ namespace UntitledFinanceTracker
                 transaction.Date = (DateTime)dpDate.SelectedDate;
                 transaction.AccountID = (int)cbAccounts.SelectedValue;
                 transaction.AccountName = cbAccounts.Text;
-                transaction.Amount = Convert.ToDecimal(txtAmount.Text);
+                transaction.AmountString = txtAmount.Text;
                 transaction.CategoryID = (int)cbCategories.SelectedValue;
                 transaction.CategoryName = cbCategories.Text;
                 transaction.SubcategoryID = (int)cbSubcategories.SelectedValue;
@@ -114,7 +114,7 @@ namespace UntitledFinanceTracker
                     trans = transaction;
 
                     // updates database
-                    string query = "UPDATE Transactions SET Date = '" + transaction.Date.ToString("yyyy-MM-dd") + "'" +
+                    string query = "UPDATE Transactions SET Date = '" + transaction.DateString + "'" +
                         ", Account_fk = " + transaction.AccountID +
                         ", Amount = '" + transaction.Amount + "'" +
                         ", Category_fk = " + transaction.CategoryID +
@@ -129,7 +129,7 @@ namespace UntitledFinanceTracker
                 {
                     string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee)" +
                         " OUTPUT INSERTED.TransactionID" +
-                        " VALUES ('" + transaction.Date.ToString("yyyy-MM-dd") + "'" +
+                        " VALUES ('" + transaction.DateString + "'" +
                         ", " + transaction.AccountID +
                         ", " + transaction.Amount +
                         ", " + transaction.CategoryID +
@@ -228,10 +228,10 @@ namespace UntitledFinanceTracker
                                             select cat.CategoryID;
 
                         Transaction trans = new();
-                        trans.Date = Convert.ToDateTime(column[0]);
+                        trans.DateString = column[0];
                         trans.AccountID = accountID.First();
                         trans.AccountName = column[1];
-                        trans.Amount = Convert.ToDecimal(column[2]);
+                        trans.AmountString = column[2];
                         trans.CategoryID = categoryID.First();
                         trans.CategoryName = column[3];
                         trans.SubcategoryID = subCategoryID.First();
@@ -246,7 +246,7 @@ namespace UntitledFinanceTracker
                     {
                         string query = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee)" +
                                 " OUTPUT INSERTED.TransactionID" +
-                                " VALUES ('" + trans.Date.ToString("yyyy-MM-dd") + "'" +
+                                " VALUES ('" + trans.DateString + "'" +
                                 ", " + trans.AccountID +
                                 ", " + trans.Amount +
                                 ", " + trans.CategoryID +

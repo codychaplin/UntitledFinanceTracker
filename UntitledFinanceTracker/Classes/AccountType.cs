@@ -4,8 +4,8 @@ namespace UntitledFinanceTracker
 {
     class AccountType
     {
-        public int AccountTypeID { get; private set; }
-        public string AccountTypeName { get; set; }
+        int _accountTypeID;
+        string _accountTypeName;
 
         /// <summary>
         /// Initializes a new instance of the AccountType class with no parameters.
@@ -40,5 +40,36 @@ namespace UntitledFinanceTracker
         {
 
         }
+
+        /// <summary>
+        /// Account Type ID
+        /// </summary>
+        public int AccountTypeID
+        {
+            get { return _accountTypeID; }
+            private set
+            {
+                if (value > 0)
+                    _accountTypeID = value;
+                else
+                    throw new Exception("Error: Account type ID must be greater than 0");
+            }
+        }
+
+        /// <summary>
+        /// Account Type Name
+        /// </summary>
+        public string AccountTypeName
+        {
+            get { return _accountTypeName; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                    _accountTypeName = value;
+                else
+                    throw new Exception("Error: Account type name cannot be blank");
+            }
+        }
+
     }
 }

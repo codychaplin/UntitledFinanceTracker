@@ -4,13 +4,12 @@ namespace UntitledFinanceTracker
 {
     class Account
     {
-        public int AccountID { get; private set; }
-        public string AccountName { get; set; }
-        public int AccountTypeID { get; set; }
-        public string AccountTypeName { get; set; }
-        public decimal StartingBalance { get; set; }
-        public decimal CurrentBalance { get; set; }
-        public bool Enabled { get; set; }
+        int _accountID;
+        string _accountName;
+        int _accountTypeID;
+        string _accountTypeName;
+        decimal _startingBalance;
+        decimal _currentBalance;
 
         /// <summary>
         /// Initializes a new instance of the Account class with no parameters.
@@ -57,5 +56,120 @@ namespace UntitledFinanceTracker
         {
 
         }
+
+        /// <summary>
+        /// Account ID
+        /// </summary>
+        public int AccountID
+        {
+            get { return _accountID; }
+            private set
+            {
+                if (value > 0)
+                    _accountID = value;
+                else
+                    throw new Exception("Error: Account ID must be greater than 0");
+            }
+        }
+
+        /// <summary>
+        /// Account Name
+        /// </summary>
+        public string AccountName
+        {
+            get { return _accountName; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                    _accountName = value;
+                else
+                    throw new Exception("Error: Account name cannot be blank");
+            }
+        }
+
+        /// <summary>
+        /// Account Type ID
+        /// </summary>
+        public int AccountTypeID
+        {
+            get { return _accountTypeID; }
+            set
+            {
+                if (value > 0)
+                    _accountTypeID = value;
+                else
+                    throw new Exception("Error: Account type ID must be greater than 0");
+            }
+        }
+
+        /// <summary>
+        /// Account Type Name
+        /// </summary>
+        public string AccountTypeName
+        {
+            get { return _accountTypeName; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                    _accountTypeName = value;
+                else
+                    throw new Exception("Error: Account type name cannot be blank");
+            }
+        }
+
+        /// <summary>
+        /// Starting Balance of Account
+        /// </summary>
+        public decimal StartingBalance { get; set; }
+
+        /// <summary>
+        /// Starting Balance of Account represented as a String
+        /// </summary>
+        public string StartingBalanceString
+        {
+            get { return _startingBalance.ToString(); }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                {
+                    if (decimal.TryParse(value, out decimal val))
+                        _startingBalance = val;
+                    else
+                        throw new Exception("Error: Starting balance could not be converted to decimal");
+                }
+                else
+                    _startingBalance = 0;
+            }
+        }
+
+        /// <summary>
+        /// Current Balance of Account
+        /// </summary>
+        public decimal CurrentBalance { get; set; }
+
+        /// <summary>
+        /// Current Balance of Account represented as a String
+        /// </summary>
+        public string CurrentBalanceString
+        {
+            get { return _currentBalance.ToString(); }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                {
+                    if (decimal.TryParse(value, out decimal val))
+                        _currentBalance = val;
+                    else
+                        throw new Exception("Error: Current balance could not be converted to decimal");
+                }
+                else
+                    _currentBalance = 0;
+            }
+        }
+
+        /// <summary>
+        /// Account Status
+        /// </summary>
+        public bool Enabled { get; set; }
     }
 }

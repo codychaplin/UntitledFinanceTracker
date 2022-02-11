@@ -4,16 +4,15 @@ namespace UntitledFinanceTracker
 {
     class Transaction
     {
-        public int TransactionID { get; private set; }
-        public DateTime Date { get; set; }
-        public int AccountID { get; set; }
-        public string AccountName { get; set; }
-        public decimal Amount { get; set; }
-        public int CategoryID { get; set; }
-        public string CategoryName { get; set; }
-        public int SubcategoryID { get; set; }
-        public string SubcategoryName { get; set; }
-        public string Payee { get; set; }
+        int _transactionID;
+        DateTime _date;
+        int _accountID;
+        string _accountName;
+        decimal _amount;
+        int _categoryID;
+        string _categoryName;
+        int _subcategoryID;
+        string _subcategoryName;
 
         /// <summary>
         /// Initializes a new instance of the Transaction class with no parameters.
@@ -66,5 +65,160 @@ namespace UntitledFinanceTracker
         {
 
         }
+
+        /// <summary>
+        /// Transaction ID
+        /// </summary>
+        public int TransactionID
+        {
+            get { return _transactionID; }
+            private set
+            {
+                if (value > 0)
+                    _transactionID = value;
+                else
+                    throw new Exception("Error: Transaction ID must be greater than 0");
+            }
+        }
+
+        /// <summary>
+        /// Transaction Date
+        /// </summary>
+        public DateTime Date { get; set; }
+
+        /// <summary>
+        /// Transaction Date representing as a String
+        /// </summary>
+        public string DateString
+        {
+            get { return _date.ToString("yyyy-mm-dd"); }
+            set
+            {
+                if (DateTime.TryParse(value, out DateTime date))
+                    _date = date;
+                else
+                    throw new Exception("Error: Transaction Date String cannot be converted to a Date");
+            }
+        }
+
+        /// <summary>
+        /// Transaction Account ID
+        /// </summary>
+        public int AccountID
+        {
+            get { return _accountID; }
+            set
+            {
+                if (value > 0)
+                    _accountID = value;
+                else
+                    throw new Exception("Error: Transaction Account ID must be greater than 0");
+            }
+        }
+
+        /// <summary>
+        /// Transaction Account Name
+        /// </summary>
+        public string AccountName
+        {
+            get { return _accountName; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                    _accountName = value;
+                else
+                    throw new Exception("Error: Transaction Account Name cannot be blank");
+            }
+        }
+
+        /// <summary>
+        /// Transaction Amount
+        /// </summary>
+        public decimal Amount { get; set; }
+
+        /// <summary>
+        /// Transaction Amount representing as a String
+        /// </summary>
+        public string AmountString
+        {
+            get { return _amount.ToString(); }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                {
+                    if (decimal.TryParse(value, out decimal val))
+                        _amount = val;
+                    else
+                        throw new Exception("Error: Transaction Amount could not be converted to decimal");
+                }
+                else
+                    throw new Exception("Error: Transaction Amount cannot be blank");
+            }
+        }
+
+        /// <summary>
+        /// Transaction Category ID
+        /// </summary>
+        public int CategoryID
+        {
+            get { return _categoryID; }
+            set
+            {
+                if (value > 0)
+                    _categoryID = value;
+                else
+                    throw new Exception("Error: Transaction Category ID must be greater than 0");
+            }
+        }
+
+        /// <summary>
+        /// Transaction Category Name
+        /// </summary>
+        public string CategoryName
+        {
+            get { return _categoryName; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                    _categoryName = value;
+                else
+                    throw new Exception("Error: Transaction Category Name cannot be blank");
+            }
+        }
+
+        /// <summary>
+        /// Transaction Subcategory ID
+        /// </summary>
+        public int SubcategoryID
+        {
+            get { return _subcategoryID; }
+            set
+            {
+                if (value > 0)
+                    _subcategoryID = value;
+                else
+                    throw new Exception("Error: Transaction Subcategory ID must be greater than 0");
+            }
+        }
+
+        /// <summary>
+        /// Transaction Subcategory Name
+        /// </summary>
+        public string SubcategoryName
+        {
+            get { return _subcategoryName; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                    _subcategoryName = value;
+                else
+                    throw new Exception("Error: Transaction Subcategory Name cannot be blank");
+            }
+        }
+
+        /// <summary>
+        /// Transaction Payee
+        /// </summary>
+        public string Payee { get; set; }
     }
 }

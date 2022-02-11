@@ -52,7 +52,7 @@ namespace UntitledFinanceTracker
                 // sets input value from account
                 txtName.Text = account.AccountName;
                 cbAccountType.SelectedValue = account.AccountTypeID;
-                txtBalance.Text = account.StartingBalance.ToString();
+                txtBalance.Text = account.StartingBalanceString;
                 chkEnabled.IsChecked = account.Enabled;
             }
             catch (Exception ex)
@@ -88,7 +88,7 @@ namespace UntitledFinanceTracker
                 account.AccountName = txtName.Text;
                 account.AccountTypeID = (int)cbAccountType.SelectedValue;
                 account.AccountTypeName = cbAccountType.Text;
-                account.StartingBalance = Convert.ToDecimal(txtBalance.Text);
+                account.StartingBalanceString = txtBalance.Text;
                 account.Enabled = chkEnabled.IsChecked != null && chkEnabled.IsChecked != false;
 
                 if (Title == "Edit Account")

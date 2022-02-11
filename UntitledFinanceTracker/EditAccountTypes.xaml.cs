@@ -47,7 +47,7 @@ namespace UntitledFinanceTracker
                                              where accType.AccountTypeID == ID
                                              select accType;
 
-                accountType = a.Count() == 1 ? a.First() : throw new Exception("ERROR: ID returned more than 1 row");
+                accountType = a.Count() == 1 ? a.First() : throw new Exception("ERROR: Could not find record");
 
                 // sets input value from account type
                 txtAccountType.Text = accountType.AccountTypeName;

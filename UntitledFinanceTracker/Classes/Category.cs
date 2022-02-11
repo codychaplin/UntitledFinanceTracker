@@ -4,11 +4,10 @@ namespace UntitledFinanceTracker
 {
     class Category
     {
-        public int CategoryID { get; private set; }
-        public int? ParentID { get; set; }
-        public string ParentName { get; set; }
-        public string CategoryName { get; set; }
-        public bool Enabled { get; set; }
+        int _categoryID;
+        int? _parentID;
+        string _parentName;
+        string _categoryName;
 
         /// <summary>
         /// Initializes a new instance of the Category class with no parameters.
@@ -49,5 +48,70 @@ namespace UntitledFinanceTracker
         {
 
         }
+
+        /// <summary>
+        /// Category ID
+        /// </summary>
+        public int CategoryID
+        {
+            get { return _categoryID; }
+            private set
+            {
+                if (value > 0)
+                    _categoryID = value;
+                else
+                    throw new Exception("Error: Category ID must be greater than 0");
+            }
+        }
+
+        /// <summary>
+        /// Parent Category ID
+        /// </summary>
+        public int? ParentID
+        {
+            get { return _parentID; }
+            set
+            {
+                if (value > 0 || value == null)
+                    _parentID = value;
+                else
+                    throw new Exception("Error: Parent ID must be empty or greater than 0");
+            }
+        }
+
+        /// <summary>
+        /// Parent Category Name
+        /// </summary>
+        public string ParentName
+        {
+            get { return _parentName; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                    _parentName = value;
+                else
+                    throw new Exception("Error: Parent name cannot be blank");
+            }
+        }
+
+        /// <summary>
+        /// Category Name
+        /// </summary>
+        public string CategoryName
+        {
+            get { return _categoryName; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                    _categoryName = value;
+                else
+                    throw new Exception("Error: Category name cannot be blank");
+            }
+        }
+
+        /// <summary>
+        /// Category Status
+        /// </summary>
+        public bool Enabled { get; set; }
     }
 }

@@ -35,44 +35,33 @@ namespace UntitledFinanceTracker
             {
                 if (ContentPanel != null)
                     ContentPanel.Children.Clear();
-
-                // dashboard
-                if (lvMainMenu.SelectedItem.Equals(lviDashboard)) // if selected item is specified listViewItem
+                
+                if (lvMainMenu.SelectedItem.Equals(lviDashboard)) // dashboard
                 {
                     Control ctrlDashboard = new Dashboard(); // insantiate control
                     ContentPanel.Children.Add(ctrlDashboard); // add control to panel as child
                 }
-
-                // transactions
-                if (lvMainMenu.SelectedItem.Equals(lviTransactions))
+                else if (lvMainMenu.SelectedItem.Equals(lviTransactions)) // transactions
                 {
                     Control ctrlTransactionView = new Transactions();
                     ContentPanel.Children.Add(ctrlTransactionView);
                 }
-
-                // calendar
-                if (lvMainMenu.SelectedItem.Equals(lviCalendar))
+                else if (lvMainMenu.SelectedItem.Equals(lviCalendar)) // calendar
                 {
                     Control ctrlWeekView = new Calendar();
                     ContentPanel.Children.Add(ctrlWeekView);
                 }
-
-                // balance sheet
-                if (lvMainMenu.SelectedItem.Equals(lviBalanceSheet))
+                else if (lvMainMenu.SelectedItem.Equals(lviBalanceSheet)) // balance sheet
                 {
                     Control ctrlBalanceSheet = new BalanceSheet();
                     ContentPanel.Children.Add(ctrlBalanceSheet);
                 }
-
-                // statistics
-                if (lvMainMenu.SelectedItem.Equals(lviStats))
+                else if (lvMainMenu.SelectedItem.Equals(lviStats)) // statistics
                 {
                     Control ctrlStats = new Statistics();
                     ContentPanel.Children.Add(ctrlStats);
                 }
-
-                // settings
-                if (lvMainMenu.SelectedItem.Equals(lviSettings))
+                else if (lvMainMenu.SelectedItem.Equals(lviSettings)) // settings
                 {
                     Control ctrlSettings = new Settings();
                     ContentPanel.Children.Add(ctrlSettings);

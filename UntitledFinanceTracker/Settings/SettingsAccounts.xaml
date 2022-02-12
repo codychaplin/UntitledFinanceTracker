@@ -28,7 +28,7 @@
                 <DataGridTextColumn Header="Name" Width="100" Binding="{Binding AccountName}" />
                 <DataGridTextColumn Header="Type" Width="100" Binding="{Binding AccountTypeName}" />
                 <DataGridTextColumn Header="Starting Balance" Width="112" Binding="{Binding StartingBalance, StringFormat=C}"
-                                    CellStyle="{StaticResource dgCellRight}" />
+                                    CellStyle="{StaticResource dgCellRight}" HeaderStyle="{StaticResource dgRight}"/>
                 <DataGridTextColumn Header="Enabled" Width="*" Binding="{Binding Enabled}" />
                 <DataGridTemplateColumn Header="Action" Width="60" HeaderStyle="{StaticResource dgCenter}">
                     <DataGridTemplateColumn.CellTemplate>

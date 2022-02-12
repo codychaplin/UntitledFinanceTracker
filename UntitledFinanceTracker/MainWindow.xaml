@@ -43,7 +43,7 @@
                 <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviDashboard">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="BarChart"/>
-                        <TextBlock Text="Dashboard" FontFamily="Microsoft JhengHei Light" />
+                        <TextBlock Text="Dashboard" />
                     </StackPanel>
                 </ListViewItem>
 

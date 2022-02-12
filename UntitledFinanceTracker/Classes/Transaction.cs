@@ -218,5 +218,13 @@ namespace UntitledFinanceTracker
         /// Transaction Payee
         /// </summary>
         public string Payee { get; set; }
+
+        /// <summary>
+        /// Overridden ToString() that outputs data into CSV friendly format
+        /// </summary>
+        public override string ToString()
+        {
+            return $"{DateString},{AccountName},{AmountString},{CategoryName},{SubcategoryName},{Payee}";
+        }
     }
 }

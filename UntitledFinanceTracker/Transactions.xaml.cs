@@ -27,7 +27,13 @@ namespace UntitledFinanceTracker
         private void UserControl_Initialized(object sender, EventArgs e)
         {
             if (Data.Transactions.Count > 0)
-                dgTransactions.ItemsSource = Data.Transactions;
+            {
+                dgTransactions.ItemsSource = Data.Transactions.
+                    OrderBy(x => x.Date).
+                    ThenBy(x => x.Amount).
+                    ThenBy(x => x.CategoryName).
+                    ThenBy(x => x.TransactionID);
+            }
         }
 
         /// <summary>

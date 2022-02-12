@@ -3,7 +3,6 @@ using System.IO;
 using System.Data;
 using System.Linq;
 using System.Windows;
-using System.Globalization;
 using System.Data.SqlClient;
 using System.Windows.Controls;
 using System.Collections.Generic;
@@ -215,7 +214,7 @@ namespace UntitledFinanceTracker
                     List<Transaction> transactions = new();
 
                     // for each line, convert to Transaction object
-                    while (sr.Read() != -1)
+                    while (sr.Peek() != -1)
                     {
                         string row = sr.ReadLine();
                         string[] column = row.Split(',');
@@ -224,13 +223,21 @@ namespace UntitledFinanceTracker
                         var accountID = from acc in Data.Accounts
                                         where acc.AccountName == column[1]
                                         select acc.AccountID;
+                        if (accountID.Count() != 1)
+                            throw new Exception(column[1] + " is not a valid account");
+
                         var categoryID = from cat in Data.Categories
                                          where cat.CategoryName == column[3]
                                          select cat.CategoryID;
+                        if (categoryID.Count() != 1)
+                            throw new Exception(column[3] + " is not a valid category");
+
                         var subCategoryID = from cat in Data.Categories
                                             where cat.CategoryName == column[4]
                                             select cat.CategoryID;
-                        
+                        if (subCategoryID.Count() != 1)
+                            throw new Exception(column[4] + " is not a valid subcategory");
+
                         Transaction trans = new();
                         trans.DateString = column[0];
                         trans.AccountID = accountID.First();
@@ -266,6 +273,7 @@ namespace UntitledFinanceTracker
                         Data.Transactions.Add(newTransaction);
                     }
 
+                    sr.Close();
                     con.Close();
                     Close();
                 }

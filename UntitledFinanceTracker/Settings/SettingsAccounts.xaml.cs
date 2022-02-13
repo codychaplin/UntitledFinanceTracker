@@ -74,22 +74,17 @@ namespace UntitledFinanceTracker
             {
                 try
                 {
-                    // gets Account ID
-                    Account row = (Account)(sender as Button).DataContext;
-                    int ID = row.AccountID;
+                    Account row = (Account)(sender as Button).DataContext; // gets account from dataGrid
 
-                    // deletes account type from collection
-                    Account acc = Data.Accounts.First(a => a.AccountID == ID);
-                    Data.Accounts.Remove(acc);
+                    Data.Accounts.Remove(row); // deletes account from collection
 
-                    // deletes account type from database
+                    // deletes account from database
                     string connectionString = Properties.Settings.Default.connectionString;
-                    string query = "DELETE FROM Accounts WHERE AccountID = @ID";
-
                     SqlConnection con = new(connectionString);
+                    string query = "DELETE FROM Accounts WHERE AccountID = @ID";
                     con.Open();
                     SqlCommand command = new(query, con);
-                    command.Parameters.AddWithValue("@ID", ID);
+                    command.Parameters.AddWithValue("@ID", row.AccountID);
                     command.ExecuteNonQuery();
                     con.Close();
 

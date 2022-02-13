@@ -95,6 +95,8 @@ namespace UntitledFinanceTracker
                 SqlConnection con = new(connectionString);
                 con.Open();
 
+                decimal originalAmount = transaction.Amount;
+
                 // update transaction
                 transaction.Date = (DateTime)dpDate.SelectedDate;
                 transaction.AccountID = (int)cbAccounts.SelectedValue;
@@ -106,26 +108,36 @@ namespace UntitledFinanceTracker
                 transaction.SubcategoryName = cbSubcategories.Text;
                 transaction.Payee = txtPayee.Text;
 
+                Account acc = Data.Accounts.First(a => a.AccountID == transaction.AccountID);
+
                 if (Title == "Edit Transaction")
                 {
-                    // updates collection
-                    Transaction trans = Data.Transactions.First(t => t.TransactionID == transaction.TransactionID);
-                    trans = transaction;
-
                     // updates database
                     string query = "UPDATE Transactions SET Date=@Date, Account_fk=@AccountID, Amount=@Amount, " +
                                    "Category_fk=@CategoryID, Subcategory_fk=@SubcategoryID, Payee=@Payee " +
                                    "WHERE TransactionID=@TransactionID";
 
                     SqlCommand command = new(query, con);
-                    command.Parameters.AddWithValue("@Date", trans.DateString);
-                    command.Parameters.AddWithValue("@AccountID", trans.AccountID);
-                    command.Parameters.AddWithValue("@Amount", trans.Amount);
-                    command.Parameters.AddWithValue("@CategoryID", trans.CategoryID);
-                    command.Parameters.AddWithValue("@SubcategoryID", trans.SubcategoryID);
-                    command.Parameters.AddWithValue("@Payee", trans.Payee);
-                    command.Parameters.AddWithValue("@TransactionID", trans.TransactionID);
+                    command.Parameters.AddWithValue("@Date", transaction.DateString);
+                    command.Parameters.AddWithValue("@AccountID", transaction.AccountID);
+                    command.Parameters.AddWithValue("@Amount", transaction.Amount);
+                    command.Parameters.AddWithValue("@CategoryID", transaction.CategoryID);
+                    command.Parameters.AddWithValue("@SubcategoryID", transaction.SubcategoryID);
+                    command.Parameters.AddWithValue("@Payee", transaction.Payee);
+                    command.Parameters.AddWithValue("@TransactionID", transaction.TransactionID);
                     command.ExecuteNonQuery();
+
+                    // update current account balance in collection
+                    acc.CurrentBalance += transaction.Amount - originalAmount;
+
+                    // updates current account balance in database
+                    string query1 = "UPDATE Accounts SET CurrentBalance=@CurrentBalance " +
+                                    "WHERE AccountID=@AccountID";
+
+                    SqlCommand command1 = new(query1, con);
+                    command1.Parameters.AddWithValue("@CurrentBalance", acc.CurrentBalance);
+                    command1.Parameters.AddWithValue("@AccountID", acc.AccountID);
+                    command1.ExecuteNonQuery();
                 }
                 else if (Title == "Add Transaction")
                 {
@@ -141,6 +153,18 @@ namespace UntitledFinanceTracker
                     command.Parameters.AddWithValue("@SubcategoryID", transaction.SubcategoryID);
                     command.Parameters.AddWithValue("@Payee", transaction.Payee);
                     int ID = (int)command.ExecuteScalar();
+
+                    // update current account balance in collection
+                    acc.CurrentBalance += transaction.Amount;
+
+                    // updates current account balance in database
+                    string query1 = "UPDATE Accounts SET CurrentBalance=@CurrentBalance " +
+                                    "WHERE AccountID=@AccountID";
+
+                    SqlCommand command1 = new(query1, con);
+                    command1.Parameters.AddWithValue("@CurrentBalance", acc.CurrentBalance);
+                    command1.Parameters.AddWithValue("@AccountID", acc.AccountID);
+                    command1.ExecuteNonQuery();
 
                     // create and add newTransaction to collection
                     Transaction newTransaction = new(ID, transaction);
@@ -223,19 +247,19 @@ namespace UntitledFinanceTracker
                         var accountID = from acc in Data.Accounts
                                         where acc.AccountName == column[1]
                                         select acc.AccountID;
-                        if (accountID.Count() != 1)
+                        if (accountID.Count() < 1)
                             throw new Exception(column[1] + " is not a valid account");
 
                         var categoryID = from cat in Data.Categories
                                          where cat.CategoryName == column[3]
                                          select cat.CategoryID;
-                        if (categoryID.Count() != 1)
+                        if (categoryID.Count() < 1)
                             throw new Exception(column[3] + " is not a valid category");
 
                         var subCategoryID = from cat in Data.Categories
                                             where cat.CategoryName == column[4]
                                             select cat.CategoryID;
-                        if (subCategoryID.Count() != 1)
+                        if (subCategoryID.Count() < 1)
                             throw new Exception(column[4] + " is not a valid subcategory");
 
                         Transaction trans = new();

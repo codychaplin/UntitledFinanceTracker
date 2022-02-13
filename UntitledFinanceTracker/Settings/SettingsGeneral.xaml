@@ -113,7 +113,9 @@
         </TextBlock>
         <ListView x:Name="LvSettings" Background="#212121" Padding="5 0 5 0"
                   BorderThickness="0" Grid.Row="1">
-            <ListViewItem x:Name="lviExportCSV" Style="{StaticResource SettingsMenuItem}" PreviewMouseLeftButtonDown="lviExportCSV_PreviewMouseLeftButtonDown">Export Transactions as .CSV</ListViewItem>
+            <ListViewItem x:Name="lviExportCSV" Style="{StaticResource SettingsMenuItem}"
+                          PreviewMouseLeftButtonDown="lviExportCSV_PreviewMouseLeftButtonDown">Export Transactions as .CSV</ListViewItem>
+            <ListViewItem x:Name="lviUpdateBalances" Style="{StaticResource SettingsMenuItem}" PreviewMouseLeftButtonDown="lviUpdateBalances_PreviewMouseLeftButtonDown">Update Account Balances</ListViewItem>
             <ListViewItem x:Name="lviDeveloperMode" Style="{StaticResource SettingsMenuItem}" PreviewMouseLeftButtonDown="lviDeveloperMode_PreviewMouseLeftButtonDown">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Padding="0 0 20 0">Developer Mode</TextBlock>
@@ -128,7 +130,6 @@
                                                Height="18" Width="60" ThumbSize="30" IsEnabled="False" />
                 </StackPanel>
             </ListViewItem>
-            <ListViewItem x:Name="lviTestSetting" Style="{StaticResource SettingsMenuItem}">Test Setting</ListViewItem>
             <ListViewItem x:Name="lviAnotherOne" Style="{StaticResource SettingsMenuItem}">Another One</ListViewItem>
         </ListView>
     </Grid>

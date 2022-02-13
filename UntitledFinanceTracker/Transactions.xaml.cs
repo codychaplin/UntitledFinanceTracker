@@ -80,23 +80,32 @@ namespace UntitledFinanceTracker
             {
                 try
                 {
-                    // gets transaction ID
-                    Transaction row = (Transaction)(sender as Button).DataContext;
-                    int ID = row.TransactionID;
+                    Transaction row = (Transaction)(sender as Button).DataContext; // gets transaction from dataGrid
 
-                    // deletes transaction from collection
-                    Transaction trans = Data.Transactions.FirstOrDefault(t => t.TransactionID == ID);
-                    Data.Transactions.Remove(trans);
+                    // gets reference to account and updates current balance
+                    Account acc = Data.Accounts.First(a => a.AccountID == row.AccountID);
+                    acc.CurrentBalance -= row.Amount;
+
+                    Data.Transactions.Remove(row); // deletes transaction from collection
 
                     // deletes transaction from database
                     string connectionString = Properties.Settings.Default.connectionString;
-                    string query = "DELETE FROM Transactions WHERE TransactionID = @ID";
-
                     SqlConnection con = new(connectionString);
                     con.Open();
+
+                    string query = "DELETE FROM Transactions WHERE TransactionID = @ID";
                     SqlCommand command = new(query, con);
-                    command.Parameters.AddWithValue("@ID", ID);
+                    command.Parameters.AddWithValue("@ID", row.TransactionID);
                     command.ExecuteNonQuery();
+
+                    // updates current account balance in database
+                    string query1 = "UPDATE Accounts SET CurrentBalance=@CurrentBalance " +
+                                    "WHERE AccountID=@AccountID";
+                    SqlCommand command1 = new(query1, con);
+                    command1.Parameters.AddWithValue("@CurrentBalance", acc.CurrentBalance);
+                    command1.Parameters.AddWithValue("@AccountID", acc.AccountID);
+                    command1.ExecuteNonQuery();
+
                     con.Close();
 
                     dgTransactions.Items.Refresh();

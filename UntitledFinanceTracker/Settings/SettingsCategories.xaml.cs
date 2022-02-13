@@ -84,22 +84,17 @@ namespace UntitledFinanceTracker
             {
                 try
                 {
-                    // gets category ID
-                    Category row = (Category)(sender as Button).DataContext;
-                    int ID = row.CategoryID;
+                    Category row = (Category)(sender as Button).DataContext; // gets category from dataGrid
 
-                    // deletes category from collection
-                    Category cat = Data.Categories.First(c => c.CategoryID == ID);
-                    Data.Categories.Remove(cat);
+                    Data.Categories.Remove(row); // deletes category from collection
 
                     // deletes category from database
                     string connectionString = Properties.Settings.Default.connectionString;
-                    string query = "DELETE FROM Categories WHERE CategoryID = @ID";
-
                     SqlConnection con = new(connectionString);
                     con.Open();
+                    string query = "DELETE FROM Categories WHERE CategoryID = @ID";
                     SqlCommand command = new(query, con);
-                    command.Parameters.AddWithValue("@ID", ID);
+                    command.Parameters.AddWithValue("@ID", row.CategoryID);
                     command.ExecuteNonQuery();
                     con.Close();
 

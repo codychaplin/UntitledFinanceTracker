@@ -99,10 +99,6 @@ namespace UntitledFinanceTracker
 
                 if (Title == "Edit Category")
                 {
-                    // updates collection
-                    Category cat = Data.Categories.First(c => c.CategoryID == category.CategoryID);
-                    cat = category;
-
                     // updates database
                     string query = "UPDATE Categories SET ParentID_fk=@ParentID, CategoryName=@CategoryName, Enabled=@Enabled " +
                                    "WHERE CategoryID=@CategoryID";

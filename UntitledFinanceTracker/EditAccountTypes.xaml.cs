@@ -76,10 +76,6 @@ namespace UntitledFinanceTracker
 
                 if (Title == "Edit Account Type")
                 {
-                    // updates collection
-                    AccountType accType = Data.AccountTypes.First(a => a.AccountTypeID == accountType.AccountTypeID);
-                    accType = accountType;
-
                     // updates database
                     string query = "UPDATE AccountTypes SET AccountType=@AccountTypeName " +
                                    "WHERE AccountTypeID=@AccountTypeID";

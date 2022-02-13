@@ -93,10 +93,6 @@ namespace UntitledFinanceTracker
 
                 if (Title == "Edit Account")
                 {
-                    // updates collection
-                    Account acc = Data.Accounts.First(a => a.AccountID == account.AccountID);
-                    acc = account;
-
                     // updates database
                     string query = "UPDATE Accounts SET AccountName=@AccountName, AccountType_fk=@AccountTypeID, " +
                                    "StartingBalance=@StartingBalance, Enabled=@Enabled " +

@@ -247,19 +247,19 @@ namespace UntitledFinanceTracker
                         var accountID = from acc in Data.Accounts
                                         where acc.AccountName == column[1]
                                         select acc.AccountID;
-                        if (accountID.Count() < 1)
+                        if (accountID.Any())
                             throw new Exception(column[1] + " is not a valid account");
 
                         var categoryID = from cat in Data.Categories
                                          where cat.CategoryName == column[3]
                                          select cat.CategoryID;
-                        if (categoryID.Count() < 1)
+                        if (categoryID.Any())
                             throw new Exception(column[3] + " is not a valid category");
 
                         var subCategoryID = from cat in Data.Categories
                                             where cat.CategoryName == column[4]
                                             select cat.CategoryID;
-                        if (subCategoryID.Count() < 1)
+                        if (subCategoryID.Any())
                             throw new Exception(column[4] + " is not a valid subcategory");
 
                         Transaction trans = new();

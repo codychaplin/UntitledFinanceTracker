@@ -3,6 +3,7 @@ using System.Windows;
 using System.Data.SqlClient;
 using System.Windows.Controls;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace UntitledFinanceTracker
 {
@@ -11,6 +12,10 @@ namespace UntitledFinanceTracker
     /// </summary>
     public partial class Transactions : UserControl
     {
+        List<Account> accounts { get; set; }
+        List<Category> categories { get; set; }
+        List<Category> subcategories { get; set; }
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -26,14 +31,68 @@ namespace UntitledFinanceTracker
         /// <param name="e">Contains EventArgs data.</param>
         private void UserControl_Initialized(object sender, EventArgs e)
         {
+            // enables all accounts
+            accounts = Data.Accounts.ToList();
+            foreach (var acc in accounts)
+                acc.Enabled = true;
+            cbAccounts.ItemsSource = accounts;
+
+            // enables all categories
+            categories = Data.Categories.Where(c => c.ParentID == null).ToList();
+            foreach (var cat in categories)
+                cat.Enabled = true;
+            cbCategories.ItemsSource = categories;
+
+            // enables all subcategories
+            subcategories = Data.Categories.Where(c => c.ParentID != null).ToList();
+            foreach (var subcat in subcategories)
+                subcat.Enabled = true;
+            cbSubcategories.ItemsSource = subcategories;
+
+            // filters transactions to current year
             if (Data.Transactions.Count > 0)
             {
-                dgTransactions.ItemsSource = Data.Transactions.
-                    OrderBy(x => x.Date).
-                    ThenBy(x => x.Amount).
-                    ThenBy(x => x.CategoryName).
-                    ThenBy(x => x.TransactionID);
+                int startingDate = Data.Transactions.OrderBy(x => x.Date).First().Date.Year;
+                int endDate = DateTime.Now.Year;
+                List<int> dates = new();
+                for (int i = startingDate; i <= endDate; i++)
+                    dates.Add(i);
+                cbYears.ItemsSource = dates;
+                cbYears.SelectedValue = dates.Last();
             }
+        }
+
+        void Filter()
+        {
+            dgTransactions.ItemsSource = Data.Transactions.
+                    Where(t => t.Date.Year == (int)cbYears.SelectedValue).
+                    Where(t => accounts.Where(a => a.Enabled == true).Select(a => a.AccountID).ToList().Contains(t.AccountID)).
+                    Where(t => categories.Where(c => c.Enabled == true).Select(c => c.CategoryID).ToList().Contains(t.CategoryID)).
+                    Where(t => subcategories.Where(s => s.Enabled == true).Select(s => s.CategoryID).ToList().Contains(t.SubcategoryID)).
+                    OrderBy(t => t.Date).
+                    ThenBy(t => t.Amount).
+                    ThenBy(t => t.CategoryName).
+                    ThenBy(t => t.TransactionID);
+        }
+
+        private void cbYears_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Filter();
+        }
+
+        private void ChkAccount_Click(object sender, RoutedEventArgs e)
+        {
+            Filter();
+        }
+
+        private void ChkCategory_Click(object sender, RoutedEventArgs e)
+        {
+            Filter();
+        }
+
+        private void ChkSubcategory_Click(object sender, RoutedEventArgs e)
+        {
+            Filter();
         }
 
         /// <summary>
@@ -48,7 +107,7 @@ namespace UntitledFinanceTracker
             addTransaction.ShowDialog();
 
             dgTransactions.ItemsSource = Data.Transactions;
-            dgTransactions.Items.Refresh();
+            //dgTransactions.Items.Refresh();
         }
 
         /// <summary>
@@ -64,7 +123,7 @@ namespace UntitledFinanceTracker
             Window editTransaction = new EditTransaction(ID);
             editTransaction.ShowDialog();
 
-            dgTransactions.Items.Refresh();
+            //dgTransactions.Items.Refresh();
         }
 
         /// <summary>
@@ -108,7 +167,7 @@ namespace UntitledFinanceTracker
 
                     con.Close();
 
-                    dgTransactions.Items.Refresh();
+                    //dgTransactions.Items.Refresh();
                 }
                 catch (SqlException ex)
                 {

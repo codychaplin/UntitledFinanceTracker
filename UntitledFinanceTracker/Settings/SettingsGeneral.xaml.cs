@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Data.SqlClient;
+using System.Collections.Generic;
 
 namespace UntitledFinanceTracker
 {
@@ -122,6 +123,55 @@ namespace UntitledFinanceTracker
         private void lviDeveloperMode_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             tsDeveloperMode.IsChecked = !tsDeveloperMode.IsChecked;
+
+            SaveFileDialog saveFile = new();
+            saveFile.Filter = "CSV Files (*.csv)|*.csv";
+
+            if (saveFile.ShowDialog() == true)
+            {
+                FileStream fs = new(saveFile.FileName, FileMode.Create, FileAccess.Write);
+                StreamWriter sw = new(fs);
+
+                try
+                {
+
+                    List<Transaction> trans = Data.Transactions.ToList();
+
+                    for (int i = 0; i < trans.Count(); i++)
+                    {
+                        if (trans[i].SubcategoryID == 2)
+                        {
+                            if (trans[i + 1].SubcategoryID == 3 && trans[i].Amount == trans[i + 1].Amount)
+                            {
+                                trans[i].Payee = trans[i + 1].AccountName;
+                                trans[i].SubcategoryName = "Transfer";
+                                trans.RemoveAt(i + 1);
+                            }
+                            else if (trans[i + 2].SubcategoryID == 3 && trans[i].Amount == trans[i + 2].Amount)
+                            {
+                                trans[i].Payee = trans[i + 2].AccountName;
+                                trans[i].SubcategoryName = "Transfer";
+                                trans.RemoveAt(i + 2);
+                            }
+                            else
+                            {
+                                MessageBox.Show(trans[i].ToString() + "\nhas no matching transfer credit");
+                            }
+                        }
+                    }
+
+                    foreach (Transaction tran in trans)
+                        sw.WriteLine(tran.ToString());
+
+                    MessageBox.Show("Transactions have successfully been exported");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+                sw.Close();
+            }
         }
 
         /// <summary>

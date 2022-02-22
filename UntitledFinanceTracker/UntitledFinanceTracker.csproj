@@ -11,10 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FilterDataGrid" Version="1.2.5" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
     <PackageReference Include="ToggleSwitch" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="App.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,10 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="EditCategories.xaml.cs">
+    <Compile Update="Views\EditCategories.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="EditAccounts.xaml.cs">
+    <Compile Update="Views\EditAccounts.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
@@ -43,11 +46,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="EditCategories.xaml">
+    <Page Update="Views\EditCategories.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="EditAccounts.xaml">
+    <Page Update="Views\EditAccounts.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>

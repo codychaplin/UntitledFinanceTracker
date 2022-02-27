@@ -29,13 +29,13 @@
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="FontFamily" Value="Microsoft JhengHei Light" />
         </Style>
-
+        
         <!-- Menu formatting -->
         <Style x:Key="Menu" TargetType="{x:Type ListView}">
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="#212121"/>
         </Style>
-        
+
         <!-- Menu item formatting -->
         <Style x:Key="MenuItem" TargetType="{x:Type ListViewItem}">
             <Style.Setters>
@@ -44,7 +44,8 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListViewItem}">
-                            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <Border HorizontalAlignment="{TemplateBinding HorizontalAlignment}" Width="{TemplateBinding Width}"
+                                    Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
                                 <ContentPresenter VerticalAlignment="Center" />
                             </Border>
                         </ControlTemplate>
@@ -78,6 +79,31 @@
             </Style.Triggers>
         </Style>
 
+        <!-- Navbar formatting -->
+        <Style x:Key="Navbar" TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MenuItem}">
+            <Setter Property="Height" Value="auto"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="9 5 15 0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Account list formatting -->
+        <Style x:Key="AccountsList" TargetType="{x:Type ListView}">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="#212121" />
+            
+            <!-- Account list item formatting -->
+            <Style.Resources>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Height" Value="28" />
+                    <Setter Property="Padding" Value="0 0 0 0" />
+                    <Setter Property="IsEnabled" Value="False" />
+                </Style>
+            </Style.Resources>
+        </Style>
+
+
+        <!-- Base button formatting -->
         <Style x:Key="btnBase" TargetType="Button">
             <Style.Resources>
             <Style TargetType="Border">

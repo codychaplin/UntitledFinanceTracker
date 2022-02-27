@@ -13,42 +13,43 @@
         Title="Untitled Finance Tracker"
         WindowStyle="SingleBorderWindow"
         WindowStartupLocation="CenterScreen"
-        FontFamily="Microsoft JhengHei Light">
+        FontFamily="Microsoft JhengHei Light"
+        Initialized="Window_Initialized">
     <Grid>
         <!-- grid column settings -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="180" />
             <ColumnDefinition Width="*" />
             <!-- * = window width - column[0] width -->
         </Grid.ColumnDefinitions>
-
-        <StackPanel Background="#212121">
-            <StackPanel.Resources>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="Margin" Value="5 0 0 0" />
-                </Style>
-            </StackPanel.Resources>
-            <TextBlock Style="{StaticResource Title}" Margin="0 15 0 10" HorizontalAlignment="Center">$123,000.00</TextBlock>
-            <ListView Style="{StaticResource Menu}" x:Name="lvMainMenu" SelectionChanged="MainMenuSelectionChanged">
-                <!-- styles -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Column="1"  Background="#212121" Orientation="Horizontal">
+            <ListView x:Name="lvMainMenu" Style="{StaticResource Menu}" SelectionChanged="MainMenuSelectionChanged">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"></StackPanel>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
                 <ListView.Resources>
                     <Style TargetType="{x:Type fa:ImageAwesome}">
                         <Setter Property="Width" Value="11"/>
-                        <Setter Property="Margin" Value="5 0 2 0"/>
+                        <Setter Property="Margin" Value="5 0 5 0"/>
                         <Setter Property="Foreground" Value="#cccccc"/>
                     </Style>
                 </ListView.Resources>
 
                 <!-- dashboard tab -->
-                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviDashboard">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviDashboard">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="BarChart"/>
                         <TextBlock Text="Dashboard" />
                     </StackPanel>
                 </ListViewItem>
-
                 <!-- tranaction view tab -->
-                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviTransactions">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviTransactions">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="CreditCard"/>
                         <TextBlock Text="Transactions"/>
@@ -56,7 +57,7 @@
                 </ListViewItem>
 
                 <!-- week view tab tab -->
-                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviCalendar">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviCalendar">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="CalendarOutline"/>
                         <TextBlock Text="Calendar"/>
@@ -64,7 +65,7 @@
                 </ListViewItem>
 
                 <!-- balance sheet tab -->
-                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviBalanceSheet">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviBalanceSheet">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="BalanceScale"/>
                         <TextBlock Text="Balance Sheet"/>
@@ -72,7 +73,7 @@
                 </ListViewItem>
 
                 <!-- statistics tab -->
-                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviStats">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviStats">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="PieChart"/>
                         <TextBlock Text="Statistics"/>
@@ -80,7 +81,7 @@
                 </ListViewItem>
 
                 <!-- settings tab -->
-                <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviSettings">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviSettings">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Cog"/>
                         <TextBlock Text="Settings"/>
@@ -89,7 +90,42 @@
             </ListView>
         </StackPanel>
 
+        <!--<Border Background="#212121" Grid.Row="0" />-->
+        <StackPanel Background="#212121" Grid.RowSpan="2">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Margin" Value="5 0 0 0" />
+                </Style>
+            </StackPanel.Resources>
+            <TextBlock x:Name="txtNetWorth" Style="{StaticResource Title}" Text="{Binding}"
+                       Margin="0 10 0 5" HorizontalAlignment="Center"></TextBlock>
+
+            <!-- Accounts list -->
+            <ListView x:Name="lvAccounts" Style="{StaticResource AccountsList}">
+                <ListView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" Margin=" 10 5 0 0" Foreground="#ffffff"
+                                           FontFamily="Microsoft JhengHei" FontWeight="Bold" FontSize="13" TextDecorations="Underline" />
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListView.GroupStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding AccountName}" FontSize="12" Foreground="#ffffff"
+                                   VerticalAlignment="Center" HorizontalAlignment="Left" Width="80" />
+                            <TextBlock Text="{Binding CurrentBalance, StringFormat=C}" FontSize="12" Foreground="#ffffff"
+                                       VerticalAlignment="Center" TextAlignment="Right" Width="85" />
+                        </StackPanel>
+                    </DataTemplate>
+                    </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+
         <!-- Grid column[1] with empty grid (parent for user controls) -->
-        <Grid Grid.Column="1" x:Name="ContentPanel" Grid.ColumnSpan="3"></Grid>
+        <Grid x:Name="ContentPanel" Grid.Column="1" Grid.Row="1" />
     </Grid>
 </Window>

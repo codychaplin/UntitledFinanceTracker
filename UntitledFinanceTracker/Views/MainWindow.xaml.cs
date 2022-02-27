@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Data.SqlClient;
 using System.Windows.Controls;
 using UntitledFinanceTracker.Models;
@@ -16,12 +18,29 @@ namespace UntitledFinanceTracker.Views
         /// </summary>
         public MainWindow()
         {
-            InitializeComponent();
-
             // load database info into ObservableCollections
             Init();
 
+            InitializeComponent();
+
             lvMainMenu.SelectedIndex = 0;
+        }
+
+        /// <summary>
+        /// Main window initialization
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains EventArgs data.</param>
+        private void Window_Initialized(object sender, EventArgs e)
+        {
+            // gets sum of all current account balances
+            txtNetWorth.Text = Data.Accounts.Sum(a => a.CurrentBalance).ToString("C");
+
+            // adds accounts to accounts lists
+            lvAccounts.ItemsSource = Data.Accounts.Where(a => a.Enabled == true).OrderBy(a => a.AccountTypeID);
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(lvAccounts.ItemsSource);
+            PropertyGroupDescription groupDescription = new PropertyGroupDescription("AccountTypeName");
+            view.GroupDescriptions.Add(groupDescription);
         }
 
         /// <summary>
@@ -31,7 +50,6 @@ namespace UntitledFinanceTracker.Views
         /// <param name="e">Contains SelectionChangedEventArgs data.</param>
         private void MainMenuSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             if (lvMainMenu != null)
             {
                 if (ContentPanel != null)

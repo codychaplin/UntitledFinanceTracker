@@ -72,6 +72,8 @@ namespace UntitledFinanceTracker.Views
                     Where(t => subcategories.Where(s => s.Enabled == true).Select(s => s.CategoryID).ToList().Contains(t.SubcategoryID)).
                     OrderBy(t => t.Date).
                     ThenBy(t => t.Amount);
+
+            ((MainWindow)Application.Current.MainWindow).RefreshBalances();
         }
 
         private void cbYears_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -13,17 +13,17 @@ namespace UntitledFinanceTracker.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow main;
+
         /// <summary>
         /// Default constructor
         /// </summary>
         public MainWindow()
         {
-            // load database info into ObservableCollections
-            Init();
-
+            Init(); // load database info into ObservableCollections
             InitializeComponent();
-
-            lvMainMenu.SelectedIndex = 0;
+            lvMainMenu.SelectedIndex = 0; // default to dashboard view
+            main = this;
         }
 
         /// <summary>
@@ -33,14 +33,22 @@ namespace UntitledFinanceTracker.Views
         /// <param name="e">Contains EventArgs data.</param>
         private void Window_Initialized(object sender, EventArgs e)
         {
-            // gets sum of all current account balances
-            txtNetWorth.Text = Data.Accounts.Sum(a => a.CurrentBalance).ToString("C");
-
             // adds accounts to accounts lists
             lvAccounts.ItemsSource = Data.Accounts.Where(a => a.Enabled == true).OrderBy(a => a.AccountTypeID);
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(lvAccounts.ItemsSource);
             PropertyGroupDescription groupDescription = new PropertyGroupDescription("AccountTypeName");
             view.GroupDescriptions.Add(groupDescription);
+
+            RefreshBalances();
+        }
+
+        /// <summary>
+        /// Gets updated sum of all current account balances and refreshes lvAccounts
+        /// </summary>
+        public void RefreshBalances()
+        {
+            txtNetWorth.Text = Data.Accounts.Sum(a => a.CurrentBalance).ToString("C");
+            lvAccounts.Items.Refresh();
         }
 
         /// <summary>

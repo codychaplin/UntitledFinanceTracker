@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:UntitledFinanceTracker.Views"
+        xmlns:local1="clr-namespace:UntitledFinanceTracker.Models"
         mc:Ignorable="d"
         Icon="/logo.png"
         Background="#121212"
@@ -15,6 +16,9 @@
         WindowStartupLocation="CenterScreen"
         FontFamily="Microsoft JhengHei Light"
         Initialized="Window_Initialized">
+    <Window.Resources>
+        <local1:AccountTypeTotalConverter x:Key="AccountTypeTotalConverter" />
+    </Window.Resources>
     <Grid>
         <!-- grid column settings -->
         <Grid.ColumnDefinitions>
@@ -92,22 +96,27 @@
 
         <!--<Border Background="#212121" Grid.Row="0" />-->
         <StackPanel Background="#212121" Grid.RowSpan="2">
-            <StackPanel.Resources>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="Margin" Value="5 0 0 0" />
-                </Style>
-            </StackPanel.Resources>
             <TextBlock x:Name="txtNetWorth" Style="{StaticResource Title}" Text="{Binding}"
                        Margin="0 10 0 5" HorizontalAlignment="Center"></TextBlock>
 
-            <!-- Accounts list -->
-            <ListView x:Name="lvAccounts" Style="{StaticResource AccountsList}">
+             <!--Accounts list-->
+            <ListView x:Name="lvAccounts" Style="{StaticResource AccountsList}" Margin="0 5 0 0">
                 <ListView.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Name}" Margin=" 10 5 0 0" Foreground="#ffffff"
-                                           FontFamily="Microsoft JhengHei" FontWeight="Bold" FontSize="13" TextDecorations="Underline" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock x:Name="AccountName" Text="{Binding Name}" Margin=" 5 5 0 0" Foreground="#ffffff"
+                                               FontFamily="Microsoft JhengHei" FontWeight="Bold" FontSize="12" />
+
+                                    <TextBlock Text="{Binding ElementName=AccountName, Path=Text, Converter={StaticResource AccountTypeTotalConverter}}"
+                                               Grid.Column="1" Margin=" 0 5 5 0" Foreground="#ffffff"
+                                               HorizontalAlignment="Right" FontFamily="Microsoft JhengHei" FontWeight="Bold" FontSize="12"/>
+                                </Grid>
                             </DataTemplate>
                         </GroupStyle.HeaderTemplate>
                     </GroupStyle>
@@ -115,13 +124,13 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="{Binding AccountName}" FontSize="12" Foreground="#ffffff"
-                                   VerticalAlignment="Center" HorizontalAlignment="Left" Width="80" />
-                            <TextBlock Text="{Binding CurrentBalance, StringFormat=C}" FontSize="12" Foreground="#ffffff"
-                                       VerticalAlignment="Center" TextAlignment="Right" Width="85" />
+                            <TextBlock Text="{Binding AccountName}" FontSize="11" Foreground="#ffffff"
+                                   HorizontalAlignment="Left" Width="65" />
+                            <TextBlock Text="{Binding CurrentBalance, StringFormat=C}" FontSize="11" Foreground="#ffffff"
+                                       VerticalAlignment="Center" TextAlignment="Right" Width="100" />
                         </StackPanel>
                     </DataTemplate>
-                    </ListView.ItemTemplate>
+                </ListView.ItemTemplate>
             </ListView>
         </StackPanel>
 

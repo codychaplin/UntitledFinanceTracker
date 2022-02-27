@@ -95,9 +95,9 @@
             <!-- Account list item formatting -->
             <Style.Resources>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="Height" Value="28" />
+                    <Setter Property="Height" Value="22" />
                     <Setter Property="Padding" Value="0 0 0 0" />
-                    <Setter Property="IsEnabled" Value="False" />
+                    <Setter Property="IsEnabled" Value="True" />
                 </Style>
             </Style.Resources>
         </Style>

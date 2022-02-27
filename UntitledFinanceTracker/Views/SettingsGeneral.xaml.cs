@@ -107,6 +107,8 @@ namespace UntitledFinanceTracker.Views
                 con.Close();
 
                 MessageBox.Show("Account balances successfully updated");
+
+                ((MainWindow)Application.Current.MainWindow).RefreshBalances();
             }
             catch (SqlException ex)
             {

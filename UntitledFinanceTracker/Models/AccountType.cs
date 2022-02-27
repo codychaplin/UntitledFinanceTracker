@@ -75,28 +75,4 @@ namespace UntitledFinanceTracker.Models
         }
 
     }
-
-    public class AccountTypeTotalConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            // get account type from header name
-            var accountType = from accType in Data.AccountTypes
-                              where accType.AccountTypeName == value.ToString()
-                              select accType.AccountTypeID;
-
-            // if account type exists, return the sum of all enabled accounts with matching accountTypeID
-            if (accountType.Any())
-            {
-                return Data.Accounts.Where(a => a.AccountTypeID == accountType.First() && a.Enabled).Sum(a => a.CurrentBalance).ToString("C");
-            }
-            else
-                return null;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

@@ -97,7 +97,7 @@
                 <Style TargetType="ListViewItem">
                     <Setter Property="Height" Value="22" />
                     <Setter Property="Padding" Value="0 0 0 0" />
-                    <Setter Property="IsEnabled" Value="True" />
+                    <Setter Property="IsEnabled" Value="False" />
                 </Style>
             </Style.Resources>
         </Style>

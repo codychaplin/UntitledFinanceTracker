@@ -4,8 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
-        xmlns:local="clr-namespace:UntitledFinanceTracker.Views"
-        xmlns:local1="clr-namespace:UntitledFinanceTracker.Models"
+        xmlns:local="clr-namespace:UntitledFinanceTracker.Models"
         mc:Ignorable="d"
         Icon="/logo.png"
         Background="#121212"
@@ -17,7 +16,7 @@
         FontFamily="Microsoft JhengHei Light"
         Initialized="Window_Initialized">
     <Window.Resources>
-        <local1:AccountTypeTotalConverter x:Key="AccountTypeTotalConverter" />
+        <local:AccountTypeTotalConverter x:Key="AccountTypeTotalConverter" />
     </Window.Resources>
     <Grid>
         <!-- grid column settings -->
@@ -100,7 +99,7 @@
                        Margin="0 10 0 5" HorizontalAlignment="Center"></TextBlock>
 
              <!--Accounts list-->
-            <ListView x:Name="lvAccounts" Style="{StaticResource AccountsList}" Margin="0 5 0 0">
+            <ListView x:Name="lvAccounts" Style="{StaticResource AccountsList}" Margin="5 5 5 0">
                 <ListView.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>
@@ -110,11 +109,10 @@
                                         <ColumnDefinition></ColumnDefinition>
                                         <ColumnDefinition></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="AccountName" Text="{Binding Name}" Margin=" 5 5 0 0" Foreground="#ffffff"
+                                    <TextBlock x:Name="AccountName" Text="{Binding Name}" Margin=" 0 5 0 0" Foreground="#ffffff"
                                                FontFamily="Microsoft JhengHei" FontWeight="Bold" FontSize="12" />
-
                                     <TextBlock Text="{Binding ElementName=AccountName, Path=Text, Converter={StaticResource AccountTypeTotalConverter}}"
-                                               Grid.Column="1" Margin=" 0 5 5 0" Foreground="#ffffff"
+                                               Grid.Column="1" Margin=" 0 5 2 0" Foreground="#ffffff"
                                                HorizontalAlignment="Right" FontFamily="Microsoft JhengHei" FontWeight="Bold" FontSize="12"/>
                                 </Grid>
                             </DataTemplate>
@@ -124,8 +122,8 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding AccountName}" FontSize="11" Foreground="#ffffff"
-                                   HorizontalAlignment="Left" Width="65" />
+                            <TextBlock Text="{Binding AccountName}" FontSize="11" Foreground="#ffffff" Margin="-5 0 0 0"
+                                       HorizontalAlignment="Left" Width="65" />
                             <TextBlock Text="{Binding CurrentBalance, StringFormat=C}" FontSize="11" Foreground="#ffffff"
                                        VerticalAlignment="Center" TextAlignment="Right" Width="100" />
                         </StackPanel>

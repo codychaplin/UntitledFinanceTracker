@@ -113,24 +113,27 @@
         </TextBlock>
         <ListView x:Name="LvSettings" Background="#212121" Padding="5 0 5 0"
                   BorderThickness="0" Grid.Row="1">
-            <ListViewItem x:Name="lviExportCSV" Style="{StaticResource SettingsMenuItem}"
+            <ListViewItem x:Name="lviExportCSV" Style="{StaticResource SettingsMenuItem}" TabIndex="0"
                           PreviewMouseLeftButtonDown="lviExportCSV_PreviewMouseLeftButtonDown">Export Transactions as .CSV</ListViewItem>
-            <ListViewItem x:Name="lviUpdateBalances" Style="{StaticResource SettingsMenuItem}" PreviewMouseLeftButtonDown="lviUpdateBalances_PreviewMouseLeftButtonDown">Update Account Balances</ListViewItem>
-            <ListViewItem x:Name="lviDeveloperMode" Style="{StaticResource SettingsMenuItem}" PreviewMouseLeftButtonDown="lviDeveloperMode_PreviewMouseLeftButtonDown">
+            <ListViewItem x:Name="lviUpdateBalances" Style="{StaticResource SettingsMenuItem}" TabIndex="1"
+                          PreviewMouseLeftButtonDown="lviUpdateBalances_PreviewMouseLeftButtonDown">Update Account Balances</ListViewItem>
+            <ListViewItem x:Name="lviDeveloperMode" Style="{StaticResource SettingsMenuItem}" TabIndex="2"
+                          PreviewMouseLeftButtonDown="lviDeveloperMode_PreviewMouseLeftButtonDown">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Padding="0 0 20 0">Developer Mode</TextBlock>
                     <ts:HorizontalToggleSwitch x:Name="tsDeveloperMode" Style="{DynamicResource HorizontalToggleSwitchStyle1}"
                                                Height="18" Width="60" ThumbSize="30" IsEnabled="False" />
                 </StackPanel>
             </ListViewItem>
-            <ListViewItem x:Name="lviTestSwitch" Style="{StaticResource SettingsMenuItem}" PreviewMouseLeftButtonDown="lviTestSwitch_PreviewMouseLeftButtonDown">
+            <ListViewItem x:Name="lviTestSwitch" Style="{StaticResource SettingsMenuItem}" TabIndex="3"
+                          PreviewMouseLeftButtonDown="lviTestSwitch_PreviewMouseLeftButtonDown">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Padding="0 0 53 0">Test Switch</TextBlock>
                     <ts:HorizontalToggleSwitch x:Name="tsTestSwitch" Style="{DynamicResource HorizontalToggleSwitchStyle1}"
                                                Height="18" Width="60" ThumbSize="30" IsEnabled="False" />
                 </StackPanel>
             </ListViewItem>
-            <ListViewItem x:Name="lviAnotherOne" Style="{StaticResource SettingsMenuItem}">Another One</ListViewItem>
+            <ListViewItem x:Name="lviAnotherOne" Style="{StaticResource SettingsMenuItem}" TabIndex="4">Another One</ListViewItem>
         </ListView>
     </Grid>
 </UserControl>

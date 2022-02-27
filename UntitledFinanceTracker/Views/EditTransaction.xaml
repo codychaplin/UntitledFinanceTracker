@@ -21,16 +21,16 @@
         <StackPanel Orientation="Vertical">
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Date</Label>
-                <DatePicker x:Name="dpDate"></DatePicker>
+                <DatePicker x:Name="dpDate" TabIndex="0"></DatePicker>
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Account</Label>
-                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbAccounts"
+                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbAccounts" TabIndex="1"
                           DisplayMemberPath = "AccountName" SelectedValuePath = "AccountID" />
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Amount</Label>
-                <TextBox x:Name="txtAmount"></TextBox>
+                <TextBox x:Name="txtAmount" TabIndex="2"></TextBox>
             </StackPanel>
             <Button Style="{StaticResource btnCSVFrm}" x:Name="btnCSV" Click="btnCSV_Click"
                     Margin="0 28 0 0" Visibility="Hidden">Import CSV</Button>
@@ -38,21 +38,23 @@
         <StackPanel Orientation="Vertical" Grid.Column="1">
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Category</Label>
-                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbCategories"
+                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbCategories" TabIndex="3"
                           DisplayMemberPath = "CategoryName" SelectedValuePath = "CategoryID" SelectionChanged="cbCategories_SelectionChanged" />
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Subcategory</Label>
-                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbSubcategories"
+                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbSubcategories" TabIndex="4"
                           DisplayMemberPath = "CategoryName" SelectedValuePath = "CategoryID" />
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Payee</Label>
-                <TextBox x:Name="txtPayee"></TextBox>
+                <TextBox x:Name="txtPayee" TabIndex="5"></TextBox>
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}" Orientation="Horizontal" Margin="0 18 0 0">
-                <Button Style="{StaticResource btnUpdateFrm}" x:Name="btnEdit" Click="btnEdit_Click">Update</Button>
-                <Button Style="{StaticResource btnCancelFrm}" x:Name="btnCancel" Click="btnCancel_Click" >Cancel</Button>
+                <Button Style="{StaticResource btnUpdateFrm}" x:Name="btnEdit" Click="btnEdit_Click"
+                        TabIndex="6" IsDefault="True">Update</Button>
+                <Button Style="{StaticResource btnCancelFrm}" x:Name="btnCancel" Click="btnCancel_Click"
+                        TabIndex="7" IsCancel="True">Cancel</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

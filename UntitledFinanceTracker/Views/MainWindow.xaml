@@ -46,14 +46,14 @@
                 </ListView.Resources>
 
                 <!-- dashboard tab -->
-                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviDashboard">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviDashboard" TabIndex="0">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="BarChart"/>
                         <TextBlock Text="Dashboard" />
                     </StackPanel>
                 </ListViewItem>
                 <!-- tranaction view tab -->
-                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviTransactions">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviTransactions" TabIndex="1">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="CreditCard"/>
                         <TextBlock Text="Transactions"/>
@@ -61,7 +61,7 @@
                 </ListViewItem>
 
                 <!-- week view tab tab -->
-                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviCalendar">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviCalendar" TabIndex="2">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="CalendarOutline"/>
                         <TextBlock Text="Calendar"/>
@@ -69,7 +69,7 @@
                 </ListViewItem>
 
                 <!-- balance sheet tab -->
-                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviBalanceSheet">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviBalanceSheet" TabIndex="3">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="BalanceScale"/>
                         <TextBlock Text="Balance Sheet"/>
@@ -77,7 +77,7 @@
                 </ListViewItem>
 
                 <!-- statistics tab -->
-                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviStats">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviStats" TabIndex="4">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="PieChart"/>
                         <TextBlock Text="Statistics"/>
@@ -85,7 +85,7 @@
                 </ListViewItem>
 
                 <!-- settings tab -->
-                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviSettings">
+                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviSettings" TabIndex="5">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Cog"/>
                         <TextBlock Text="Settings"/>

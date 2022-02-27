@@ -47,7 +47,7 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
         </StackPanel>
-            <Button Style="{StaticResource btnAdd}" x:Name="btnAdd" Click="BtnAdd_Click"
+            <Button Style="{StaticResource btnAdd}" x:Name="btnAdd" Click="BtnAdd_Click" IsDefault="True"
                 VerticalAlignment="Stretch" HorizontalAlignment="Right" Grid.Column="1" Margin="5 0 5 5" Content="Add Transaction" />
             </Grid>
 

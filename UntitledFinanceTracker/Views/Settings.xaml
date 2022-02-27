@@ -13,10 +13,10 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
             <ListView Style="{StaticResource Menu}" x:Name="lvSettingsMenu" Margin="10 10 0 10" SelectionChanged="SettingsMenuSelectionChanged">
-            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviGeneral" Content="General"/>
-            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviAccountTypes" Content="Account Types" />
-            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviAccounts" Content="Accounts" />
-            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviCategories" Content="Categories" />
+            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviGeneral" Content="General" TabIndex="0" />
+            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviAccountTypes" Content="Account Types" TabIndex="1" />
+            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviAccounts" Content="Accounts" TabIndex="2" />
+            <ListViewItem Style="{StaticResource MenuItem}" x:Name="lviCategories" Content="Categories" TabIndex="3" />
         </ListView>
 
         <Grid Grid.Column="1" Grid.Row="1" x:Name="SettingsPanel" Margin="0 10 0 0"></Grid>

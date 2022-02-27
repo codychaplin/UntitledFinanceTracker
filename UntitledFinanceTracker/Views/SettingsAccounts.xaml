@@ -18,9 +18,9 @@
                 Accounts
             </TextBlock>
         </Border>
-        <Button Style="{StaticResource btnAdd}" x:Name="btnAdd" Click="btnAdd_Click" VerticalAlignment="Stretch">
-            Add Account
-        </Button>
+        <Button Style="{StaticResource btnAdd}" x:Name="btnAdd" Click="btnAdd_Click"
+                VerticalAlignment="Stretch" TabIndex="0" IsDefault="True">
+                Add Account</Button>
 
         <DataGrid x:Name="dgAccounts" Grid.Row="1">
             <DataGrid.Columns>

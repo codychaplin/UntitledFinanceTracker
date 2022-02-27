@@ -18,9 +18,8 @@
                 Categories
             </TextBlock>
         </Border>
-        <Button Style="{StaticResource btnAdd}" x:Name="btnAdd" Click="btnAdd_Click" VerticalAlignment="Stretch">
-            Add Category
-        </Button>
+        <Button Style="{StaticResource btnAdd}" x:Name="btnAdd" Click="btnAdd_Click" VerticalAlignment="Stretch"
+                IsDefault="True">Add Category</Button>
         
         <DataGrid x:Name="dgCategories" Grid.Row="1">
             <DataGrid.Columns>

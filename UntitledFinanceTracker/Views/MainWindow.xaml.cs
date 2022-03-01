@@ -119,6 +119,8 @@ namespace UntitledFinanceTracker.Views
                 InitializePayees(ref con);
                 InitializeTransactions(ref con);
 
+                Calculations();
+
                 con.Close();
             }
             catch (Exception ex)
@@ -236,12 +238,45 @@ namespace UntitledFinanceTracker.Views
                 // converts DBNull to null
                 int? PayeeAccountID = (reader[10] is DBNull) ? null : (int)reader[10];
 
-                Data.Transactions.Add(new Transaction((int)reader[0], (DateTime)reader[1], (int)reader[2],
-                     reader[3].ToString(), (decimal)reader[4], (int)reader[5], reader[6].ToString(),
-                     (int)reader[7], reader[8].ToString(), (int)reader[9], PayeeAccountID, reader[11].ToString()));
+                Data.Transactions.Add(new Transaction((int)reader[0], (DateTime)reader[1], (int)reader[2], // TransactionID, date, accountID
+                     reader[3].ToString(), (decimal)reader[4], (int)reader[5], reader[6].ToString(), // accountName, amount, categoryID, categoryName
+                     (int)reader[7], reader[8].ToString(), // subcategoryID, subcategoryName
+                     (int)reader[9], PayeeAccountID, reader[11].ToString())); // payeeID, payeeAccountID, payeeAccountName
             }
 
             reader.Close();
+        }
+
+        /// <summary>
+        /// Performs calculations needed for data visualization.
+        /// </summary>
+        void Calculations()
+        {
+            CalulateYearStartBalances();
+        }
+
+        /// <summary>
+        /// Calculate starting balance for each year and add to Dictionary
+        /// </summary>
+        void CalulateYearStartBalances()
+        {
+            Data.YearStartBalances = new();
+            int startingYear = Data.Transactions.Min(x => x.Date).Year; // get starting year
+            decimal startingBalance = Data.Accounts.Sum(a => a.StartingBalance); // get starting balance of first year
+            Data.YearStartBalances.Add(startingYear, startingBalance); // add first year to dictionary
+
+            // for each year balance = startingBalance + incomes - expenses
+            for (int i = startingYear; i < DateTime.Now.Year;)
+            {
+                decimal incomes = Data.Transactions.Where(t => t.Date.Year == i)
+                                                   .Where(t => t.CategoryID == Data.INCOME_ID).Sum(t => t.Amount);
+                decimal expenses = Data.Transactions.Where(t => t.Date.Year == i)
+                                                    .Where(t => t.CategoryID != Data.INCOME_ID
+                                                             && t.CategoryID != Data.TRANSFER_ID).Sum(t => t.Amount);
+                decimal balance = startingBalance + incomes - expenses;
+                startingBalance = balance;
+                Data.YearStartBalances.Add(++i, balance); // ++i because this year end balance = next year start balance
+            }
         }
     }
 }

@@ -70,7 +70,7 @@ namespace UntitledFinanceTracker.Views
         {
             // gets parents categories
             IEnumerable<Category> cats = from cat in Data.Categories
-                                         where cat.ParentID == null && cat.CategoryID != 1
+                                         where cat.ParentID == null && cat.CategoryID != Data.TRANSFER_ID
                                          select cat;
 
             // prepends empty object to beginning

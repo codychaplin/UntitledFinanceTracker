@@ -53,7 +53,7 @@ namespace UntitledFinanceTracker.Views
             // filters transactions to current year
             if (Data.Transactions.Count > 0)
             {
-                int startingDate = Data.Transactions.OrderBy(x => x.Date).First().Date.Year;
+                int startingDate = Data.Transactions.Min(x => x.Date).Year;
                 int endDate = DateTime.Now.Year;
                 List<int> dates = new();
                 for (int i = startingDate; i <= endDate; i++)
@@ -145,7 +145,7 @@ namespace UntitledFinanceTracker.Views
                     Account acc = Data.Accounts.First(a => a.AccountID == transaction.AccountID);
                     Account payAcc = null;
 
-                    if (transaction.CategoryID == 1) // 1 = transfer
+                    if (transaction.CategoryID == Data.TRANSFER_ID)
                     {
                         payAcc = Data.Accounts.First(a => a.AccountID ==
                                  Data.Payees.Where(p => p.AccountID == transaction.PayeeAccountID)
@@ -156,7 +156,7 @@ namespace UntitledFinanceTracker.Views
                     }
                     else
                     {
-                        acc.CurrentBalance = transaction.CategoryID == 3 // 3 = income
+                        acc.CurrentBalance = transaction.CategoryID == Data.INCOME_ID
                             ? acc.CurrentBalance - transaction.Amount : acc.CurrentBalance + transaction.Amount;
                     }
                     

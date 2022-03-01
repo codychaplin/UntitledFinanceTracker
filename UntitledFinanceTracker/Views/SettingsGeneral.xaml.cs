@@ -75,7 +75,6 @@ namespace UntitledFinanceTracker.Views
                 foreach (Account account in Data.Accounts)
                 {
                     // get income/expense categories
-                    int incomeCatID = 3;
                     var expenseCatIDs = from cat in Data.Categories
                                         where cat.CategoryID > 3 && cat.ParentID == null // >3 = all expense categories
                                         select cat.CategoryID;
@@ -84,12 +83,12 @@ namespace UntitledFinanceTracker.Views
 
                     // get list of transactions grouped by income/expense categories
                     var incomes = Data.Transactions.Where(t => t.AccountID == account.AccountID
-                        && t.CategoryID == incomeCatID);
+                        && t.CategoryID == Data.INCOME_ID);
                     var expenses = Data.Transactions.Where(t => t.AccountID == account.AccountID
                         && expenseCatIDs.Contains(t.CategoryID));
-                    var transferDebits = Data.Transactions.Where(t => t.CategoryID == 1
+                    var transferDebits = Data.Transactions.Where(t => t.CategoryID == Data.TRANSFER_ID
                         && t.AccountID == account.AccountID);
-                    var transferCredits = Data.Transactions.Where(t => t.CategoryID == 1
+                    var transferCredits = Data.Transactions.Where(t => t.CategoryID == Data.TRANSFER_ID
                         && t.PayeeAccountID == account.AccountID);
 
                     // calculate sum

@@ -145,15 +145,15 @@ namespace UntitledFinanceTracker.Views
                     transUpdateCmd.ExecuteNonQuery();
 
                     // update current account balance in collection
-                    account.CurrentBalance = (originalCategoryID == 3) // 3 = income
+                    account.CurrentBalance = (originalCategoryID == Data.INCOME_ID)
                         ? account.CurrentBalance - originalAmount : account.CurrentBalance + originalAmount;
 
-                    account.CurrentBalance = (transaction.CategoryID == 3) // 3 = income
+                    account.CurrentBalance = (transaction.CategoryID == Data.INCOME_ID)
                         ? account.CurrentBalance + transaction.Amount : account.CurrentBalance - transaction.Amount;
 
                     UpdateAccountBalance(accUpdateQuery, ref con, account);
 
-                    if (originalCategoryID == 1) // 1 = transfer
+                    if (originalCategoryID == Data.TRANSFER_ID)
                     {
                         // gets account from payee account ID
                         payeeAccount = Data.Accounts.First(a => a.AccountID ==
@@ -166,7 +166,7 @@ namespace UntitledFinanceTracker.Views
                         UpdateAccountBalance(accUpdateQuery, ref con, payeeAccount);
                     }
 
-                    if (transaction.CategoryID == 1) // 1 = transfer
+                    if (transaction.CategoryID == Data.TRANSFER_ID)
                     {
                         // gets account from payee account ID
                         payeeAccount = Data.Accounts.First(a => a.AccountID ==
@@ -198,7 +198,7 @@ namespace UntitledFinanceTracker.Views
                     Transaction newTransaction = new(ID, transaction);
                     Data.Transactions.Add(newTransaction);
 
-                    if (transaction.CategoryID == 1) // 1 = transfer
+                    if (transaction.CategoryID == Data.TRANSFER_ID)
                     {
                         // update current account balance in collection
                         account.CurrentBalance -= transaction.Amount;
@@ -216,7 +216,7 @@ namespace UntitledFinanceTracker.Views
                     }
                     else
                     {
-                        account.CurrentBalance = transaction.CategoryID == 3 // 3 = income
+                        account.CurrentBalance = transaction.CategoryID == Data.INCOME_ID
                             ? account.CurrentBalance + transaction.Amount : account.CurrentBalance - transaction.Amount;
 
                         UpdateAccountBalance(accUpdateQuery, ref con, account);
@@ -349,7 +349,7 @@ namespace UntitledFinanceTracker.Views
                         trans.SubcategoryName = column[4];
 
                         // if category is "Transfer"
-                        if (categoryID.First() == 1)
+                        if (categoryID.First() == Data.TRANSFER_ID)
                         {
                             // get AccountID from account name in payee field
                             var account = from acc in Data.Accounts

@@ -40,7 +40,7 @@ namespace UntitledFinanceTracker.Models
             {
                 case 1:
                     return "#ffffff"; // transfer = white
-                case 3:
+                case 4:
                     return "#a3ff9b"; // income = green
                 default:
                     return "#ff8a89"; // expense = red

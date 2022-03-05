@@ -41,6 +41,12 @@ namespace UntitledFinanceTracker.Views
 
                 try
                 {
+                    Data.Transactions = Data.Transactions.
+                        OrderBy(t => t.Date).
+                        ThenBy(t => t.CategoryID).
+                        ThenBy(t => Math.Abs(t.Amount)).
+                        ThenBy(t => t.TransactionID).ToList();
+
                     foreach (Transaction trans in Data.Transactions)
                         sw.WriteLine(trans.ToString());
 
@@ -60,10 +66,12 @@ namespace UntitledFinanceTracker.Views
         /// </summary>
         /// <param name="sender">Object that raised the event.</param>
         /// <param name="e">Contains MouseButtonEventArgs data.</param>
-        private void lviUpdateBalances_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void lviUpdateAccountBalances_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             try
             {
+                DateTime startTime = DateTime.Now;
+
                 // updates current balance of account in database
                 string connectionString = Properties.Settings.Default.connectionString;
                 string accUpdateQuery = "UPDATE Accounts SET CurrentBalance=@CurrentBalance " +
@@ -74,26 +82,11 @@ namespace UntitledFinanceTracker.Views
 
                 foreach (Account account in Data.Accounts)
                 {
-                    // get income/expense categories
-                    var expenseCatIDs = from cat in Data.Categories
-                                        where cat.CategoryID > 3 && cat.ParentID == null // >3 = all expense categories
-                                        select cat.CategoryID;
-                    if (!expenseCatIDs.Any())
-                        throw new Exception("No expense catgories found");
+                    // get list of transactions for specified account
+                    var transactions = Data.Transactions.Where(t => t.AccountID == account.AccountID);
 
-                    // get list of transactions grouped by income/expense categories
-                    var incomes = Data.Transactions.Where(t => t.AccountID == account.AccountID
-                        && t.CategoryID == Data.INCOME_ID);
-                    var expenses = Data.Transactions.Where(t => t.AccountID == account.AccountID
-                        && expenseCatIDs.Contains(t.CategoryID));
-                    var transferDebits = Data.Transactions.Where(t => t.CategoryID == Data.TRANSFER_ID
-                        && t.AccountID == account.AccountID);
-                    var transferCredits = Data.Transactions.Where(t => t.CategoryID == Data.TRANSFER_ID
-                        && t.PayeeAccountID == account.AccountID);
-
-                    // calculate sum
-                    decimal sum = account.StartingBalance + incomes.Sum(t => t.Amount) + transferCredits.Sum(t => t.Amount)
-                                - expenses.Sum(t => t.Amount) - transferDebits.Sum(t => t.Amount);
+                    // calculate sum and update current balance in memory
+                    decimal sum = account.StartingBalance + transactions.Sum(t => t.Amount);
                     account.CurrentBalance = sum;
                     
                     // executes query
@@ -105,9 +98,116 @@ namespace UntitledFinanceTracker.Views
 
                 con.Close();
 
-                MessageBox.Show("Account balances successfully updated");
+                int endTime = (DateTime.Now - startTime).Milliseconds;
+                MessageBox.Show($"Account balances successfully updated in {endTime} milliseconds");
 
                 ((MainWindow)Application.Current.MainWindow).RefreshBalances();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("SQL: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Updates total running balance based on transactions
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains MouseButtonEventArgs data.</param>
+        private void lviUpdateRunningBalance_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                DateTime startTime = DateTime.Now;
+
+                // updates current balance of account in database
+                string connectionString = Properties.Settings.Default.connectionString;
+                string accUpdateQuery = "UPDATE Transactions SET Balance=@Balance " +
+                                        "WHERE TransactionID=@TransactionID";
+
+                SqlConnection con = new(connectionString);
+                con.Open();
+
+                decimal balance = Data.Accounts.Sum(a => a.StartingBalance);
+                foreach (Transaction trans in Data.Transactions)
+                {
+                    balance += trans.Amount;
+                    if (trans.Balance != balance)
+                    {
+                        trans.Balance = balance;
+
+                        // executes query
+                        SqlCommand accUpdateCmd = new(accUpdateQuery, con);
+                        accUpdateCmd.Parameters.AddWithValue("@Balance", trans.Balance);
+                        accUpdateCmd.Parameters.AddWithValue("@TransactionID", trans.TransactionID);
+                        accUpdateCmd.ExecuteNonQuery();
+                    }
+                }
+
+                con.Close();
+
+                int endTime = (DateTime.Now - startTime).Milliseconds;
+                MessageBox.Show($"Running balance successfully updated in {endTime} milliseconds");
+
+                ((MainWindow)Application.Current.MainWindow).RefreshBalances();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("SQL: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Updates order of transactions in memory and database
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains MouseButtonEventArgs data.</param>
+        private void lviUpdateTransactionOrder_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                DateTime startTime = DateTime.Now;
+
+                Data.Transactions = Data.Transactions.
+                OrderBy(t => t.Date).
+                ThenBy(t => Math.Abs(t.Amount)).
+                ThenBy(t => t.CategoryID).
+                ThenBy(t => t.TransactionID).ToList();
+
+                string connectionString = Properties.Settings.Default.connectionString;
+                string orderUpdateQuery = "UPDATE Transactions SET DisplayOrder=@Order " +
+                                          "WHERE TransactionID=@TransactionID";
+
+                SqlConnection con = new(connectionString);
+                con.Open();
+
+                int i = 1;
+                foreach (Transaction trans in Data.Transactions)
+                {
+                    if (trans.Order != i)
+                    {
+                        trans.Order = i;
+                        SqlCommand accUpdateCmd = new(orderUpdateQuery, con);
+                        accUpdateCmd.Parameters.AddWithValue("@Order", trans.Order);
+                        accUpdateCmd.Parameters.AddWithValue("@TransactionID", trans.TransactionID);
+                        accUpdateCmd.ExecuteNonQuery();
+                    }
+
+                    i++;
+                }
+
+                con.Close();
+
+                int endTime = (DateTime.Now - startTime).Milliseconds;
+                MessageBox.Show($"Running balance successfully updated in {endTime} milliseconds");
             }
             catch (SqlException ex)
             {

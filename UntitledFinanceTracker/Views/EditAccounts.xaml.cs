@@ -44,11 +44,8 @@ namespace UntitledFinanceTracker.Views
         {
             try
             {
-                IEnumerable<Account> a = from acc in Data.Accounts
-                                         where acc.AccountID == ID
-                                         select acc;
-
-                account = a.Count() == 1 ? a.First() : throw new Exception("ERROR: Could not find record");
+                IEnumerable<Account> a = Data.Accounts.Where(a => a.AccountID == ID);
+                account = a.Count() == 1 ? a.First() : throw new Exception("ERROR: Could not find account");
 
                 // sets input value from account
                 txtName.Text = account.AccountName;

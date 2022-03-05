@@ -5,15 +5,17 @@ namespace UntitledFinanceTracker.Models
 {
     abstract class Data
     {
-        public static ObservableCollection<Account> Accounts { get; set; }
-        public static ObservableCollection<AccountType> AccountTypes { get; set; }
-        public static ObservableCollection<Category> Categories { get; set; }
-        public static ObservableCollection<Payee> Payees { get; set; }
-        public static ObservableCollection<Transaction> Transactions { get; set; }
+        public static List<Account> Accounts { get; set; }
+        public static List<AccountType> AccountTypes { get; set; }
+        public static List<Category> Categories { get; set; }
+        public static List<Payee> Payees { get; set; }
+        public static List<Transaction> Transactions { get; set; }
 
         // income categories
         public static readonly int TRANSFER_ID = 1;
-        public static readonly int INCOME_ID = 3;
+        public static readonly int DEBIT_ID = 2;
+        public static readonly int CREDIT_ID = 3;
+        public static readonly int INCOME_ID = 4;
 
         /// <summary>
         /// Holds starting balance for each year of transactions

@@ -120,7 +120,7 @@ namespace UntitledFinanceTracker.Views
                 InitializeTransactions(ref con);
 
                 Calculations();
-
+                
                 con.Close();
             }
             catch (Exception ex)
@@ -207,10 +207,7 @@ namespace UntitledFinanceTracker.Views
 
             while (reader.Read())
             {
-                // converts DBNull to null
-                int? AccountID = (reader[1] is DBNull) ? null : (int)reader[1];
-
-                Data.Payees.Add(new Payee((int)reader[0], AccountID, reader[2].ToString()));
+                Data.Payees.Add(new Payee((int)reader[0], reader[1].ToString()));
             }
 
             reader.Close();
@@ -224,7 +221,7 @@ namespace UntitledFinanceTracker.Views
         {
             string query = "SELECT TransactionID, Date, Account_fk, Accounts.AccountName, Amount, " +
                 "Category_fk, cat.CategoryName, Subcategory_fk, sub.CategoryName AS SubcategoryName, Payee_fk, " +
-                "pay.AccountID_fk AS PayeeAccountID, pay.PayeeName FROM Transactions " +
+                "pay.PayeeName, Balance, DisplayOrder FROM Transactions " +
                 "INNER JOIN Accounts ON Transactions.Account_fk = Accounts.AccountID " +
                 "INNER JOIN Categories cat ON Transactions.Category_fk = cat.CategoryID " +
                 "INNER JOIN Categories sub ON Transactions.Subcategory_fk = sub.CategoryID " +
@@ -235,13 +232,11 @@ namespace UntitledFinanceTracker.Views
 
             while (reader.Read())
             {
-                // converts DBNull to null
-                int? PayeeAccountID = (reader[10] is DBNull) ? null : (int)reader[10];
-
-                Data.Transactions.Add(new Transaction((int)reader[0], (DateTime)reader[1], (int)reader[2], // TransactionID, date, accountID
-                     reader[3].ToString(), (decimal)reader[4], (int)reader[5], reader[6].ToString(), // accountName, amount, categoryID, categoryName
-                     (int)reader[7], reader[8].ToString(), // subcategoryID, subcategoryName
-                     (int)reader[9], PayeeAccountID, reader[11].ToString())); // payeeID, payeeAccountID, payeeAccountName
+                Data.Transactions.Add(new Transaction((int)reader[0], (DateTime)reader[1], // TransactionID, date
+                    (int)reader[2], reader[3].ToString(), // accountID, accountName
+                    (decimal)reader[4], (int)reader[5], reader[6].ToString(), // amount, categoryID, categoryName
+                    (int)reader[7], reader[8].ToString(), // subcategoryID, subcategoryName
+                    (int)reader[9], reader[10].ToString(), (decimal)reader[11], (int)reader[12])); // payeeID, payeeName, balance, order
             }
 
             reader.Close();
@@ -268,12 +263,8 @@ namespace UntitledFinanceTracker.Views
             // for each year balance = startingBalance + incomes - expenses
             for (int i = startingYear; i < DateTime.Now.Year;)
             {
-                decimal incomes = Data.Transactions.Where(t => t.Date.Year == i)
-                                                   .Where(t => t.CategoryID == Data.INCOME_ID).Sum(t => t.Amount);
-                decimal expenses = Data.Transactions.Where(t => t.Date.Year == i)
-                                                    .Where(t => t.CategoryID != Data.INCOME_ID
-                                                             && t.CategoryID != Data.TRANSFER_ID).Sum(t => t.Amount);
-                decimal balance = startingBalance + incomes - expenses;
+                decimal transactions = Data.Transactions.Where(t => t.Date.Year == i).Sum(t => t.Amount);
+                decimal balance = startingBalance + transactions;
                 startingBalance = balance;
                 Data.YearStartBalances.Add(++i, balance); // ++i because this year end balance = next year start balance
             }

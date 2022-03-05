@@ -49,6 +49,8 @@
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Payee</Label>
                 <TextBox x:Name="txtPayee" TabIndex="5"></TextBox>
+                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbTransferAccount" TabIndex="5"
+                          Visibility="Collapsed" DisplayMemberPath = "AccountName" SelectedValuePath = "AccountID" />
             </StackPanel>
             <StackPanel Style="{StaticResource spForm}" Orientation="Horizontal" Margin="0 18 0 0">
                 <Button Style="{StaticResource btnUpdateFrm}" x:Name="btnEdit" Click="btnEdit_Click"

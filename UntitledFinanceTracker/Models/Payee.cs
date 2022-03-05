@@ -4,8 +4,7 @@ namespace UntitledFinanceTracker.Models
 {
     class Payee
     {
-        int _payeeID;
-        int? _accountID;
+        int? _payeeID;
 
         /// <summary>
         /// Initializes a new instance of the Payee class with no parameters.
@@ -25,11 +24,9 @@ namespace UntitledFinanceTracker.Models
         /// Initializes a new instance of the AccountType class.
         /// </summary>
         /// <param name="ID">Payee ID.</param>
-        /// <param name="AccountID">Account ID.</param>
         /// <param name="payeeName">Payee.</param>
-        public Payee(int ID, int? accountID, string payeeName) : this(ID)
+        public Payee(int ID, string payeeName) : this(ID)
         {
-            AccountID = accountID;
             PayeeName = payeeName;
         }
 
@@ -38,7 +35,7 @@ namespace UntitledFinanceTracker.Models
         /// </summary>
         /// <param name="ID">Payee ID.</param>
         /// <param name="payee">Payee object.</param>
-        public Payee(int ID, Payee payee) : this(ID, payee.AccountID, payee.PayeeName)
+        public Payee(int ID, Payee payee) : this(ID, payee.PayeeName)
         {
 
         }
@@ -46,30 +43,15 @@ namespace UntitledFinanceTracker.Models
         /// <summary>
         /// Payee ID
         /// </summary>
-        public int PayeeID
+        public int? PayeeID
         {
             get { return _payeeID; }
             private set
             {
-                if (value > 0)
+                if (value > 0 || value == null)
                     _payeeID = value;
                 else
-                    throw new Exception("Error: Payee ID must be greater than 0");
-            }
-        }
-
-        /// <summary>
-        /// Account ID
-        /// </summary>
-        public int? AccountID
-        {
-            get { return _accountID; }
-            private set
-            {
-                if (value > 0 || value == null)
-                    _accountID = value;
-                else
-                    throw new Exception("Error: If Account ID  is not null, it must be greater than 0");
+                    throw new Exception("Error: If Payee ID is not null, it must be greater than 0");
             }
         }
 

@@ -8,10 +8,28 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              Initialized="UserControl_Initialized">
-    <UniformGrid Columns="2" Rows="2">
-        <DockPanel LastChildFill="True" Margin="10" Background="#212121">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Margin="5 10 0 0">
+            <Label Margin="5 0 5 0" Content="From" FontSize="11" />
+            <DatePicker x:Name="dtFrom" Width="105" />
+            <Label Margin="5 0 5 0" Content="To" FontSize="11"  />
+            <DatePicker x:Name="dtTo" Width="105" />
+        </StackPanel>
+        
+        <DockPanel Grid.Row="1" Grid.Column="0" LastChildFill="True" Margin="10" Background="#212121">
             <Label DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Top">Weekly Balance</Label>
-            <lvc:CartesianChart x:Name="chrtBalance" Series="{Binding series}" Margin="0 -10 20 10" Padding="10">
+            <lvc:CartesianChart x:Name="chrtBalance" Series="{Binding series}" DisableAnimations="True" DataTooltip="{x:Null}"
+                                Margin="0 -10 20 20" Padding="10">
                 <lvc:CartesianChart.AxisY>
                     <lvc:Axis x:Name="chrtBalanceAxisY" LabelFormatter="{Binding Formatter}">
                         <lvc:Axis.Separator>
@@ -28,5 +46,5 @@
                 </lvc:CartesianChart.AxisX>
             </lvc:CartesianChart>
         </DockPanel>
-    </UniformGrid>
+    </Grid>
 </UserControl>

@@ -44,11 +44,8 @@ namespace UntitledFinanceTracker.Views
         {
             try
             {
-                IEnumerable<Category> c = from cat in Data.Categories
-                                         where cat.CategoryID == ID
-                                         select cat;
-
-                category = c.Count() == 1 ? c.First() : throw new Exception("ERROR: Could not find record");
+                IEnumerable<Category> c = Data.Categories.Where(c => c.CategoryID == ID);
+                category = c.Count() == 1 ? c.First() : throw new Exception("ERROR: Could not find category");
 
                 // sets input value from category
                 cbParent.SelectedValue = category.ParentID;

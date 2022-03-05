@@ -11,8 +11,12 @@ namespace UntitledFinanceTracker.Models
         string _categoryName;
         int _subcategoryID;
         string _subcategoryName;
-        int _payeeID;
-        int? _payeeAccountID;
+        int? _payeeID;
+
+        /// <summary>
+        /// Current highest transaction ID
+        /// </summary>
+        public static int HighestID { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the Transaction class with no parameters.
@@ -41,11 +45,11 @@ namespace UntitledFinanceTracker.Models
         /// <param name="subcategoryID">Transaction subcategory ID.</param>
         /// <param name="subcategory">Transaction subcategory name.</param>
         /// <param name="payeeID">Transaction payee ID.</param>
-        /// <param name="payeeID">Transaction payee ID.</param>
-        /// <param name="payeeAccountID">Transaction payee account ID.</param>
         /// <param name="payee">Transaction payee.</param>
+        /// <param name="balance">Running total balance.</param>
+        /// <param name="order">Display order.</param>
         public Transaction(int ID, DateTime date, int accountID, string account, decimal amount,
-            int categoryID, string category, int subcategoryID, string subcategory, int payeeID, int? payeeAccountID, string payee) : this(ID)
+            int categoryID, string category, int subcategoryID, string subcategory, int? payeeID, string payee, decimal balance, int order) : this(ID)
         {
             Date = date;
             AccountID = accountID;
@@ -56,8 +60,9 @@ namespace UntitledFinanceTracker.Models
             SubcategoryID = subcategoryID;
             SubcategoryName = subcategory;
             PayeeID = payeeID;
-            PayeeAccountID = payeeAccountID;
             PayeeName = payee;
+            Balance = balance;
+            Order = order;
         }
 
         /// <summary>
@@ -66,9 +71,21 @@ namespace UntitledFinanceTracker.Models
         /// <param name="ID">Transaction ID.</param>
         /// <param name="trans">Transaction object.</param>
         public Transaction(int ID, Transaction trans) : this(ID, trans.Date, trans.AccountID, trans.AccountName, trans.Amount,
-            trans.CategoryID, trans.CategoryName, trans.SubcategoryID, trans.SubcategoryName, trans.PayeeID, trans.PayeeAccountID, trans.PayeeName)
+            trans.CategoryID, trans.CategoryName, trans.SubcategoryID, trans.SubcategoryName, trans.PayeeID, trans.PayeeName, trans.Balance, trans.Order)
         {
 
+        }
+
+        public bool Compare(Transaction trans1, Transaction trans2)
+        {
+            if (trans1.Date != trans2.Date || trans1.AccountID != trans2.AccountID || trans1.Amount != trans2.Amount
+                || trans1.CategoryID != trans2.CategoryID || trans1.SubcategoryID != trans2.SubcategoryID
+                || trans1.PayeeID != trans2.PayeeID)
+            {
+                return false;
+            }
+            else
+                return true;
         }
 
         /// <summary>
@@ -80,7 +97,10 @@ namespace UntitledFinanceTracker.Models
             private set
             {
                 if (value > 0)
+                {
                     _transactionID = value;
+                    HighestID = (value > HighestID) ? value : HighestID;
+                }
                 else
                     throw new Exception("Error: Transaction ID must be greater than 0");
             }
@@ -224,30 +244,17 @@ namespace UntitledFinanceTracker.Models
         /// <summary>
         /// Transaction Payee ID
         /// </summary>
-        public int PayeeID
+        public int? PayeeID
         {
             get { return _payeeID; }
             set
             {
-                if (value > 0)
+                if (value > 0 || value == null)
                     _payeeID = value;
                 else
-                    throw new Exception("Error: Transaction Payee ID must be greater than 0");
-            }
-        }
+                    throw new Exception("Error: If Transaction Payee ID is not null, it must be greater than 0");
 
-        /// <summary>
-        /// Transaction Payee Account ID
-        /// </summary>
-        public int? PayeeAccountID
-        {
-            get { return _payeeAccountID; }
-            set
-            {
-                if (value > 0 || value == null)
-                    _payeeAccountID = value;
-                else
-                    throw new Exception("Error: If Transaction Payee Account ID is not null, it must be greater than 0");
+
             }
         }
 
@@ -255,6 +262,16 @@ namespace UntitledFinanceTracker.Models
         /// Transaction Payee Name
         /// </summary>
         public string PayeeName { get; set; }
+
+        /// <summary>
+        /// Running total account balance
+        /// </summary>
+        public decimal Balance { get; set; }
+
+        /// <summary>
+        /// Display order
+        /// </summary>
+        public int Order { get; set; }
 
         /// <summary>
         /// Overridden ToString() that outputs data into CSV friendly format

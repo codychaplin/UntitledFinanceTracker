@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UntitledFinanceTracker.Models;
 using LiveCharts.Wpf;
 using LiveCharts;
+using System.Windows.Media;
 
 namespace UntitledFinanceTracker.Views
 {
@@ -29,6 +30,8 @@ namespace UntitledFinanceTracker.Views
         /// <param name="e">Contains EventArgs event data.</param>
         private void UserControl_Initialized(object sender, EventArgs e)
         {
+            dtFrom.SelectedDate = new DateTime(DateTime.Now.Year, 1, 1);
+            dtTo.SelectedDate = DateTime.Now;
             CalculateWeeklyBalance();
         }
 
@@ -37,45 +40,7 @@ namespace UntitledFinanceTracker.Views
         /// </summary>
         void CalculateWeeklyBalance()
         {
-            int currentYear = DateTime.Now.Year;
-            int currentWeek = ISOWeek.GetWeekOfYear(DateTime.Now);
-            decimal balance = Data.YearStartBalances[currentYear];
-            var weeks = Enumerable.Range(1, currentWeek);
-
-            ChartValues<decimal> points = new();
-            points.Add(balance);
-
-            foreach (int week in weeks)
-            {
-                // get transactions in year and in specified week
-                var transactionsInYear = Data.Transactions.Where(t => t.Date.Year == currentYear);
-                var transactionsInWeek = transactionsInYear.Where(t => ISOWeek.GetWeekOfYear(t.Date) == week);
-
-                // on first week, add transactions that were technically in last week of previous year
-                if (week == 1)
-                {
-                    var other = transactionsInYear.Where(t => t.Date.Month == 1 && ISOWeek.GetWeekOfYear(t.Date) > 50);
-                    transactionsInWeek = transactionsInWeek.Concat(other);
-                }
-
-                decimal incomes = transactionsInWeek.Where(t => t.CategoryID == Data.INCOME_ID).Sum(t => t.Amount);
-                decimal expenses = transactionsInWeek.Where(t => t.CategoryID > Data.INCOME_ID).Sum(t => t.Amount);
-                decimal sum = balance + incomes - expenses;
-                balance = sum;
-                points.Add(balance);
-            }
-
-            SeriesCollection series = new SeriesCollection { new LineSeries
-            {
-                Values = points,
-                LineSmoothness = 0.5,
-                PointGeometry = null
-            }};
             
-            Func<double, string> Formatter = value => value.ToString("C0");
-            chrtBalance.Series = series;
-            chrtBalanceAxisY.LabelFormatter = Formatter;
-            chrtBalanceAxisX.Separator.Step = points.Count / 7;
         }
     }
 }

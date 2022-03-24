@@ -41,12 +41,6 @@ namespace UntitledFinanceTracker.Views
 
                 try
                 {
-                    Data.Transactions = Data.Transactions.
-                        OrderBy(t => t.Date).
-                        ThenBy(t => t.CategoryID).
-                        ThenBy(t => Math.Abs(t.Amount)).
-                        ThenBy(t => t.TransactionID).ToList();
-
                     foreach (Transaction trans in Data.Transactions)
                         sw.WriteLine(trans.ToString());
 
@@ -80,6 +74,7 @@ namespace UntitledFinanceTracker.Views
                 SqlConnection con = new(connectionString);
                 con.Open();
 
+                int count = 0;
                 foreach (Account account in Data.Accounts)
                 {
                     // get list of transactions for specified account
@@ -87,19 +82,25 @@ namespace UntitledFinanceTracker.Views
 
                     // calculate sum and update current balance in memory
                     decimal sum = account.StartingBalance + transactions.Sum(t => t.Amount);
-                    account.CurrentBalance = sum;
+
+                    // if different, update
+                    if (account.CurrentBalance != sum)
+                    {
+                        count++;
+                        account.CurrentBalance = sum;
                     
-                    // executes query
-                    SqlCommand accUpdateCmd = new(accUpdateQuery, con);
-                    accUpdateCmd.Parameters.AddWithValue("@CurrentBalance", account.CurrentBalance);
-                    accUpdateCmd.Parameters.AddWithValue("@AccountID", account.AccountID);
-                    accUpdateCmd.ExecuteNonQuery();
+                        // executes query
+                        SqlCommand accUpdateCmd = new(accUpdateQuery, con);
+                        accUpdateCmd.Parameters.AddWithValue("@CurrentBalance", account.CurrentBalance);
+                        accUpdateCmd.Parameters.AddWithValue("@AccountID", account.AccountID);
+                        accUpdateCmd.ExecuteNonQuery();
+                    }
                 }
 
                 con.Close();
 
                 int endTime = (DateTime.Now - startTime).Milliseconds;
-                MessageBox.Show($"Account balances successfully updated in {endTime} milliseconds");
+                MessageBox.Show($"Updated account balances for {count} records in {endTime} milliseconds");
 
                 ((MainWindow)Application.Current.MainWindow).RefreshBalances();
             }
@@ -132,18 +133,22 @@ namespace UntitledFinanceTracker.Views
                 SqlConnection con = new(connectionString);
                 con.Open();
 
+                Data.Transactions = Data.Transactions.OrderBy(t => t.Order).ToList();
+
+                int count = 0;
                 decimal balance = Data.Accounts.Sum(a => a.StartingBalance);
-                foreach (Transaction trans in Data.Transactions)
+                for (int i = 0; i < Data.Transactions.Count; i++)
                 {
-                    balance += trans.Amount;
-                    if (trans.Balance != balance)
+                    balance += Data.Transactions[i].Amount;
+                    if (Data.Transactions[i].Balance != balance)
                     {
-                        trans.Balance = balance;
+                        count++;
+                        Data.Transactions[i].Balance = balance;
 
                         // executes query
                         SqlCommand accUpdateCmd = new(accUpdateQuery, con);
-                        accUpdateCmd.Parameters.AddWithValue("@Balance", trans.Balance);
-                        accUpdateCmd.Parameters.AddWithValue("@TransactionID", trans.TransactionID);
+                        accUpdateCmd.Parameters.AddWithValue("@Balance", Data.Transactions[i].Balance);
+                        accUpdateCmd.Parameters.AddWithValue("@TransactionID", Data.Transactions[i].TransactionID);
                         accUpdateCmd.ExecuteNonQuery();
                     }
                 }
@@ -151,7 +156,7 @@ namespace UntitledFinanceTracker.Views
                 con.Close();
 
                 int endTime = (DateTime.Now - startTime).Milliseconds;
-                MessageBox.Show($"Running balance successfully updated in {endTime} milliseconds");
+                MessageBox.Show($"Updated running balance for {count} records in {endTime} milliseconds");
 
                 ((MainWindow)Application.Current.MainWindow).RefreshBalances();
             }
@@ -189,25 +194,25 @@ namespace UntitledFinanceTracker.Views
                 SqlConnection con = new(connectionString);
                 con.Open();
 
-                int i = 1;
-                foreach (Transaction trans in Data.Transactions)
+                int count = 0;
+                int index = 1;
+                for (int i = 0; i < Data.Transactions.Count; i++, index++)
                 {
-                    if (trans.Order != i)
+                    if (Data.Transactions[i].Order != index)
                     {
-                        trans.Order = i;
+                        count++;
+                        Data.Transactions[i].Order = index;
                         SqlCommand accUpdateCmd = new(orderUpdateQuery, con);
-                        accUpdateCmd.Parameters.AddWithValue("@Order", trans.Order);
-                        accUpdateCmd.Parameters.AddWithValue("@TransactionID", trans.TransactionID);
+                        accUpdateCmd.Parameters.AddWithValue("@Order", Data.Transactions[i].Order);
+                        accUpdateCmd.Parameters.AddWithValue("@TransactionID", Data.Transactions[i].TransactionID);
                         accUpdateCmd.ExecuteNonQuery();
                     }
-
-                    i++;
                 }
 
                 con.Close();
 
                 int endTime = (DateTime.Now - startTime).Milliseconds;
-                MessageBox.Show($"Running balance successfully updated in {endTime} milliseconds");
+                MessageBox.Show($"Updated transaction order for {count} records in {endTime} milliseconds");
             }
             catch (SqlException ex)
             {

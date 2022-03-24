@@ -12,6 +12,7 @@ namespace UntitledFinanceTracker.Models
         int _subcategoryID;
         string _subcategoryName;
         int? _payeeID;
+        int? _transferID;
 
         /// <summary>
         /// Current highest transaction ID
@@ -46,10 +47,11 @@ namespace UntitledFinanceTracker.Models
         /// <param name="subcategory">Transaction subcategory name.</param>
         /// <param name="payeeID">Transaction payee ID.</param>
         /// <param name="payee">Transaction payee.</param>
+        /// <param name="transferID">Transaction ID of matching transfer.</param>
         /// <param name="balance">Running total balance.</param>
         /// <param name="order">Display order.</param>
         public Transaction(int ID, DateTime date, int accountID, string account, decimal amount,
-            int categoryID, string category, int subcategoryID, string subcategory, int? payeeID, string payee, decimal balance, int order) : this(ID)
+            int categoryID, string category, int subcategoryID, string subcategory, int? payeeID, string payee, int? transferID, decimal balance, int order) : this(ID)
         {
             Date = date;
             AccountID = accountID;
@@ -61,6 +63,7 @@ namespace UntitledFinanceTracker.Models
             SubcategoryName = subcategory;
             PayeeID = payeeID;
             PayeeName = payee;
+            TransferID = transferID;
             Balance = balance;
             Order = order;
         }
@@ -68,24 +71,22 @@ namespace UntitledFinanceTracker.Models
         /// <summary>
         /// Initializes a new instance of the Transaction class using a copy constructor
         /// </summary>
-        /// <param name="ID">Transaction ID.</param>
         /// <param name="trans">Transaction object.</param>
-        public Transaction(int ID, Transaction trans) : this(ID, trans.Date, trans.AccountID, trans.AccountName, trans.Amount,
-            trans.CategoryID, trans.CategoryName, trans.SubcategoryID, trans.SubcategoryName, trans.PayeeID, trans.PayeeName, trans.Balance, trans.Order)
+        public Transaction(Transaction trans) : this(trans.TransactionID, trans.Date, trans.AccountID, trans.AccountName, trans.Amount,
+            trans.CategoryID, trans.CategoryName, trans.SubcategoryID, trans.SubcategoryName, trans.PayeeID, trans.PayeeName, trans.TransferID, trans.Balance, trans.Order)
         {
 
         }
 
-        public bool Compare(Transaction trans1, Transaction trans2)
+        /// <summary>
+        /// Initializes a new instance of the Transaction class using a copy constructor and a new transaction ID
+        /// </summary>
+        /// <param name="ID">Transaction ID.</param>
+        /// <param name="trans">Transaction object.</param>
+        public Transaction(int ID, Transaction trans) : this(ID, trans.Date, trans.AccountID, trans.AccountName, trans.Amount,
+            trans.CategoryID, trans.CategoryName, trans.SubcategoryID, trans.SubcategoryName, trans.PayeeID, trans.PayeeName, trans.TransferID, trans.Balance, trans.Order)
         {
-            if (trans1.Date != trans2.Date || trans1.AccountID != trans2.AccountID || trans1.Amount != trans2.Amount
-                || trans1.CategoryID != trans2.CategoryID || trans1.SubcategoryID != trans2.SubcategoryID
-                || trans1.PayeeID != trans2.PayeeID)
-            {
-                return false;
-            }
-            else
-                return true;
+
         }
 
         /// <summary>
@@ -253,8 +254,6 @@ namespace UntitledFinanceTracker.Models
                     _payeeID = value;
                 else
                     throw new Exception("Error: If Transaction Payee ID is not null, it must be greater than 0");
-
-
             }
         }
 
@@ -262,6 +261,21 @@ namespace UntitledFinanceTracker.Models
         /// Transaction Payee Name
         /// </summary>
         public string PayeeName { get; set; }
+
+        /// <summary>
+        /// Transaction ID of matching transfer
+        /// </summary>
+        public int? TransferID
+        {
+            get { return _transferID; }
+            set
+            {
+                if (value > 0 || value == null)
+                    _transferID = value;
+                else
+                    throw new Exception("Error: If Transfer ID is not null, it must be greater than 0");
+            }
+        }
 
         /// <summary>
         /// Running total account balance

@@ -18,6 +18,8 @@ namespace UntitledFinanceTracker.Views
     {
         Transaction transaction { get; set; }
 
+        int? originalAccountTransferID { get; set; }
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -59,8 +61,11 @@ namespace UntitledFinanceTracker.Views
                 IEnumerable<Transaction> t = Data.Transactions.Where(t => t.TransactionID == ID);
                 transaction = t.Count() == 1 ? t.First() : throw new Exception("ERROR: Could not find transaction");
 
+                // if expense or transfer debit, amount *= -1 for readability
                 if (transaction.CategoryID > Data.INCOME_ID || transaction.SubcategoryID == Data.DEBIT_ID)
                     txtAmount.Text = (transaction.Amount * -1).ToString();
+                else
+                    txtAmount.Text = transaction.AmountString;
 
                 // sets input values from transaction
                 dpDate.SelectedDate = transaction.Date;
@@ -68,6 +73,16 @@ namespace UntitledFinanceTracker.Views
                 cbCategories.SelectedValue = transaction.CategoryID;
                 cbSubcategories.SelectedValue = transaction.SubcategoryID;
                 txtPayee.Text = transaction.PayeeName;
+
+                // if transfer, select account for cbTransferAccount and save current transferID
+                if (transaction.CategoryID == Data.TRANSFER_ID)
+                {
+                    Transaction trans = Data.Transactions.First(t => t.TransactionID == transaction.TransferID);
+                    originalAccountTransferID = trans.AccountID;
+                    cbTransferAccount.SelectedValue = originalAccountTransferID;
+                }
+                else
+                    originalAccountTransferID = -1;
             }
             catch (Exception ex)
             {
@@ -83,8 +98,8 @@ namespace UntitledFinanceTracker.Views
         private void Window_Initialized(object sender, EventArgs e)
         {
             // load dropdown menu items
-            cbAccounts.ItemsSource = Data.Accounts;
-            cbTransferAccount.ItemsSource = Data.Accounts;
+            cbAccounts.ItemsSource = Data.Accounts.Where(a => a.Enabled);
+            cbTransferAccount.ItemsSource = Data.Accounts.Where(a => a.Enabled);
             cbCategories.ItemsSource = Data.Categories.Where(c => c.ParentID == null);
             cbSubcategories.ItemsSource = null;
             dpDate.SelectedDate = DateTime.Now.Date;
@@ -103,7 +118,9 @@ namespace UntitledFinanceTracker.Views
                 SqlConnection con = new(connectionString);
                 con.Open();
 
+                // saves original transaction amount and accountID
                 decimal originalAmount = transaction.Amount;
+                int originalAccountID = transaction.AccountID;
 
                 // validate fields
                 if (dpDate.SelectedDate == null || cbAccounts.SelectedValue == null || txtAmount.Text == ""
@@ -124,10 +141,12 @@ namespace UntitledFinanceTracker.Views
                 transaction.CategoryName = cbCategories.Text;
                 transaction.SubcategoryID = (int)cbSubcategories.SelectedValue;
                 transaction.SubcategoryName = cbSubcategories.Text;
-                
-                GetPayee(ref con);
 
-                //TODO: Update running balance
+                // set default values for order and balance
+                transaction.Order = -1;
+                transaction.Balance = -1;
+
+                GetPayee(ref con);
 
                 // if transfer, get transfer payee info
                 int transferAccountID = (transaction.CategoryID == Data.TRANSFER_ID) ? (int)cbTransferAccount.SelectedValue : -1;
@@ -140,19 +159,14 @@ namespace UntitledFinanceTracker.Views
                 Account account = Data.Accounts.First(a => a.AccountID == transaction.AccountID);
 
                 // updates current account balance in database
-                string accUpdateQuery = "UPDATE Accounts SET CurrentBalance=@CurrentBalance " +
-                                        "WHERE AccountID=@AccountID";
+                string accUpdateQuery = "UPDATE Accounts SET CurrentBalance=@CurrentBalance WHERE AccountID=@AccountID";
 
                 if (Title == "Edit Transaction")
                 {
-                    // updates database
+                    // update transaction query
                     string transUpdateQuery = "UPDATE Transactions SET Date=@Date, Account_fk=@AccountID, Amount=@Amount, " +
-                                              "Category_fk=@CategoryID, Subcategory_fk=@SubcategoryID, Payee_fk =@PayeeID, Balance=0, Order=0 " +
-                                              "WHERE TransactionID=@TransactionID";
-
-                    /*// if expense or transfer debit, value = value * -1
-                    if (transaction.CategoryID > Data.INCOME_ID || transaction.SubcategoryID == Data.DEBIT_ID)
-                        transaction.Amount *= -1;*/
+                                              "Category_fk=@CategoryID, Subcategory_fk=@SubcategoryID, Payee_fk=@PayeeID, " +
+                                              "Balance=@Balance, DisplayOrder=@Order WHERE TransactionID=@ID";
 
                     SqlCommand transUpdateCmd = new(transUpdateQuery, con);
                     transUpdateCmd.Parameters.AddWithValue("@Date", transaction.DateString);
@@ -160,37 +174,82 @@ namespace UntitledFinanceTracker.Views
                     transUpdateCmd.Parameters.AddWithValue("@Amount", transaction.Amount);
                     transUpdateCmd.Parameters.AddWithValue("@CategoryID", transaction.CategoryID);
                     transUpdateCmd.Parameters.AddWithValue("@SubcategoryID", transaction.SubcategoryID);
-                    transUpdateCmd.Parameters.AddWithValue("@PayeeID", transaction.PayeeID);
-                    transUpdateCmd.Parameters.AddWithValue("@TransactionID", transaction.TransactionID);
+                    transUpdateCmd.Parameters.AddWithValue("@PayeeID", (transaction.PayeeID == null) ? DBNull.Value : transaction.PayeeID);
+                    transUpdateCmd.Parameters.AddWithValue("@TransferID", (transaction.TransferID == null) ? DBNull.Value : transaction.TransferID);
+                    transUpdateCmd.Parameters.AddWithValue("@Balance", transaction.Balance);
+                    transUpdateCmd.Parameters.AddWithValue("@Order", transaction.Order);
+                    transUpdateCmd.Parameters.AddWithValue("@ID", transaction.TransactionID);
                     transUpdateCmd.ExecuteNonQuery();
 
-                    // update current account balance in collection
-                    account.CurrentBalance -= originalAmount;
-                    account.CurrentBalance += transaction.Amount;
+                    // if account is same, only update current account balance
+                    if (account.AccountID == originalAccountID)
+                    {
+                        account.CurrentBalance -= originalAmount;
+                        account.CurrentBalance += transaction.Amount;
+                        UpdateAccountBalance(accUpdateQuery, ref con, account);
+                    }
+                    else // if account has changed, update both accounts' balances
+                    {
+                        // get original account from transaction and update balance
+                        Account originalAccount = Data.Accounts.First(a => a.AccountID == originalAccountID);
+                        originalAccount.CurrentBalance -= originalAmount;
+                        UpdateAccountBalance(accUpdateQuery, ref con, originalAccount);
 
-                    UpdateAccountBalance(accUpdateQuery, ref con, account);
-                    UpdateOrder();
-                    UpdateRunningBalance();
+                        // update new account balance
+                        account.CurrentBalance += transaction.Amount;
+                        UpdateAccountBalance(accUpdateQuery, ref con, account);
+                    }
 
                     // if transfer, edit other side of transaction as well
                     if (transaction.CategoryID == Data.TRANSFER_ID)
                     {
-                        // if debit, check next transaction for match, if not, check next + 1, if still not, throw exception
-                        if (transaction.SubcategoryID == Data.DEBIT_ID)
-                            UpdateTransfer(1, originalAmount, Data.CREDIT_ID, accUpdateQuery, ref con);
-                        else if (transaction.SubcategoryID == Data.CREDIT_ID)
-                            UpdateTransfer(-1, originalAmount, Data.DEBIT_ID, accUpdateQuery, ref con);
+                        // gets other transaction and updates date, accountID, and amount
+                        Transaction otherTransaction = Data.Transactions.First(t => t.TransactionID == transaction.TransferID);
+                        otherTransaction.Date = transaction.Date;
+                        otherTransaction.AccountID = transferAccountID;
+                        otherTransaction.Amount = transaction.Amount * -1;
+
+                        // get other account and set account name in other transaction
+                        Account otherAccount = Data.Accounts.First(a => a.AccountID == otherTransaction.AccountID);
+                        otherTransaction.AccountName = otherAccount.AccountName;
+
+                        // if payee account is same, update account balance
+                        if (otherTransaction.AccountID == originalAccountTransferID)
+                        {
+                            otherAccount.CurrentBalance -= originalAmount * -1;
+                            otherAccount.CurrentBalance += otherTransaction.Amount;
+                            UpdateAccountBalance(accUpdateQuery, ref con, otherAccount);
+                        }
+                        else // if changed, update original and new account balances
+                        {
+                            Account originalAccount = Data.Accounts.First(a => a.AccountID == originalAccountTransferID);
+                            originalAccount.CurrentBalance -= originalAmount * -1;
+                            UpdateAccountBalance(accUpdateQuery, ref con, originalAccount);
+
+                            Account newAccount = Data.Accounts.First(a => a.AccountID == transferAccountID);
+                            newAccount.CurrentBalance += otherTransaction.Amount;
+                            UpdateAccountBalance(accUpdateQuery, ref con, newAccount);
+                        }
+
+                        // update other transaction's date, accountID, and amount
+                        string otherTransUpdateQuery = "UPDATE Transactions SET Date=@Date, Account_fk=@AccountID, Amount=@Amount WHERE TransactionID=@ID";
+                        SqlCommand otherTransUpdateCmd = new(otherTransUpdateQuery, con);
+                        otherTransUpdateCmd.Parameters.AddWithValue("@Date", otherTransaction.Date);
+                        otherTransUpdateCmd.Parameters.AddWithValue("@AccountID", otherTransaction.AccountID);
+                        otherTransUpdateCmd.Parameters.AddWithValue("@Amount", otherTransaction.Amount);
+                        otherTransUpdateCmd.Parameters.AddWithValue("@ID", otherTransaction.TransactionID);
+                        otherTransUpdateCmd.ExecuteNonQuery();
                     }
+                    
+                    Data.UpdateOrderAndRunningBalance(transaction);
                 }
                 else if (Title == "Add Transaction")
                 {
-                    string transInsertQuery = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee_fk, Balance, DisplayOrder) " +
+                    string transInsertQuery = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee_fk, TransferID, Balance, DisplayOrder) " +
                                               "OUTPUT INSERTED.TransactionID " +
-                                              "VALUES (@Date, @AccountID, @Amount, @CategoryID, @SubcategoryID, @PayeeID, @Balance, @Order)";
-
-                    UpdateOrder();
-                    UpdateRunningBalance();
-                    AddTransaction(transInsertQuery, ref con, transaction);
+                                              "VALUES (@Date, @AccountID, @Amount, @CategoryID, @SubcategoryID, @PayeeID, null, -1, -1)";
+                    
+                    Transaction trans = AddTransaction(transInsertQuery, ref con, transaction);
 
                     account.CurrentBalance += transaction.Amount;
                     UpdateAccountBalance(accUpdateQuery, ref con, account);
@@ -198,21 +257,36 @@ namespace UntitledFinanceTracker.Views
                     // if transfer, create matching credit transfer transaction
                     if (transaction.CategoryID == Data.TRANSFER_ID)
                     {
+                        Account otherAccount;
                         if (transferAccountID != -1)
-                            account = Data.Accounts.Where(a => a.AccountID == transferAccountID).First();
+                            otherAccount = Data.Accounts.First(a => a.AccountID == transferAccountID);
                         else
                             throw new Exception("Error: Invalid transfer payee");
 
-                        Transaction newTransaction = new(transaction.TransactionID + 1, transaction);
-                        newTransaction.Amount = transaction.Amount * -1;
-                        newTransaction.AccountID = account.AccountID;
-                        newTransaction.AccountName = account.AccountName;
+                        // set attributes of new transaction
+                        Transaction newTransaction = new(trans);
+                        newTransaction.Amount = trans.Amount * -1;
+                        newTransaction.AccountID = otherAccount.AccountID;
+                        newTransaction.AccountName = otherAccount.AccountName;
                         newTransaction.SubcategoryID = Data.CREDIT_ID;
-                        newTransaction.Order = transaction.Order + 1;
+                        newTransaction.SubcategoryName = "Credit";
+                        newTransaction.TransferID = trans.TransactionID;
 
-                        AddTransaction(transInsertQuery, ref con, newTransaction);
-                        UpdateAccountBalance(accUpdateQuery, ref con, account);
+                        // add transaction
+                        newTransaction = AddTransaction(transInsertQuery, ref con, newTransaction);
+                        trans.TransferID = newTransaction.TransactionID;
+
+                        // update transferIDs of both transactions
+                        string TransIDUpdateQuery = "UPDATE Transactions SET TransferID=@TransferID WHERE TransactionID=@ID";
+                        UpdateTransferID(TransIDUpdateQuery, ref con, newTransaction.TransactionID, trans.TransactionID);
+                        UpdateTransferID(TransIDUpdateQuery, ref con, trans.TransactionID, newTransaction.TransactionID);
+
+                        // update account balance
+                        otherAccount.CurrentBalance += newTransaction.Amount;
+                        UpdateAccountBalance(accUpdateQuery, ref con, otherAccount);
                     }
+
+                    Data.UpdateOrderAndRunningBalance(trans);
                 }
                 else
                 {
@@ -246,7 +320,7 @@ namespace UntitledFinanceTracker.Views
                 transaction.PayeeID = payee.PayeeID;
                 transaction.PayeeName = payee.PayeeName;
             }
-            else if (txtPayee.Text != "")
+            else if (string.IsNullOrEmpty(txtPayee.Text.Trim()))
             {
                 // insert new payee into database
                 string addPayeeQuery = "INSERT INTO Payees (PayeeName) OUTPUT INSERTED.PayeeID VALUES (@PayeeName)";
@@ -260,6 +334,11 @@ namespace UntitledFinanceTracker.Views
 
                 transaction.PayeeID = payee.PayeeID;
                 transaction.PayeeName = payee.PayeeName;
+            }
+            else
+            {
+                transaction.PayeeID = null;
+                transaction.PayeeName = "";
             }
         }
 
@@ -278,110 +357,12 @@ namespace UntitledFinanceTracker.Views
         }
 
         /// <summary>
-        /// Updates transaction running balance starting at specified transaction
-        /// </summary>
-        void UpdateRunningBalance()
-        {
-
-        }
-
-        /// <summary>
-        /// Attempts to find matching transfer
-        /// </summary>
-        /// <param name="offset">search offset.</param>
-        /// <param name="originalAmount">original transfer amount.</param>
-        /// <param name="transferSubcatID">ID of debit/credit transfer subcategory.</param>
-        /// <param name="accUpdateQuery">SQL query.</param>
-        /// <param name="con">SQL Connection.</param>
-        void UpdateTransfer(int offset, decimal originalAmount, int transferSubcatID, string accUpdateQuery, ref SqlConnection con)
-        {
-            Account acc = UpdateConnectedTransfer(1 * offset, originalAmount, transferSubcatID);
-            if (acc != null)
-                UpdateAccountBalance(accUpdateQuery, ref con, acc);
-            else
-            {
-                acc = UpdateConnectedTransfer(2 * offset, originalAmount, transferSubcatID);
-                if (acc != null)
-                    UpdateAccountBalance(accUpdateQuery, ref con, acc);
-                else
-                    throw new Exception($"Could not find matching transfer on { transaction.Date } for ${ transaction.Amount }");
-            }
-        }
-
-        /// <summary>
-        /// Updates transaction Amount of matching transfer and returns account
-        /// </summary>
-        /// <param name="offset">index offset where matching transfer should be located.</param>
-        /// <param name="originalAmount">original transfer amount.</param>
-        /// <param name="transferSubcatID">SubcategoryID of matching transfer.</param>
-        /// <returns>Account of matching transfer</returns>
-        Account UpdateConnectedTransfer(int offset, decimal originalAmount, int transferSubcatID)
-        {
-            int transID = Data.Transactions.IndexOf(transaction);
-            Transaction trans = Data.Transactions[transID + offset];
-            if (trans.SubcategoryID == transferSubcatID && Math.Abs(originalAmount) == Math.Abs(trans.Amount))
-            {
-                // updates amount and gets account from trans
-                trans.Amount = transaction.Amount;
-                Account acc = Data.Accounts.First(a => a.AccountID == trans.AccountID);
-
-                // update current account balance in collection
-                acc.CurrentBalance -= originalAmount;
-                acc.CurrentBalance += trans.Amount;
-
-                return acc;
-            }
-            else
-                return null;
-        }
-
-        /// <summary>
-        /// Updates Order of transaction in list
-        /// </summary>
-        void UpdateOrder()
-        {
-            for (int i = Data.Transactions.Count() - 1; i >= 0; i--)
-            {
-                // go until transaction date is >= date in transactions list
-                if (transaction.Date >= Data.Transactions[i].Date)
-                {
-                    // if dates are equal, create list of transactions, sort, and assign Order
-                    if (Data.Transactions[i].Date == transaction.Date)
-                    {
-                        List<Transaction> transactionsOfDay = new();
-                        transactionsOfDay.Add(transaction);
-                        for (int j = i; transaction.Date == Data.Transactions[j].Date; j--)
-                            transactionsOfDay.Add(Data.Transactions[j]);
-
-                        transactionsOfDay = transactionsOfDay.
-                            OrderBy(t => Math.Abs(t.Amount)).
-                            ThenBy(t => t.CategoryID).
-                            ThenBy(t => t.TransactionID).ToList();
-
-                        int index = transactionsOfDay.IndexOf(transaction);
-                        if (index == 0)
-                            transaction.Order = transactionsOfDay[index + 1].Order;
-                        else
-                            transaction.Order = transactionsOfDay[index - 1].Order + 1;
-
-                        break;
-                    }
-                    else
-                    {
-                        transaction.Order = Data.Transactions[i - 1].Order + 1;
-                        break;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Inserts a transaction into memory and database
         /// </summary>
         /// <param name="query">SQL query.</param>
         /// <param name="con">reference to database connection.</param>
         /// <param name="trans">Transaction object.</param>
-        void AddTransaction(string query, ref SqlConnection con, Transaction trans)
+        Transaction AddTransaction(string query, ref SqlConnection con, Transaction trans)
         {
             if (trans.CategoryID == Data.TRANSFER_ID)
             {
@@ -395,33 +376,29 @@ namespace UntitledFinanceTracker.Views
             transInsertCmd.Parameters.AddWithValue("@Amount", trans.Amount);
             transInsertCmd.Parameters.AddWithValue("@CategoryID", trans.CategoryID);
             transInsertCmd.Parameters.AddWithValue("@SubcategoryID", trans.SubcategoryID);
-            transInsertCmd.Parameters.AddWithValue("@PayeeID", trans.PayeeID);
-            transInsertCmd.Parameters.AddWithValue("@Balance", trans.Balance);
-            transInsertCmd.Parameters.AddWithValue("@Order", trans.Order);
+            transInsertCmd.Parameters.AddWithValue("@PayeeID", (trans.PayeeID == null) ? DBNull.Value : trans.PayeeID);
             int ID = (int)transInsertCmd.ExecuteScalar();
 
             // create and add newTransaction to collection
             Transaction newTransaction = new(ID, trans);
-            int index = newTransaction.Order - 1;
-            Data.Transactions.Insert(index, newTransaction);
-            
-            // update order values, starting at specified index
-            string orderUpdateQuery = "UPDATE Transactions SET DisplayOrder=@Order " +
-                                      "WHERE TransactionID=@TransactionID";
+            Data.Transactions.Add(newTransaction);
 
-            for (int i = index + 1; i < Data.Transactions.Count(); i++)
-            {
-                if (Data.Transactions[i].Order != index)
-                {
-                    Data.Transactions[i].Order = index;
-                    SqlCommand accUpdateCmd = new(orderUpdateQuery, con);
-                    accUpdateCmd.Parameters.AddWithValue("@Order", Data.Transactions[i].Order);
-                    accUpdateCmd.Parameters.AddWithValue("@TransactionID", Data.Transactions[i].TransactionID);
-                    accUpdateCmd.ExecuteNonQuery();
-                }
+            return newTransaction;
+        }
 
-                index++;
-            }
+        /// <summary>
+        /// Inserts a transaction into memory and database
+        /// </summary>
+        /// <param name="query">SQL query.</param>
+        /// <param name="con">reference to database connection.</param>
+        /// <param name="transferID">transfer ID.</param>
+        /// <param name="ID">Transaction ID.</param>
+        void UpdateTransferID(string query, ref SqlConnection con, int transferID, int ID)
+        {
+            SqlCommand TransIDUpdateCmd = new(query, con);
+            TransIDUpdateCmd.Parameters.AddWithValue("@TransferID", transferID);
+            TransIDUpdateCmd.Parameters.AddWithValue("@ID", ID);
+            TransIDUpdateCmd.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -433,9 +410,7 @@ namespace UntitledFinanceTracker.Views
         {
             int ID = (int)cbCategories.SelectedValue;
 
-            IEnumerable<Category> categories = (ID == Data.TRANSFER_ID)
-                ? Data.Categories.Where(c => c.CategoryID == Data.DEBIT_ID)
-                : Data.Categories.Where(c => c.ParentID == ID);
+            IEnumerable<Category> categories = Data.Categories.Where(c => c.ParentID == ID);
             
             cbSubcategories.ItemsSource = categories;
 
@@ -443,8 +418,10 @@ namespace UntitledFinanceTracker.Views
             if (categories.Count() == 1)
                 cbSubcategories.SelectedIndex = 0;
 
+            // if category is transfer, select 'debit' and show cbTransferAccount, else, show txtPayee instead
             if (ID == Data.TRANSFER_ID)
             {
+                cbSubcategories.SelectedIndex = 0;
                 txtPayee.Visibility = Visibility.Collapsed;
                 cbTransferAccount.Visibility = Visibility.Visible;
             }
@@ -499,7 +476,7 @@ namespace UntitledFinanceTracker.Views
                         if (!subCategoryID.Any())
                             throw new Exception(column[4] + " is not a valid subcategory");
 
-                        var payeeID = Data.Payees.Where(p => p.PayeeName == column[5]).Select(p => p.PayeeID);
+                        var payee = Data.Payees.Where(p => p.PayeeName == column[5]);
 
                         // set transaction attributes
                         Transaction trans = new();
@@ -511,41 +488,41 @@ namespace UntitledFinanceTracker.Views
                         trans.CategoryName = column[3];
                         trans.SubcategoryID = subCategoryID.First();
                         trans.SubcategoryName = column[4];
-                        trans.PayeeName = column[5];
+                        trans.TransferID = null;
 
                         // if payee exists, add to transaction, if not, add to Payee table, then to transaction
-                        if (payeeID.Any())
-                            trans.PayeeID = payeeID.First();
+                        if (payee.Any())
+                        {
+                            trans.PayeeID = payee.First().PayeeID;
+                            trans.PayeeName = payee.First().PayeeName;
+                        }
                         else
                         {
-                            string payeeInsertQuery = "INSERT INTO Payees (PayeeName) " +
-                                                      "OUTPUT INSERTED.PayeeID " +
-                                                      "VALUES (@PayeeName)";
+                            if (!string.IsNullOrEmpty(column[5]))
+                            {
+                                trans.PayeeName = column[5];
+                                string payeeInsertQuery = "INSERT INTO Payees (PayeeName) " +
+                                                          "OUTPUT INSERTED.PayeeID " +
+                                                          "VALUES (@PayeeName)";
 
-                            SqlCommand payeeInsertCmd = new(payeeInsertQuery, con);
+                                SqlCommand payeeInsertCmd = new(payeeInsertQuery, con);
+                                payeeInsertCmd.Parameters.AddWithValue("@PayeeName", trans.PayeeName);
+                                int ID = (int)payeeInsertCmd.ExecuteScalar();
 
-                            payeeInsertCmd.Parameters.AddWithValue("@PayeeName", trans.PayeeName);
-                            int ID = (int)payeeInsertCmd.ExecuteScalar();
-
-                            trans.PayeeID = ID;
-                            Data.Payees.Add(new Payee(ID, trans.PayeeName));
+                                trans.PayeeID = ID;
+                                Data.Payees.Add(new Payee(ID, trans.PayeeName));
+                            }
                         }
 
                         transactions.Add(trans);
                     }
 
-                    // order transactions
-                    transactions = transactions.OrderBy(t => t.Date).
-                        ThenBy(t => t.CategoryID).
-                        ThenBy(t => Math.Abs(t.Amount)).ToList();
-
                     // after all data passes validation, insert each into collection/database
                     for (int i = 0; i < transactions.Count(); i++)
                     {
-
-                        string transInsertQuery = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee_fk, Balance, DisplayOrder) " +
+                        string transInsertQuery = "INSERT INTO Transactions (Date, Account_fk, Amount, Category_fk, Subcategory_fk, Payee_fk, TransferID, Balance, DisplayOrder) " +
                                                   "OUTPUT INSERTED.TransactionID " +
-                                                  "VALUES (@Date, @AccountID, @Amount, @CategoryID, @SubcategoryID, @Payee, @Balance, @Order)";
+                                                  "VALUES (@Date, @AccountID, @Amount, @CategoryID, @SubcategoryID, @Payee, null, -1, -1)";
 
                         SqlCommand transInsertCmd = new(transInsertQuery, con);
                         transInsertCmd.Parameters.AddWithValue("@Date", transactions[i].DateString);
@@ -553,15 +530,39 @@ namespace UntitledFinanceTracker.Views
                         transInsertCmd.Parameters.AddWithValue("@Amount", transactions[i].Amount);
                         transInsertCmd.Parameters.AddWithValue("@CategoryID", transactions[i].CategoryID);
                         transInsertCmd.Parameters.AddWithValue("@SubcategoryID", transactions[i].SubcategoryID);
-                        transInsertCmd.Parameters.AddWithValue("@Payee", transactions[i].PayeeID);
-                        transInsertCmd.Parameters.AddWithValue("@Balance", 0);
-                        transInsertCmd.Parameters.AddWithValue("@Order", i + 1); // order starts at 1, not 0
+                        transInsertCmd.Parameters.AddWithValue("@Payee", (transactions[i].PayeeID) == null ? DBNull.Value : transactions[i].PayeeID);
                         int ID = (int)transInsertCmd.ExecuteScalar();
+                        
+                        Transaction newTransaction = new(ID, transactions[i]); // create newTransaction 
 
-                        // create and add newTransaction to collection
-                        Transaction newTransaction = new(ID, transactions[i]);
-                        Data.Transactions.Add(newTransaction);
+                        // if transaction is a transfer credit, set TransferIDs of debit and credit
+                        if (newTransaction.SubcategoryID == Data.CREDIT_ID)
+                        {
+                            Transaction previousTrans = transactions[i - 1];
+                            if (previousTrans.SubcategoryID != Data.DEBIT_ID)
+                                MessageBox.Show("Transaction: " + previousTrans.TransactionID + " is not placed correctly");
+
+                            newTransaction.TransferID = previousTrans.TransactionID;
+                            previousTrans.TransferID = newTransaction.TransactionID;
+
+                            string transUpdateQuery = "UPDATE Transactions SET TransferID=@TransferID WHERE TransactionID=@ID";
+
+                            SqlCommand creditTransUpdateCmd = new(transUpdateQuery, con);
+                            creditTransUpdateCmd.Parameters.AddWithValue("@TransferID", newTransaction.TransferID);
+                            creditTransUpdateCmd.Parameters.AddWithValue("@ID", newTransaction.TransactionID);
+                            creditTransUpdateCmd.ExecuteNonQuery();
+
+                            SqlCommand debitTransUpdateCmd = new(transUpdateQuery, con);
+                            debitTransUpdateCmd.Parameters.AddWithValue("@TransferID", previousTrans.TransferID);
+                            debitTransUpdateCmd.Parameters.AddWithValue("@ID", previousTrans.TransactionID);
+                            debitTransUpdateCmd.ExecuteNonQuery();
+                        }
+
+                        transactions[i] = newTransaction; // update transaction in collection
                     }
+
+                    Data.Transactions.AddRange(transactions); // add new transactions to Transactions
+                    Data.UpdateOrderAndRunningBalance(Data.Transactions[0]);
 
                     sr.Close();
                     con.Close();

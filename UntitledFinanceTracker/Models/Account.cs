@@ -47,6 +47,16 @@ namespace UntitledFinanceTracker.Models
         /// <summary>
         /// Initializes a new instance of the Account class using a copy constructor
         /// </summary>
+        /// <param name="acc">Account object.</param>
+        public Account(Account acc) : this(acc.AccountID, acc.AccountName, acc.AccountTypeID, acc.AccountTypeName,
+            acc.StartingBalance, acc.CurrentBalance, acc.Enabled)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Account class using a copy constructor and a new account ID
+        /// </summary>
         /// <param name="ID">Account ID.</param>
         /// <param name="acc">Account object.</param>
         public Account(int ID, Account acc) : this(ID, acc.AccountName, acc.AccountTypeID, acc.AccountTypeName,

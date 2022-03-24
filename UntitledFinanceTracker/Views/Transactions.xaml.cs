@@ -33,22 +33,31 @@ namespace UntitledFinanceTracker.Views
         private void UserControl_Initialized(object sender, EventArgs e)
         {
             // enables all accounts
-            accounts = Data.Accounts.ToList();
-            foreach (var acc in accounts)
-                acc.Enabled = true;
+            accounts = new();
+            for (int i = 0; i < Data.Accounts.Count; i++)
+            {
+                accounts.Add(new Account(Data.Accounts[i]));
+                //accounts[i].Enabled = true;
+            }
             cbAccounts.ItemsSource = accounts;
 
             // enables all categories
-            categories = Data.Categories.Where(c => c.ParentID == null).ToList();
-            foreach (var cat in categories)
-                cat.Enabled = true;
-            cbCategories.ItemsSource = categories;
+            categories = new();
+            for (int i = 0; i < Data.Categories.Count; i++)
+            {
+                categories.Add(new Category(Data.Categories[i]));
+                //categories[i].Enabled = true;
+            }
+            cbCategories.ItemsSource = categories.Where(c => c.ParentID == null);
 
             // enables all subcategories
-            subcategories = Data.Categories.Where(c => c.ParentID != null).ToList();
-            foreach (var subcat in subcategories)
-                subcat.Enabled = true;
-            cbSubcategories.ItemsSource = subcategories;
+            subcategories = new();
+            for (int i = 0; i < Data.Categories.Count; i++)
+            {
+                subcategories.Add(new Category(Data.Categories[i]));
+                //subcategories[i].Enabled = true;
+            }
+            cbSubcategories.ItemsSource = subcategories.Where(c => c.ParentID != null);
 
             // filters transactions to current year
             if (Data.Transactions.Count > 0)
@@ -70,12 +79,14 @@ namespace UntitledFinanceTracker.Views
 
         void Filter()
         {
+            // order by year, active accounts, active sub/categories, then by Order
+            int year = (int)cbYears.SelectedValue;
             dgTransactions.ItemsSource = Data.Transactions.
-                    Where(t => t.Date.Year == (int)cbYears.SelectedValue).
-                    Where(t => accounts.Where(a => a.Enabled == true).Select(a => a.AccountID).Contains(t.AccountID)).
-                    Where(t => categories.Where(c => c.Enabled == true).Select(c => c.CategoryID).Contains(t.CategoryID)).
-                    Where(t => subcategories.Where(s => s.Enabled == true).Select(s => s.CategoryID).Contains(t.SubcategoryID)).
-                    OrderBy(t => t.Order);
+                Where(t => t.Date.Year == year).
+                Where(t => accounts.Where(a => a.Enabled == true).Select(a => a.AccountID).Contains(t.AccountID)).
+                Where(t => categories.Where(c => c.Enabled == true).Select(c => c.CategoryID).Contains(t.CategoryID)).
+                Where(t => subcategories.Where(s => s.Enabled == true).Select(s => s.CategoryID).Contains(t.SubcategoryID)).
+                OrderBy(t => t.Order);
 
             ((MainWindow)Application.Current.MainWindow).RefreshBalances();
         }
@@ -152,41 +163,45 @@ namespace UntitledFinanceTracker.Views
                     // gets reference to account and updates current balance
                     Account acc = Data.Accounts.First(a => a.AccountID == transaction.AccountID);
                     acc.CurrentBalance -= transaction.Amount;
-                    int index = transaction.Order - 1;
-                    Data.Transactions.Remove(transaction); // deletes transaction from collection
 
-                    // update order values, starting at specified index
-                    string orderUpdateQuery = "UPDATE Transactions SET DisplayOrder=@Order " +
-                                              "WHERE TransactionID=@TransactionID";
+                    int index = Data.Transactions.IndexOf(transaction); // get index of transaction before removal
+                    if (index >= Data.Transactions.Count - 1) // if last in collection, set to count - 2 to avoid OutOfRange Exception
+                        index = Data.Transactions.Count - 2;
+                    if (transaction.CategoryID == Data.TRANSFER_ID) // if deleting credit, decrement by 1 again to avoid OutOfRange Exception
+                        index--;
 
-                    for (int i = index + 1; i < Data.Transactions.Count(); i++)
+                    // transaction delete query
+                    string transDeleteQuery = "DELETE FROM Transactions WHERE TransactionID = @ID";
+                    // account balance update query
+                    string accUpdateQuery = "UPDATE Accounts SET CurrentBalance=@CurrentBalance WHERE AccountID=@AccountID";
+
+                    // if transfer, delete other side of transfer from memory and database too
+                    if (transaction.CategoryID == Data.TRANSFER_ID)
                     {
-                        if (Data.Transactions[i].Order != index)
-                        {
-                            Data.Transactions[i].Order = index;
-                            SqlCommand accUpdateCmd = new(orderUpdateQuery, con);
-                            accUpdateCmd.Parameters.AddWithValue("@Order", Data.Transactions[i].Order);
-                            accUpdateCmd.Parameters.AddWithValue("@TransactionID", Data.Transactions[i].TransactionID);
-                            accUpdateCmd.ExecuteNonQuery();
-                        }
+                        // delete other transaction
+                        Transaction otherTransaction = Data.Transactions.First(t => t.TransactionID == transaction.TransferID);
+                        Data.Transactions.Remove(otherTransaction);
+                        SqlCommand otherTransDeleteCmd = new(transDeleteQuery, con);
+                        otherTransDeleteCmd.Parameters.AddWithValue("@ID", otherTransaction.TransactionID);
+                        otherTransDeleteCmd.ExecuteNonQuery();
 
-                        index++;
+                        // updates other account's balance
+                        Account otherAccount = Data.Accounts.First(a => a.AccountID == otherTransaction.AccountID);
+                        otherAccount.CurrentBalance -= otherTransaction.Amount;
+                        UpdateAccountBalance(accUpdateQuery, ref con, otherAccount);
                     }
 
-                    // deletes transaction from database
-                    string transDeleteQuery = "DELETE FROM Transactions WHERE TransactionID = @ID";
+                    // delete transaction
+                    Data.Transactions.Remove(transaction); // deletes transaction from collection
                     SqlCommand transDeleteCmd = new(transDeleteQuery, con);
                     transDeleteCmd.Parameters.AddWithValue("@ID", transaction.TransactionID);
                     transDeleteCmd.ExecuteNonQuery();
 
-                    // updates current account balance in database
-                    string accUpdateQuery = "UPDATE Accounts SET CurrentBalance=@CurrentBalance " +
-                                            "WHERE AccountID=@AccountID";
-                    UpdateAccountBalance(accUpdateQuery, ref con, acc);
+                    UpdateAccountBalance(accUpdateQuery, ref con, acc); // updates current account balance in database
+                    Data.UpdateOrderAndRunningBalance(Data.Transactions[index]); // update balance and order after removal
+                    Filter();
 
                     con.Close();
-
-                    Filter();
                 }
                 catch (SqlException ex)
                 {

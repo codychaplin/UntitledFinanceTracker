@@ -41,6 +41,15 @@ namespace UntitledFinanceTracker.Models
         /// <summary>
         /// Initializes a new instance of the Category class using a copy constructor
         /// </summary>
+        /// <param name="cat">Category object.</param>
+        public Category(Category cat) : this(cat.CategoryID, cat.ParentID, cat.ParentName, cat.CategoryName, cat.Enabled)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Category class using a copy constructor and a new category ID
+        /// </summary>
         /// <param name="ID">Category ID.</param>
         /// <param name="cat">Category object.</param>
         public Category(int ID, Category cat) : this(ID, cat.ParentID, cat.ParentName, cat.CategoryName, cat.Enabled)

@@ -276,7 +276,7 @@ namespace UntitledFinanceTracker.Views
                     Data.YearStartBalances.Add(++i, balance); // ++i because this year end balance = next year start balance
                 }
 
-            } catch (Exception ex) { }
+            } catch (Exception) { }
         }
     }
 }

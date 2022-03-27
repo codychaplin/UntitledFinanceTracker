@@ -41,6 +41,7 @@ namespace UntitledFinanceTracker.Views
 
                 try
                 {
+                    Data.Transactions = Data.Transactions.OrderBy(t => t.Order).ToList();
                     foreach (Transaction trans in Data.Transactions)
                         sw.WriteLine(trans.ToString());
 

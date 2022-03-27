@@ -86,7 +86,8 @@ namespace UntitledFinanceTracker.Views
                 Where(t => accounts.Where(a => a.Enabled == true).Select(a => a.AccountID).Contains(t.AccountID)).
                 Where(t => categories.Where(c => c.Enabled == true).Select(c => c.CategoryID).Contains(t.CategoryID)).
                 Where(t => subcategories.Where(s => s.Enabled == true).Select(s => s.CategoryID).Contains(t.SubcategoryID)).
-                OrderBy(t => t.Order);
+                OrderBy(t => t.Order).
+                Reverse();
 
             ((MainWindow)Application.Current.MainWindow).RefreshBalances();
         }

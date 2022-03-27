@@ -225,10 +225,9 @@ namespace UntitledFinanceTracker.Views
                             Account originalAccount = Data.Accounts.First(a => a.AccountID == originalAccountTransferID);
                             originalAccount.CurrentBalance -= originalAmount * -1;
                             UpdateAccountBalance(accUpdateQuery, ref con, originalAccount);
-
-                            Account newAccount = Data.Accounts.First(a => a.AccountID == transferAccountID);
-                            newAccount.CurrentBalance += otherTransaction.Amount;
-                            UpdateAccountBalance(accUpdateQuery, ref con, newAccount);
+                            
+                            otherAccount.CurrentBalance += otherTransaction.Amount;
+                            UpdateAccountBalance(accUpdateQuery, ref con, otherAccount);
                         }
 
                         // update other transaction's date, accountID, and amount

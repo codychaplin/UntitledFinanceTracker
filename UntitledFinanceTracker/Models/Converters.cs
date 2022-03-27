@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Windows.Data;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Media;
 
 namespace UntitledFinanceTracker.Models
 {

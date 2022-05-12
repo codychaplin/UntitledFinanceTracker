@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
-using System.Globalization;
 using System.Windows.Controls;
-using System.Collections.Generic;
 using UntitledFinanceTracker.Models;
 using LiveCharts;
 using LiveCharts.Wpf;
 using LiveCharts.Helpers;
 using LiveCharts.Geared;
 using System.Windows;
+using System.Windows.Media;
 
 namespace UntitledFinanceTracker.Views
 {
@@ -27,7 +26,6 @@ namespace UntitledFinanceTracker.Views
         public Dashboard()
         {
             InitializeComponent();
-            DataContext = this;
         }
 
         /// <summary>
@@ -45,23 +43,17 @@ namespace UntitledFinanceTracker.Views
         }
 
         /// <summary>
-        /// Calculates weekly total balance to use in chart
+        /// Updates running balance chart.
         /// </summary>
-        void RunningBalanceGetPoints()
+        void UpdateRunningBalanceChart()
         {
-            // validation
-            if (dtFrom.SelectedDate == null || dtTo.SelectedDate == null)
-                return;
-            if (dtFrom.SelectedDate >= dtTo.SelectedDate)
-                throw new Exception("Error: \"From\" date must be before \"To\" date.");
-
             // cache start and end dates, get list of properties from Transactions
             fromDate = dtFrom.SelectedDate.Value;
             ToDate = dtTo.SelectedDate.Value;
             var results = Data.Transactions.Where(t => t.Date >= fromDate && t.Date <= ToDate)
                                            .Where(t => t.CategoryID != Data.TRANSFER_ID)
-                                           .OrderBy(t => t.Date)
-                                           .Select(t => new { Date = t.Date, Balance = t.Balance }).ToList();
+                                           .OrderBy(t => t.Order)
+                                           .Select(t => new { Date = t.Date, Amount = t.Amount, Balance = t.Balance }).ToList();
 
             // split results
             string[] dates = results.Select(r => r.Date.ToString("yy-MM-dd")).ToArray();
@@ -90,11 +82,57 @@ namespace UntitledFinanceTracker.Views
             chrtBalanceAxisX.Labels = Labels;
         }
 
+        /// <summary>
+        /// Updates expenses chart.
+        /// </summary>
+        void UpdateExpensesChart()
+        {
+            // cache start and end dates
+            fromDate = dtFrom.SelectedDate.Value;
+            ToDate = dtTo.SelectedDate.Value;
+            
+            // get transactions between dates, group by category, return objects containing category name and summed amount
+            var query = Data.Transactions.Where(t => t.Date >= fromDate && t.Date <= ToDate)
+                                         .Where(t => t.CategoryID > Data.INCOME_ID)
+                                         .GroupBy(t => t.CategoryName)
+                                         .Select(t => new
+                                         {
+                                             Category = t.First().CategoryName,
+                                             Amount = t.Sum(a => a.Amount)
+                                         });
+            
+            SeriesCollection seriesCollection = new();
+            foreach (var item in query)
+            {
+                seriesCollection.Add(
+                    new PieSeries
+                    {
+                        Title = item.Category,
+                        Values = new ChartValues<decimal> { item.Amount },
+                        DataLabels = true,
+                        LabelPoint = point => Math.Abs(point.Y).ToString("C"),
+                        LabelPosition = PieLabelPosition.InsideSlice
+                    });
+            };
+
+            // sets balances as chart values in series
+            chrtExpenses.Series = seriesCollection;
+
+            (chrtExpenses.DataTooltip as DefaultTooltip).SelectionMode = TooltipSelectionMode.OnlySender;
+        }
+
         private void dtFrom_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {
-                RunningBalanceGetPoints();
+                // validation
+                if (dtFrom.SelectedDate == null || dtTo.SelectedDate == null)
+                    return;
+                if (dtFrom.SelectedDate >= dtTo.SelectedDate)
+                    throw new Exception("Error: \"From\" date must be before \"To\" date.");
+
+                UpdateRunningBalanceChart();
+                UpdateExpensesChart();
             }
             catch (Exception ex)
             {
@@ -109,7 +147,14 @@ namespace UntitledFinanceTracker.Views
         {
             try
             {
-                RunningBalanceGetPoints();
+                // validation
+                if (dtFrom.SelectedDate == null || dtTo.SelectedDate == null)
+                    return;
+                if (dtFrom.SelectedDate >= dtTo.SelectedDate)
+                    throw new Exception("Error: \"From\" date must be before \"To\" date.");
+
+                UpdateRunningBalanceChart();
+                UpdateExpensesChart();
             }
             catch (Exception ex)
             {

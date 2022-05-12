@@ -118,8 +118,6 @@ namespace UntitledFinanceTracker.Views
                 InitializeCategories(ref con);
                 InitializePayees(ref con);
                 InitializeTransactions(ref con);
-
-                Calculations();
                 
                 con.Close();
             }
@@ -245,38 +243,6 @@ namespace UntitledFinanceTracker.Views
             }
 
             reader.Close();
-        }
-
-        /// <summary>
-        /// Performs calculations needed for data visualization.
-        /// </summary>
-        void Calculations()
-        {
-            CalulateYearStartBalances();
-        }
-
-        /// <summary>
-        /// Calculate starting balance for each year and add to Dictionary
-        /// </summary>
-        void CalulateYearStartBalances()
-        {
-            try
-            {
-                Data.YearStartBalances = new();
-                int startingYear = Data.Transactions.Min(x => x.Date).Year; // get starting year
-                decimal startingBalance = Data.Accounts.Sum(a => a.StartingBalance); // get starting balance of first year
-                Data.YearStartBalances.Add(startingYear, startingBalance); // add first year to dictionary
-
-                // for each year balance = startingBalance + incomes - expenses
-                for (int i = startingYear; i < DateTime.Now.Year;)
-                {
-                    decimal transactions = Data.Transactions.Where(t => t.Date.Year == i).Sum(t => t.Amount);
-                    decimal balance = startingBalance + transactions;
-                    startingBalance = balance;
-                    Data.YearStartBalances.Add(++i, balance); // ++i because this year end balance = next year start balance
-                }
-
-            } catch (Exception) { }
         }
     }
 }

@@ -319,7 +319,7 @@ namespace UntitledFinanceTracker.Views
                 transaction.PayeeID = payee.PayeeID;
                 transaction.PayeeName = payee.PayeeName;
             }
-            else if (string.IsNullOrEmpty(txtPayee.Text.Trim()))
+            else if (!string.IsNullOrEmpty(txtPayee.Text.Trim()))
             {
                 // insert new payee into database
                 string addPayeeQuery = "INSERT INTO Payees (PayeeName) OUTPUT INSERTED.PayeeID VALUES (@PayeeName)";

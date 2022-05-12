@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Windows;
+using System.Data.SqlClient;
+using System.Collections.Generic;
 
 namespace UntitledFinanceTracker.Models
 {
@@ -20,17 +20,9 @@ namespace UntitledFinanceTracker.Models
         public static readonly int INCOME_ID = 4; // parent income category
 
         /// <summary>
-        /// Holds starting balance for each year of transactions
-        /// </summary>
-        /// <returns>
-        /// Dictionary containing starting balances for each year (key = year, value = balance)
-        /// </returns>
-        public static Dictionary<int, decimal> YearStartBalances { get; set; }
-
-        /// <summary>
         /// Updates order and running balance of transactions in memory and database
         /// </summary>
-        /// <param name="date">Object that raised the event.</param>
+        /// <param name="trans">Transaction object used as starting point for sorting.</param>
         public static void UpdateOrderAndRunningBalance(Transaction trans)
         {
             try
@@ -67,8 +59,6 @@ namespace UntitledFinanceTracker.Models
                     balance = Accounts.Sum(a => a.StartingBalance);
                 else // balance = previous transaction's balance
                     balance = Transactions[newIndex - 1].Balance;
-
-                
 
                 int order = newIndex + 1;
                 int counter = 0;

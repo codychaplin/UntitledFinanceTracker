@@ -7,15 +7,15 @@
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
     <Application.Resources>
 
-        <!-- Default font -->
+        <!-- Default font
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="FontFamily" Value="Microsoft JhengHei Light" />
-        </Style>
+        </Style>-->
 
         <Style TargetType="{x:Type Label}">
             <Setter Property="FontSize" Value="14" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="#ffffff" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
         </Style>
 
         <!-- Title formatting -->
@@ -39,7 +39,7 @@
         <Style x:Key="MenuItem" TargetType="{x:Type ListViewItem}">
             <Style.Setters>
                 <Setter Property="Height" Value="30"/>
-                <Setter Property="Foreground" Value="#ffffff"/>
+                <Setter Property="Foreground" Value="#FFFFFF"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListViewItem}">

@@ -21,6 +21,8 @@ namespace UntitledFinanceTracker.Views
         DateTime fromDate { get; set; }
         DateTime ToDate { get; set; }
 
+        BrushConverter converter = new BrushConverter();
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -61,6 +63,7 @@ namespace UntitledFinanceTracker.Views
             UpdateRunningBalanceChart(query);
             UpdateExpensesChart(query);
             UpdateIncomeExpensesChart(query);
+            UpdateValues(query);
         }
 
         /// <summary>
@@ -149,17 +152,15 @@ namespace UntitledFinanceTracker.Views
             var expenseBalances = expenses.Select(i => (i.Amount <= 0) ? Math.Abs(i.Amount) : i.Amount * -1).AsChartValues();
             var dates = expenses.Select(i => i.Month.ToString("MMM yy")).ToList();
 
-            var converter = new BrushConverter();
-
             SeriesCollection seriesCollection = new()
             {
-                new ColumnSeries // income series
+                new ColumnSeries
                 {
                     Title = "Income",
                     Values = incomes,
                     Fill = (Brush)converter.ConvertFromString("#54de42")
                 },
-                new ColumnSeries // expense series
+                new ColumnSeries
                 {
                     Title = "Expense",
                     Values = expenseBalances,
@@ -177,6 +178,31 @@ namespace UntitledFinanceTracker.Views
 
             // on hover, only show details for selection
             (chrtIncExp.DataTooltip as DefaultTooltip).SelectionMode = TooltipSelectionMode.OnlySender;
+        }
+
+        void UpdateValues(IOrderedEnumerable<Transaction> query)
+        {
+            // income sum
+            decimal incomeSum = query.Where(t => t.CategoryID == Data.INCOME_ID).Select(t => t.Amount).Sum();
+            txtIncomeSum.Text = incomeSum.ToString("C");
+
+            // if expense sum is negative (expected), convert to positive, otherwise, make negative
+            decimal expenseSum = query.Where(t => t.CategoryID > Data.INCOME_ID).Select(t => t.Amount).Sum();
+            txtExpenseSum.Text = ((expenseSum < 0) ? Math.Abs(expenseSum) : expenseSum * -1).ToString("C");
+
+            // transaction count
+            txtTransCount.Text = query.Count().ToString();
+
+            // net income
+            decimal net = incomeSum + expenseSum;
+
+            // if positive, text is green, if negative, text is red
+            if (net > 0)
+                txtNet.Foreground = (Brush)converter.ConvertFromString("#a3ff9b");
+            else if (net < 0)
+                txtNet.Foreground = (Brush)converter.ConvertFromString("#ff8a89");
+
+            txtNet.Text = net.ToString("C");
         }
 
         private void dtFrom_SelectedDateChanged(object sender, SelectionChangedEventArgs e)

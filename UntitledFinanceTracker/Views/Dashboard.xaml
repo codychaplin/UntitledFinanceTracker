@@ -96,5 +96,46 @@
                 </lvc:PieChart.Resources>
             </lvc:PieChart>
         </DockPanel>
+
+        <UniformGrid Grid.Column="1" Grid.Row="2" Columns="2" Rows="2"
+                     Margin="0 0 5 5">
+            <UniformGrid.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Setter Property="FontFamily" Value="Arial" />
+                    <Setter Property="FontSize" Value="20" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                </Style>
+                <Style TargetType="{x:Type Label}">
+                    <Setter Property="Margin" Value="0 5 0 0" />
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                </Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Setter Property="Margin" Value="5" />
+                    <Setter Property="Background" Value="#212121" />
+                </Style>
+            </UniformGrid.Resources>
+            <Grid>
+                <Label>Income</Label>
+                <TextBlock Foreground="#a3ff9b" x:Name="txtIncomeSum" />
+            </Grid>
+            <Grid>
+                <Label>Expense</Label>
+                <TextBlock Foreground="#ff8a89" x:Name="txtExpenseSum" />
+            </Grid>
+            <Grid>
+                <Label>Net</Label>
+                <TextBlock x:Name="txtNet" />
+            </Grid>
+            <Grid>
+                <Label>Transactions</Label>
+                <TextBlock x:Name="txtTransCount" />
+            </Grid>
+        </UniformGrid>
     </Grid>
 </UserControl>

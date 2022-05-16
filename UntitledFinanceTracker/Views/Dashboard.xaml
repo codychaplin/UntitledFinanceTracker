@@ -18,7 +18,8 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
+        
+        <!-- date picker row -->
         <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Margin="5 10 0 0">
             <Label Margin="5 0 5 0" Content="From" FontSize="11" />
             <DatePicker x:Name="dtFrom" Width="105" SelectedDateChanged="dtFrom_SelectedDateChanged" />
@@ -26,12 +27,13 @@
             <DatePicker x:Name="dtTo" Width="105" SelectedDateChanged="dtTo_SelectedDateChanged" />
         </StackPanel>
         
+        <!-- balance over time chart -->
         <DockPanel Grid.Row="1" Grid.Column="0" LastChildFill="True" Margin="10 10 5 5" Background="#212121">
             <Label DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Top">Balance Over Time</Label>
             <lvc:CartesianChart x:Name="chrtBalance" DisableAnimations="True" DataTooltip="{x:Null}"
                                 Margin="0 -10 20 20" Padding="10">
                 <lvc:CartesianChart.AxisY>
-                    <lvc:Axis x:Name="chrtBalanceAxisY" LabelFormatter="{Binding Formatter}">
+                    <lvc:Axis x:Name="chrtBalanceAxisY">
                         <lvc:Axis.Separator>
                             <lvc:Separator Stroke="#707070"/>
                         </lvc:Axis.Separator>
@@ -46,30 +48,40 @@
                 </lvc:CartesianChart.AxisX>
             </lvc:CartesianChart>
         </DockPanel>
+
+        <!-- income/expense chart -->
         <DockPanel Grid.Row="2" Margin="10 5 5 10" Background="#212121">
             <Label DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Top">Incomes/Expenses over Time</Label>
-            <!--<lvc:CartesianChart x:Name="chrtIncExpOverTime" DisableAnimations="True" DataTooltip="{x:Null}"
+            <lvc:CartesianChart x:Name="chrtIncExp" DisableAnimations="True"
                                 Margin="0 -10 20 20" Padding="10">
+                <lvc:CartesianChart.Resources>
+                    <Style TargetType="{x:Type lvc:DefaultTooltip}">
+                        <Setter Property="Background" Value="#99121212" />
+                        <Setter Property="Foreground" Value="White" />
+                    </Style>
+                </lvc:CartesianChart.Resources>
                 <lvc:CartesianChart.AxisY>
-                    <lvc:Axis x:Name="chrtIncExpOverTimeAxisY" LabelFormatter="{Binding Formatter}">
+                    <lvc:Axis x:Name="chrtIncExpAxisY">
                         <lvc:Axis.Separator>
-                            <lvc:Separator Stroke="#707070"/>
+                            <lvc:Separator Stroke="#707070" />
                         </lvc:Axis.Separator>
                     </lvc:Axis>
                 </lvc:CartesianChart.AxisY>
                 <lvc:CartesianChart.AxisX>
-                    <lvc:Axis x:Name="chrtIncExpOverTimeAxisX">
+                    <lvc:Axis x:Name="chrtIncExpAxisX">
                         <lvc:Axis.Separator>
-                            <lvc:Separator Stroke="#707070"/>
+                            <lvc:Separator StrokeThickness="0" Step="1" />
                         </lvc:Axis.Separator>
                     </lvc:Axis>
                 </lvc:CartesianChart.AxisX>
-            </lvc:CartesianChart>-->
+            </lvc:CartesianChart>
         </DockPanel>
+
+        <!-- expenses pie chart -->
         <DockPanel Grid.Row="1" Grid.Column="2" Margin="5 10 10 5" Background="#212121">
             <Label DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Top">Expenses</Label>
-            <lvc:PieChart x:Name="chrtExpenses" InnerRadius="50" LegendLocation="None"
-                          Margin="20 0 0 20" Foreground="White">
+            <lvc:PieChart x:Name="chrtExpenses" InnerRadius="50" LegendLocation="Right"
+                          Margin="20 0 20 20" Foreground="White">
                 <lvc:PieChart.Resources>    
                     <Style TargetType="{x:Type lvc:PieSeries}">
                         <Setter Property="Stroke" Value="#212121" />

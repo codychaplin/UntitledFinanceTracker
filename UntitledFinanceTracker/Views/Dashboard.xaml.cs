@@ -18,7 +18,8 @@ namespace UntitledFinanceTracker.Views
     /// </summary>
     public partial class Dashboard : UserControl
     {
-        DateTime fromDate { get; set; }
+        string SelectedExpenseCategory { get; set; }
+        DateTime FromDate { get; set; }
         DateTime ToDate { get; set; }
 
         BrushConverter converter = new BrushConverter();
@@ -39,23 +40,27 @@ namespace UntitledFinanceTracker.Views
         private void UserControl_Initialized(object sender, EventArgs e)
         {
             // set default dates
-            fromDate = new DateTime(DateTime.Now.Year, 1, 1);
+            FromDate = new DateTime(DateTime.Now.Year, 1, 1);
             ToDate = DateTime.Now;
-            dtFrom.SelectedDate = fromDate;
+            dtFrom.SelectedDate = FromDate;
             dtTo.SelectedDate = ToDate;
+
+            DataContext = this;
+
+            chrtSubExpenses.Visibility = Visibility.Visible;
         }
 
         /// <summary>
-        /// Updates all charts.
+        /// Updates all charts
         /// </summary>
         void UpdateCharts()
         {
             // cache dates
-            fromDate = dtFrom.SelectedDate.Value;
+            FromDate = dtFrom.SelectedDate.Value;
             ToDate = dtTo.SelectedDate.Value;
 
             // get list of Transactions within date, excluding transfers, and ordered by Order
-            var query = Data.Transactions.Where(t => t.Date >= fromDate && t.Date <= ToDate)
+            var query = Data.Transactions.Where(t => t.Date >= FromDate && t.Date <= ToDate)
                                            .Where(t => t.CategoryID != Data.TRANSFER_ID)
                                            .OrderBy(t => t.Order);
 
@@ -64,10 +69,13 @@ namespace UntitledFinanceTracker.Views
             UpdateExpensesChart(query);
             UpdateIncomeExpensesChart(query);
             UpdateValues(query);
+
+            if (chrtSubExpenses.Visibility == Visibility.Visible)
+                UpdateSubExpensesChart(query);
         }
 
         /// <summary>
-        /// Updates running balance chart.
+        /// Updates running balance chart
         /// </summary>
         /// <param name="query">Filtered list of Transactions.</param>
         void UpdateRunningBalanceChart(IOrderedEnumerable<Transaction> query)
@@ -102,7 +110,7 @@ namespace UntitledFinanceTracker.Views
         }
 
         /// <summary>
-        /// Updates expenses chart.
+        /// Updates expenses chart
         /// </summary>
         /// <param name="query">Filtered list of Transactions.</param>
         void UpdateExpensesChart(IOrderedEnumerable<Transaction> query)
@@ -111,8 +119,8 @@ namespace UntitledFinanceTracker.Views
             var results = query.Where(t => t.CategoryID > Data.INCOME_ID)
                              .GroupBy(t => t.CategoryName)
                              .Select(t => new { Category = t.First().CategoryName,
-                                                Amount = t.Sum(a => a.Amount) });
-            
+                                 Amount = t.Sum(a => a.Amount) });
+
             SeriesCollection seriesCollection = new();
             foreach (var item in results)
             {
@@ -134,7 +142,41 @@ namespace UntitledFinanceTracker.Views
         }
 
         /// <summary>
-        /// Updates Incomes/Expenses chart.
+        /// Updates sub expenses chart
+        /// </summary>
+        /// <param name="query">Filtered list of Transactions.</param>
+        void UpdateSubExpensesChart(IOrderedEnumerable<Transaction> query)
+        {
+            // get transactions between dates, group by category, return objects containing category name and summed amount
+            var results = query.Where(t => t.CategoryName == SelectedExpenseCategory)
+                             .GroupBy(t => t.SubcategoryName)
+                             .Select(t => new {
+                                 Category = t.First().SubcategoryName,
+                                 Amount = t.Sum(a => a.Amount)
+                             });
+
+            SeriesCollection seriesCollection = new();
+            foreach (var item in results)
+            {
+                seriesCollection.Add(
+                    new PieSeries
+                    {
+                        Title = item.Category,
+                        Values = new ChartValues<decimal> { item.Amount },
+                        DataLabels = true,
+                        LabelPoint = point => Math.Abs(point.Y).ToString("C"),
+                        LabelPosition = PieLabelPosition.InsideSlice
+                    });
+            };
+
+            chrtSubExpenses.Series = seriesCollection;
+
+            // on hover, only show details for selection
+            (chrtSubExpenses.DataTooltip as DefaultTooltip).SelectionMode = TooltipSelectionMode.OnlySender;
+        }
+
+        /// <summary>
+        /// Updates Incomes/Expenses chart
         /// </summary>
         /// <param name="query">Filtered list of Transactions.</param>
         void UpdateIncomeExpensesChart(IOrderedEnumerable<Transaction> query)
@@ -180,6 +222,10 @@ namespace UntitledFinanceTracker.Views
             (chrtIncExp.DataTooltip as DefaultTooltip).SelectionMode = TooltipSelectionMode.OnlySender;
         }
 
+        /// <summary>
+        /// Updates summary values
+        /// </summary>
+        /// <param name="query">Filtered list of Transactions.</param>
         void UpdateValues(IOrderedEnumerable<Transaction> query)
         {
             // income sum
@@ -205,6 +251,11 @@ namespace UntitledFinanceTracker.Views
             txtNet.Text = net.ToString("C");
         }
 
+        /// <summary>
+        /// Updates charts when select date range changes
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains SelectionChangedEventArgs event data.</param>
         private void dtFrom_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -216,17 +267,22 @@ namespace UntitledFinanceTracker.Views
                     throw new Exception("Error: \"From\" date must be before \"To\" date.");
 
                 UpdateCharts();
-                
+
             }
             catch (Exception ex)
             {
                 // reset dates and display error
-                dtFrom.SelectedDate = fromDate;
+                dtFrom.SelectedDate = FromDate;
                 dtTo.SelectedDate = ToDate;
                 MessageBox.Show(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates charts when select date range changes
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains SelectionChangedEventArgs event data.</param>
         private void dtTo_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -242,9 +298,64 @@ namespace UntitledFinanceTracker.Views
             catch (Exception ex)
             {
                 // reset dates and display error
-                dtFrom.SelectedDate = fromDate;
+                dtFrom.SelectedDate = FromDate;
                 dtTo.SelectedDate = ToDate;
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Updates Expense subcategory pie chart data
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="chartPoint">ChartPoint object associated with data.</param>
+        private void chrtExpenses_DataClick(object sender, ChartPoint chartPoint)
+        {
+            Data.Log(chartPoint.SeriesView.Title);
+            // get list of Transactions within date, excluding transfers, and ordered by Order
+            var query = Data.Transactions.Where(t => t.Date >= FromDate && t.Date <= ToDate)
+                                           .Where(t => t.CategoryID != Data.TRANSFER_ID)
+                                           .OrderBy(t => t.Order);
+
+            SelectedExpenseCategory = chartPoint.SeriesView.Title;
+            chrtSubExpenses.Visibility = Visibility.Visible;
+            UpdateSubExpensesChart(query);
+        }
+
+        /// <summary>
+        /// Scales properties with size of window
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains SizeChangedEventArgs event data.</param>
+        private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // scales pie chart doughnut hole size
+            chrtExpenses.InnerRadius = Application.Current.MainWindow.Height / 22;
+            chrtSubExpenses.InnerRadius = Application.Current.MainWindow.Height / 50;
+
+            if (Application.Current.MainWindow.Width < 1000)
+            {
+                chrtExpenses.LegendLocation = LegendLocation.None;
+                chrtSubExpenses.LegendLocation = LegendLocation.None;
+            }
+            else if (Application.Current.MainWindow.Width < 1200)
+            {
+                chrtExpenses.LegendLocation = LegendLocation.Right;
+                chrtSubExpenses.LegendLocation = LegendLocation.None;
+            }
+            else
+            {
+                chrtExpenses.LegendLocation = LegendLocation.Right;
+                chrtSubExpenses.LegendLocation = LegendLocation.Right;
+            }
+
+            // when window is maximized
+            if (Application.Current.MainWindow.WindowState == WindowState.Maximized)
+            {
+                chrtExpenses.InnerRadius = 50;
+                chrtSubExpenses.InnerRadius = 30;
+                chrtExpenses.LegendLocation = LegendLocation.Right;
+                chrtSubExpenses.LegendLocation = LegendLocation.Right;
             }
         }
     }

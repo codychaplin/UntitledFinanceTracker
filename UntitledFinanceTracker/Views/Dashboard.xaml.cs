@@ -46,7 +46,7 @@ namespace UntitledFinanceTracker.Views
             dtTo.SelectedDate = ToDate;
 
             DataContext = this;
-
+            
             chrtSubExpenses.Visibility = Visibility.Visible;
         }
 

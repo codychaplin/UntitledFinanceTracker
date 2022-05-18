@@ -18,6 +18,8 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        
+        <!-- left side -->
         <StackPanel Orientation="Vertical">
             <StackPanel Style="{StaticResource spForm}">
                 <Label>Date</Label>
@@ -32,32 +34,67 @@
                 <Label>Amount</Label>
                 <TextBox x:Name="txtAmount" TabIndex="2"></TextBox>
             </StackPanel>
+
+            <!-- hidden Import CSV button -->
             <Button Style="{StaticResource btnCSVFrm}" x:Name="btnCSV" Click="btnCSV_Click"
                     Margin="0 28 0 0" Visibility="Hidden">Import CSV</Button>
         </StackPanel>
-        <StackPanel Orientation="Vertical" Grid.Column="1">
-            <StackPanel Style="{StaticResource spForm}">
-                <Label>Category</Label>
-                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbCategories" TabIndex="3"
-                          DisplayMemberPath = "CategoryName" SelectedValuePath = "CategoryID" SelectionChanged="cbCategories_SelectionChanged" />
-            </StackPanel>
-            <StackPanel Style="{StaticResource spForm}">
-                <Label>Subcategory</Label>
-                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbSubcategories" TabIndex="4"
-                          DisplayMemberPath = "CategoryName" SelectedValuePath = "CategoryID" />
-            </StackPanel>
-            <StackPanel Style="{StaticResource spForm}">
-                <Label>Payee</Label>
-                <TextBox x:Name="txtPayee" TabIndex="5"></TextBox>
-                <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbTransferAccount" TabIndex="5"
+        
+        <!-- right side -->
+        <Grid Grid.Column="1">
+
+            <!-- payee dropdown box -->
+            <Border x:Name="bdrPayee" Width="180" MaxHeight="134" HorizontalAlignment="Center" VerticalAlignment="Top"
+                    Visibility="Collapsed" BorderBrush="#646464" BorderThickness="1" Margin="0 59 0 0" Panel.ZIndex="99">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="spPayees">
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type TextBox}">
+                                <Setter Property="Padding" Value="3" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="FontFamily" Value="Microsoft JhengHei Light" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="Foreground" Value="White" />
+                                <Setter Property="Background" Value="#212121" />
+                                <Setter Property="IsReadOnly" Value="True" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#224a5d" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Resources>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+            
+            <StackPanel Orientation="Vertical" Grid.Column="1">
+                <StackPanel Style="{StaticResource spForm}">
+                    <Label>Payee</Label>
+                    <TextBox x:Name="txtPayee" TabIndex="5" KeyUp="txtPayee_KeyUp"></TextBox>
+                    <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbTransferAccount" TabIndex="5"
                           Visibility="Collapsed" DisplayMemberPath = "AccountName" SelectedValuePath = "AccountID" />
-            </StackPanel>
-            <StackPanel Style="{StaticResource spForm}" Orientation="Horizontal" Margin="0 18 0 0">
-                <Button Style="{StaticResource btnUpdateFrm}" x:Name="btnEdit" Click="btnEdit_Click"
+                </StackPanel>
+                <StackPanel Style="{StaticResource spForm}">
+                    <Label>Category</Label>
+                    <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbCategories" TabIndex="3"
+                          DisplayMemberPath = "CategoryName" SelectedValuePath = "CategoryID" SelectionChanged="cbCategories_SelectionChanged" />
+                </StackPanel>
+                <StackPanel Style="{StaticResource spForm}">
+                    <Label>Subcategory</Label>
+                    <ComboBox Template="{DynamicResource ComboBoxTemplate}" x:Name="cbSubcategories" TabIndex="4"
+                          DisplayMemberPath = "CategoryName" SelectedValuePath = "CategoryID" />
+                </StackPanel>
+                
+                <!-- buttons -->
+                <StackPanel Style="{StaticResource spForm}" Orientation="Horizontal" Margin="0 18 0 0">
+                    <Button Style="{StaticResource btnUpdateFrm}" x:Name="btnEdit" Click="btnEdit_Click"
                         TabIndex="6" IsDefault="True">Update</Button>
-                <Button Style="{StaticResource btnCancelFrm}" x:Name="btnCancel" Click="btnCancel_Click"
+                    <Button Style="{StaticResource btnCancelFrm}" x:Name="btnCancel" Click="btnCancel_Click"
                         TabIndex="7" IsCancel="True">Cancel</Button>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Grid>
     </Grid>
 </Window>

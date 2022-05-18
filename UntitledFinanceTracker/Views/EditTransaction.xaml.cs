@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using UntitledFinanceTracker.Models;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace UntitledFinanceTracker.Views
 {
@@ -103,6 +105,13 @@ namespace UntitledFinanceTracker.Views
             cbCategories.ItemsSource = Data.Categories.Where(c => c.ParentID == null);
             cbSubcategories.ItemsSource = null;
             dpDate.SelectedDate = DateTime.Now.Date;
+
+            // hides payee dropdown box when focus is lost
+            txtPayee.LostFocus += (sender, e) =>
+            {
+                spPayees.Children.Clear();
+                bdrPayee.Visibility = Visibility.Collapsed;
+            };
         }
 
         /// <summary>
@@ -576,6 +585,61 @@ namespace UntitledFinanceTracker.Views
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        /// <summary>
+        /// Updates txtPayee's autocomplete dropdown box on key press
+        /// </summary>
+        /// <param name="sender">Object that raised the event.</param>
+        /// <param name="e">Contains KeyEventArgs data.</param>
+        private void txtPayee_KeyUp(object sender, KeyEventArgs e)
+        {
+            bool found = false;
+            string query = txtPayee.Text;
+            spPayees.Children.Clear();
+
+            if (query.Length < 3)
+            {
+                bdrPayee.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                bdrPayee.Visibility = Visibility.Visible;
+
+                // for each payee, check if query matches any payees
+                foreach (var item in Data.Payees.Select(p => p.PayeeName))
+                {
+                    if (item.ToLower().Contains(query.ToLower()))
+                    {
+                        AddItem(item);
+                        found = true;
+                    }
+                }
+            }
+
+            // if no match, hide dropdown box
+            if (!found)
+                bdrPayee.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// Adds item to payee dropdown box
+        /// </summary>
+        /// <param name="text">string that will be added to dropdown box</param>
+        void AddItem(string text)
+        {
+            // add new textblock
+            TextBox box = new();
+            box.Text = text;
+
+            box.PreviewMouseLeftButtonDown += (sender, e) =>
+            {
+                txtPayee.Text = box.Text;
+                spPayees.Children.Clear();
+                bdrPayee.Visibility = Visibility.Collapsed;
+            };
+
+            spPayees.Children.Add(box);
         }
 
         /// <summary>

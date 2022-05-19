@@ -13,7 +13,6 @@ namespace UntitledFinanceTracker.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static MainWindow main;
 
         /// <summary>
         /// Default constructor
@@ -23,7 +22,6 @@ namespace UntitledFinanceTracker.Views
             Init(); // load database info into ObservableCollections
             InitializeComponent();
             lvMainMenu.SelectedIndex = 0; // default to dashboard view
-            main = this;
         }
 
         /// <summary>
@@ -40,6 +38,12 @@ namespace UntitledFinanceTracker.Views
             view.GroupDescriptions.Add(groupDescription);
 
             RefreshBalances();
+
+            // set default dates
+            Data.FromDate = new DateTime(DateTime.Now.Year, 1, 1);
+            Data.ToDate = DateTime.Now;
+            dtFrom.SelectedDate = Data.FromDate;
+            dtTo.SelectedDate = Data.ToDate;
         }
 
         /// <summary>
@@ -77,11 +81,6 @@ namespace UntitledFinanceTracker.Views
                 {
                     Control ctrlWeekView = new Calendar();
                     ContentPanel.Children.Add(ctrlWeekView);
-                }
-                else if (lvMainMenu.SelectedItem.Equals(lviBalanceSheet)) // balance sheet
-                {
-                    Control ctrlBalanceSheet = new BalanceSheet();
-                    ContentPanel.Children.Add(ctrlBalanceSheet);
                 }
                 else if (lvMainMenu.SelectedItem.Equals(lviStats)) // statistics
                 {
@@ -243,6 +242,42 @@ namespace UntitledFinanceTracker.Views
             }
 
             reader.Close();
+        }
+
+        private void dtFrom_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ChangeDates();
+        }
+
+        private void dtTo_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ChangeDates();
+        }
+
+        void ChangeDates()
+        {
+            try
+            {
+                // validation
+                if (dtFrom.SelectedDate == null || dtTo.SelectedDate == null)
+                    return;
+                if (dtFrom.SelectedDate >= dtTo.SelectedDate)
+                    throw new Exception("Error: \"From\" date must be before \"To\" date.");
+
+                // cache dates
+                Data.FromDate = dtFrom.SelectedDate.Value;
+                Data.ToDate = dtTo.SelectedDate.Value;
+
+                if (Dashboard.dashboard != null)
+                    Dashboard.dashboard.UpdateCharts(); // call UpdateCharts through singleton
+            }
+            catch (Exception ex)
+            {
+                // reset dates and display error
+                dtFrom.SelectedDate = Data.FromDate;
+                dtTo.SelectedDate = Data.ToDate;
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

@@ -8,8 +8,6 @@ using LiveCharts.Helpers;
 using LiveCharts.Geared;
 using System.Windows;
 using System.Windows.Media;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace UntitledFinanceTracker.Views
 {
@@ -18,9 +16,9 @@ namespace UntitledFinanceTracker.Views
     /// </summary>
     public partial class Dashboard : UserControl
     {
+        public static Dashboard dashboard; // singleton
+
         string SelectedExpenseCategory { get; set; }
-        DateTime FromDate { get; set; }
-        DateTime ToDate { get; set; }
 
         BrushConverter converter = new BrushConverter();
 
@@ -30,6 +28,7 @@ namespace UntitledFinanceTracker.Views
         public Dashboard()
         {
             InitializeComponent();
+            dashboard = this;
         }
 
         /// <summary>
@@ -39,28 +38,18 @@ namespace UntitledFinanceTracker.Views
         /// <param name="e">Contains EventArgs event data.</param>
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            // set default dates
-            FromDate = new DateTime(DateTime.Now.Year, 1, 1);
-            ToDate = DateTime.Now;
-            dtFrom.SelectedDate = FromDate;
-            dtTo.SelectedDate = ToDate;
-
             DataContext = this;
-            
             chrtSubExpenses.Visibility = Visibility.Visible;
+            UpdateCharts();
         }
 
         /// <summary>
         /// Updates all charts
         /// </summary>
-        void UpdateCharts()
+        public void UpdateCharts()
         {
-            // cache dates
-            FromDate = dtFrom.SelectedDate.Value;
-            ToDate = dtTo.SelectedDate.Value;
-
             // get list of Transactions within date, excluding transfers, and ordered by Order
-            var query = Data.Transactions.Where(t => t.Date >= FromDate && t.Date <= ToDate)
+            var query = Data.Transactions.Where(t => t.Date >= Data.FromDate && t.Date <= Data.ToDate)
                                            .Where(t => t.CategoryID != Data.TRANSFER_ID)
                                            .OrderBy(t => t.Order);
 
@@ -252,68 +241,14 @@ namespace UntitledFinanceTracker.Views
         }
 
         /// <summary>
-        /// Updates charts when select date range changes
-        /// </summary>
-        /// <param name="sender">Object that raised the event.</param>
-        /// <param name="e">Contains SelectionChangedEventArgs event data.</param>
-        private void dtFrom_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            try
-            {
-                // validation
-                if (dtFrom.SelectedDate == null || dtTo.SelectedDate == null)
-                    return;
-                if (dtFrom.SelectedDate >= dtTo.SelectedDate)
-                    throw new Exception("Error: \"From\" date must be before \"To\" date.");
-
-                UpdateCharts();
-
-            }
-            catch (Exception ex)
-            {
-                // reset dates and display error
-                dtFrom.SelectedDate = FromDate;
-                dtTo.SelectedDate = ToDate;
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Updates charts when select date range changes
-        /// </summary>
-        /// <param name="sender">Object that raised the event.</param>
-        /// <param name="e">Contains SelectionChangedEventArgs event data.</param>
-        private void dtTo_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            try
-            {
-                // validation
-                if (dtFrom.SelectedDate == null || dtTo.SelectedDate == null)
-                    return;
-                if (dtFrom.SelectedDate >= dtTo.SelectedDate)
-                    throw new Exception("Error: \"From\" date must be before \"To\" date.");
-
-                UpdateCharts();
-            }
-            catch (Exception ex)
-            {
-                // reset dates and display error
-                dtFrom.SelectedDate = FromDate;
-                dtTo.SelectedDate = ToDate;
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        /// <summary>
         /// Updates Expense subcategory pie chart data
         /// </summary>
         /// <param name="sender">Object that raised the event.</param>
         /// <param name="chartPoint">ChartPoint object associated with data.</param>
         private void chrtExpenses_DataClick(object sender, ChartPoint chartPoint)
         {
-            Data.Log(chartPoint.SeriesView.Title);
             // get list of Transactions within date, excluding transfers, and ordered by Order
-            var query = Data.Transactions.Where(t => t.Date >= FromDate && t.Date <= ToDate)
+            var query = Data.Transactions.Where(t => t.Date >= Data.FromDate && t.Date <= Data.ToDate)
                                            .Where(t => t.CategoryID != Data.TRANSFER_ID)
                                            .OrderBy(t => t.Order);
 
@@ -333,6 +268,14 @@ namespace UntitledFinanceTracker.Views
             chrtExpenses.InnerRadius = Application.Current.MainWindow.Height / 22;
             chrtSubExpenses.InnerRadius = Application.Current.MainWindow.Height / 50;
 
+            // scales summary values based on height/width ratio (favouring width)
+            double fontSize = (Application.Current.MainWindow.Height / 80) + (Application.Current.MainWindow.Width / 60);
+            txtIncomeSum.FontSize = fontSize;
+            txtExpenseSum.FontSize = fontSize;
+            txtNet.FontSize = fontSize;
+            txtTransCount.FontSize = fontSize;
+
+            // based on width
             if (Application.Current.MainWindow.Width < 1000)
             {
                 chrtExpenses.LegendLocation = LegendLocation.None;
@@ -352,10 +295,17 @@ namespace UntitledFinanceTracker.Views
             // when window is maximized
             if (Application.Current.MainWindow.WindowState == WindowState.Maximized)
             {
+                // expenses pie chart inner radius and legend visibility
                 chrtExpenses.InnerRadius = 50;
                 chrtSubExpenses.InnerRadius = 30;
                 chrtExpenses.LegendLocation = LegendLocation.Right;
                 chrtSubExpenses.LegendLocation = LegendLocation.Right;
+
+                // summary values
+                txtIncomeSum.FontSize = 40;
+                txtExpenseSum.FontSize = 40;
+                txtNet.FontSize = 40;
+                txtTransCount.FontSize = 40;
             }
         }
     }

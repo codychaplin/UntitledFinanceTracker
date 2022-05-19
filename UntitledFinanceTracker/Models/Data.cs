@@ -14,6 +14,10 @@ namespace UntitledFinanceTracker.Models
         public static List<Payee> Payees { get; set; }
         public static List<Transaction> Transactions { get; set; }
 
+        // user selected date range
+        public static DateTime FromDate { get; set; }
+        public static DateTime ToDate { get; set; }
+
         public static readonly int TRANSFER_ID = 1; // parent transfer category
         public static readonly int DEBIT_ID = 2; // transfer debit subcategory
         public static readonly int CREDIT_ID = 3; // transfer credit subcategory

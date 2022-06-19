@@ -74,5 +74,9 @@ namespace UntitledFinanceTracker.Models
             }
         }
 
+        public override string ToString()
+        {
+            return $"{AccountTypeID},{AccountTypeName}";
+        }
     }
 }

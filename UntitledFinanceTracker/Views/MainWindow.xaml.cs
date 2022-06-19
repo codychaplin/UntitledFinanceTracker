@@ -77,16 +77,6 @@ namespace UntitledFinanceTracker.Views
                     Control ctrlTransactionView = new Transactions();
                     ContentPanel.Children.Add(ctrlTransactionView);
                 }
-                else if (lvMainMenu.SelectedItem.Equals(lviCalendar)) // calendar
-                {
-                    Control ctrlWeekView = new Calendar();
-                    ContentPanel.Children.Add(ctrlWeekView);
-                }
-                else if (lvMainMenu.SelectedItem.Equals(lviStats)) // statistics
-                {
-                    Control ctrlStats = new Statistics();
-                    ContentPanel.Children.Add(ctrlStats);
-                }
                 else if (lvMainMenu.SelectedItem.Equals(lviSettings)) // settings
                 {
                     Control ctrlSettings = new Settings();

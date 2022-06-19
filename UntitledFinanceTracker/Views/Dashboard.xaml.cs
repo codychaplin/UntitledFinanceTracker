@@ -107,8 +107,11 @@ namespace UntitledFinanceTracker.Views
             // get transactions between dates, group by category, return objects containing category name and summed amount
             var results = query.Where(t => t.CategoryID > Data.INCOME_ID)
                              .GroupBy(t => t.CategoryName)
-                             .Select(t => new { Category = t.First().CategoryName,
-                                 Amount = t.Sum(a => a.Amount) });
+                             .Select(t => new
+                             {
+                                 Category = t.First().CategoryName,
+                                 Amount = t.Sum(a => a.Amount)
+                             });
 
             SeriesCollection seriesCollection = new();
             foreach (var item in results)
@@ -139,7 +142,8 @@ namespace UntitledFinanceTracker.Views
             // get transactions between dates, group by category, return objects containing category name and summed amount
             var results = query.Where(t => t.CategoryName == SelectedExpenseCategory)
                              .GroupBy(t => t.SubcategoryName)
-                             .Select(t => new {
+                             .Select(t => new
+                             {
                                  Category = t.First().SubcategoryName,
                                  Amount = t.Sum(a => a.Amount)
                              });

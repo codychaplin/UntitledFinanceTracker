@@ -179,5 +179,10 @@ namespace UntitledFinanceTracker.Models
         /// Account Status
         /// </summary>
         public bool Enabled { get; set; }
+
+        public override string ToString()
+        {
+            return $"{AccountID},{AccountName},{AccountTypeID},{AccountTypeName},{StartingBalance},{CurrentBalance}";
+        }
     }
 }

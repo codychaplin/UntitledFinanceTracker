@@ -292,7 +292,7 @@ namespace UntitledFinanceTracker.Models
         /// </summary>
         public override string ToString()
         {
-            return $"{DateString},{AccountName},{AmountString},{CategoryName},{SubcategoryName},{PayeeName}";
+            return $"{TransactionID},{DateString},{AccountName},{AmountString},{CategoryName},{SubcategoryName},{PayeeName},{Order}";
         }
     }
 }

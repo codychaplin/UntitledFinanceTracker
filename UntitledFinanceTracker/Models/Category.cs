@@ -111,5 +111,10 @@ namespace UntitledFinanceTracker.Models
         /// Category Status
         /// </summary>
         public bool Enabled { get; set; }
+
+        public override string ToString()
+        {
+            return $"{ParentID},{CategoryID},{CategoryName}";
+        }
     }
 }

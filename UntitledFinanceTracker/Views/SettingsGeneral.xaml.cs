@@ -232,17 +232,19 @@ namespace UntitledFinanceTracker.Views
         /// <param name="e">Contains MouseButtonEventArgs data.</param>
         private void lviDeveloperMode_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (tsDeveloperMode.IsChecked)
+            {
+                lviUpdateAccountBalances.Visibility = Visibility.Hidden;
+                lviUpdateRunningBalance.Visibility = Visibility.Hidden;
+                lviUpdateTransactionOrder.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                lviUpdateAccountBalances.Visibility = Visibility.Visible;
+                lviUpdateRunningBalance.Visibility = Visibility.Visible;
+                lviUpdateTransactionOrder.Visibility = Visibility.Visible;
+            }
             tsDeveloperMode.IsChecked = !tsDeveloperMode.IsChecked;
-        }
-
-        /// <summary>
-        /// Updates switch on click
-        /// </summary>
-        /// <param name="sender">Object that raised the event.</param>
-        /// <param name="e">Contains MouseButtonEventArgs data.</param>
-        private void lviTestSwitch_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            tsTestSwitch.IsChecked = !tsTestSwitch.IsChecked;
         }
     }
 }

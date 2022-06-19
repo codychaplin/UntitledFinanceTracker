@@ -115,12 +115,6 @@
                   BorderThickness="0" Grid.Row="1">
             <ListViewItem x:Name="lviExportCSV" Style="{StaticResource SettingsMenuItem}" TabIndex="0"
                           PreviewMouseLeftButtonDown="lviExportCSV_PreviewMouseLeftButtonDown">Export Transactions as .CSV</ListViewItem>
-            <ListViewItem x:Name="lviUpdateAccountBalances" Style="{StaticResource SettingsMenuItem}" TabIndex="1"
-                          PreviewMouseLeftButtonDown="lviUpdateAccountBalances_PreviewMouseLeftButtonDown">Update Account Balances</ListViewItem>
-            <ListViewItem x:Name="lviUpdateRunningBalance" Style="{StaticResource SettingsMenuItem}" TabIndex="2" PreviewMouseLeftButtonDown="lviUpdateRunningBalance_PreviewMouseLeftButtonDown"
-                          >Update Running Balance</ListViewItem>
-            <ListViewItem x:Name="lviUpdateTransactionOrder" Style="{StaticResource SettingsMenuItem}" TabIndex="3" PreviewMouseLeftButtonDown="lviUpdateTransactionOrder_PreviewMouseLeftButtonDown"
-                          >Update Transaction Order</ListViewItem>
             <ListViewItem x:Name="lviDeveloperMode" Style="{StaticResource SettingsMenuItem}" TabIndex="4"
                           PreviewMouseLeftButtonDown="lviDeveloperMode_PreviewMouseLeftButtonDown">
                 <StackPanel Orientation="Horizontal">
@@ -129,15 +123,13 @@
                                                Height="18" Width="60" ThumbSize="30" IsEnabled="False" />
                 </StackPanel>
             </ListViewItem>
-            <ListViewItem x:Name="lviTestSwitch" Style="{StaticResource SettingsMenuItem}" TabIndex="5"
-                          PreviewMouseLeftButtonDown="lviTestSwitch_PreviewMouseLeftButtonDown">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Padding="0 0 53 0">Test Switch</TextBlock>
-                    <ts:HorizontalToggleSwitch x:Name="tsTestSwitch" Style="{DynamicResource HorizontalToggleSwitchStyle1}"
-                                               Height="18" Width="60" ThumbSize="30" IsEnabled="False" />
-                </StackPanel>
-            </ListViewItem>
-            <ListViewItem x:Name="lviAnotherOne" Style="{StaticResource SettingsMenuItem}" TabIndex="6">Another One</ListViewItem>
+            <ListViewItem x:Name="lviUpdateAccountBalances" Style="{StaticResource SettingsMenuItem}" TabIndex="1" Visibility="Hidden"
+                          PreviewMouseLeftButtonDown="lviUpdateAccountBalances_PreviewMouseLeftButtonDown">Update Account Balances</ListViewItem>
+            <ListViewItem x:Name="lviUpdateRunningBalance" Style="{StaticResource SettingsMenuItem}" TabIndex="2" Visibility="Hidden"
+                          PreviewMouseLeftButtonDown="lviUpdateRunningBalance_PreviewMouseLeftButtonDown">Update Running Balance</ListViewItem>
+            <ListViewItem x:Name="lviUpdateTransactionOrder" Style="{StaticResource SettingsMenuItem}" TabIndex="3" Visibility="Hidden"
+                          PreviewMouseLeftButtonDown="lviUpdateTransactionOrder_PreviewMouseLeftButtonDown">Update Transaction Order</ListViewItem>
+            
         </ListView>
     </Grid>
 </UserControl>

@@ -59,22 +59,6 @@
                     </StackPanel>
                 </ListViewItem>
 
-                <!-- week view tab tab -->
-                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviCalendar" TabIndex="2">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:ImageAwesome Icon="CalendarOutline"/>
-                        <TextBlock Text="Calendar"/>
-                    </StackPanel>
-                </ListViewItem>
-
-                <!-- statistics tab -->
-                <ListViewItem Style="{StaticResource Navbar}" x:Name="lviStats" TabIndex="4">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:ImageAwesome Icon="PieChart"/>
-                        <TextBlock Text="Statistics"/>
-                    </StackPanel>
-                </ListViewItem>
-
                 <!-- settings tab -->
                 <ListViewItem Style="{StaticResource Navbar}" x:Name="lviSettings" TabIndex="5">
                     <StackPanel Orientation="Horizontal">
